@@ -408,7 +408,8 @@ try{
     var port = port -  0; //to number
     var fullUrl = req.protocol + '://' + req.get('Host') + req.originalUrl;
     console.log((new Date()).toJSON(), 'GET /team entered. ', req.method, fullUrl, port);
-    port === 80 ? res.send('Hello World v3b!') : res.send(401);
+		// port === 80 ? res.send('Hello World v3b!') : res.send(401);
+		res.send('Hello World v3c!');
   });
 
 
