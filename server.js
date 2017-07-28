@@ -409,12 +409,12 @@ try{
     var fullUrl = req.protocol + '://' + req.get('Host') + req.originalUrl;
     console.log((new Date()).toJSON(), 'GET /team entered. ', req.method, fullUrl, port);
 		// port === 80 ? res.send('Hello World v3b!') : res.send(401);
-		res.send('Hello World v3c!');
+		res.send('Hello World v3d!');
   });
 
 
 console.log((new Date()).toJSON()+'server.js before creating http(s)Server');
-	var httpServer = http.Server(app).listen(httpPort) /*,
+	var httpServer = http.Server(app).listen(httpPort, '0.0.0.0', function() {console.log('Server Listening');}) /*,
 		httpsServer = https.Server(options, app).listen(httpsPort),
 		io = socketIO(httpsServer, {path: context.pathPrefix+'socket.io'}) */;
 /*
