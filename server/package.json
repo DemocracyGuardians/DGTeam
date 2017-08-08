@@ -1,5 +1,5 @@
 {
-  "name": "DGTeam",
+  "name": "DGTeamserver",
   "version": "0.0.1",
   "description": "Democracy Guardians team applications",
   "author": "Democracy Guardians",
@@ -9,10 +9,10 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/JonKFerraiolo/DGTeam"
+    "url": "https://github.com/DemocracyGuardians/DGTeam"
   },
   "bugs": {
-    "url": "https://github.com/JonKFerraiolo/DGTeam/issues"
+    "url": "https://github.com/DemocracyGuardians/DGTeam/issues"
   },
   "dependencies": {
     "body-parser": "1.17.x",
@@ -25,7 +25,6 @@
     "passport": "0.3.x",
     "passport-local": "1.0.x",
     "request": "2.81.x",
-    "requirejs": "2.3.x",
     "socket.io": "2.0.x"
   },
   "devDependencies": {},

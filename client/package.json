@@ -1,0 +1,28 @@
+{
+  "name": "DGTeamclient",
+  "version": "0.0.1",
+  "description": "Democracy Guardians team applications",
+  "author": "Democracy Guardians",
+  "scripts": {
+    "clean": "rm -rf node_modules npm-debug.log client/tools_built.js client/tools_uncompressed.js client/tools.css client/tools.css.map",
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test --env=jsdom",
+    "eject": "react-scripts eject"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/DemocracyGuardians/DGTeam"
+  },
+  "bugs": {
+    "url": "https://github.com/DemocracyGuardians/DGTeam/issues"
+  },
+  "dependencies": {
+    "axios": "^0.16.2",
+    "react": "^15.6.1",
+    "react-dom": "^15.6.1",
+    "react-scripts": "1.0.10",
+    "react-tap-event-plugin": "^2.0.1"
+  },
+  "private": false
+}
