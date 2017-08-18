@@ -1,29 +1,27 @@
 import React, { Component } from 'react';
 import Login from './Login';
 import Register from './Register';
+import Dashboard from './Dashboard';
 
 class Usermgmt extends Component {
   constructor(props) {
     super(props);
-    this.state = {
-      message: '',
-      screenToShow: 'Login'
-    }
   }
 
   render() {
     let screen = null;
-    if (this.state.screenToShow === "Login") {
-      screen = <Login parentComponent={this}/>;
-    } else if (this.state.screenToShow === "Register") {
-      screen = <Register parentComponent={this} />;
+    if (this.props.currentScreen === "show_login") {
+      screen = <Login onSubmitLogin={this.props.onSubmitLogin} />;
+    } else if (this.props.currentScreen === "show_registration") {
+      screen = <Register />;
+    } else if (this.props.currentScreen === "show_dashboard") {
+      screen = <Dashboard />;
     } else {
-      screen = <div>Error in value of this.state.screenToShow: {this.state.screenToShow}</div>;
+      screen = <div>Error in value of this.props.currentScreen: {this.props.currentScreen}</div>;
     }
     return (
       <div className="usermgmt">
         {screen}
-        <div>{this.state.message}</div>
       </div>
     );
   }
