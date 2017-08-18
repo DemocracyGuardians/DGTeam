@@ -1,9 +1,15 @@
 import React, { Component } from 'react';
 import injectTapEventPlugin from 'react-tap-event-plugin';
+import { RSAA } from 'redux-api-middleware';
 import { connect } from 'react-redux'
 import { loginFetch } from './actions/loginActions'
 import './App.css';
 import Usermgmt from './Usermgmt'
+import {
+  LOGIN_REQUEST,
+  LOGIN_SUCCESS,
+  LOGIN_FAILURE
+} from './actions/loginActions'
 
 // Needed for onTouchTap
 // http://stackoverflow.com/a/34015469/988941
@@ -28,7 +34,20 @@ class App extends Component {
     //if (!input.value.trim()) {
       //return
     //}
-    this.props.store.dispatch(loginFetch(f.email.value, f.password.value))
+    var payload = {
+      email: f.email.value,
+      password: f.password.value
+    }
+    const apiAction = {
+      [RSAA]: {
+        endpoint: "http://localhost:3001/api/login",
+        method: 'POST',
+        types: [LOGIN_REQUEST,  LOGIN_SUCCESS, LOGIN_FAILURE],
+        body: JSON.stringify(payload),
+        headers: { 'Content-Type': 'application/json' }
+      }
+    }
+    this.props.store.dispatch(apiAction)
   }
 
   render() {
