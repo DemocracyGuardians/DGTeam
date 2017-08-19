@@ -20,7 +20,7 @@ class Login extends Component {
             <input type="password" name="password" placeholder="Password" />
           </div>
           <div className="usermgmtbuttonrow">
-            <button type="submit">Login"</button>
+            <button type="submit">Login</button>
           </div>
         </form>
       </div>
