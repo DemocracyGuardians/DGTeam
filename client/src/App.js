@@ -19,9 +19,11 @@ class App extends Component {
   constructor(props){
     super(props);
     this.state = {
-      currentScreen: 'show_login',
-      isFetching: false,
-      message: ''
+      sessionReducer: {
+        currentScreen: 'show_login',
+        isFetching: false,
+        message: ''
+      }
     }
     this.onSubmitLogin = this.onSubmitLogin.bind(this)
     window.setInterval(() => {console.log('App state='+JSON.stringify(this.state));}, 10000);
@@ -61,7 +63,7 @@ class App extends Component {
 }
 
 const mapStateToProps = (state, ownProps) => {
-  const { currentScreen, isFetching, message } = state
+  const { currentScreen, isFetching, message } = state.sessionReducer || {}
   return {
     store: ownProps.store,
     currentScreen: currentScreen,

@@ -9,12 +9,12 @@ import { createStore, applyMiddleware } from 'redux'
 import { Provider } from 'react-redux'
 import './index.css';
 import App from './App';
-import sessionReducer from './reducers/sessionReducer'
+import TeamAppReducer from './reducers'
 
 const loggerMiddleware = createLogger()
 
 const store = createStore(
-  sessionReducer,
+  TeamAppReducer,
   applyMiddleware(
     thunkMiddleware, // lets us dispatch() functions
     loggerMiddleware, // neat middleware that logs actions
