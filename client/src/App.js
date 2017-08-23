@@ -4,7 +4,7 @@ import { RSAA } from 'redux-api-middleware';
 import { connect } from 'react-redux'
 import { loginFetch } from './actions/loginActions'
 import './App.css';
-import Usermgmt from './Usermgmt'
+import Usermgmt from './containers/Usermgmt'
 import {
   LOGIN_REQUEST,
   LOGIN_SUCCESS,

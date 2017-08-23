@@ -41,8 +41,8 @@ class Register extends React.Component {
     fetch(apiBaseUrl+'/register', fetchParams).then(function(response) {
       console.log(response);
       if (response.status === 200) {
-        console.log("registration success");
-        that.props.parentComponent.setState({screenToShow: "Login", message: "Registered" }); //FIXME
+        console.log("Signup success");
+        that.props.parentComponent.setState({screenToShow: "Login", message: "Signup successful" }); //FIXME
       } else {
         console.log("registration failure");
       }
@@ -54,8 +54,8 @@ class Register extends React.Component {
 
   render() {
     return (
-      <div className="usermgmt usermgmtregister">
-        <div className="usermgmttitle">Register</div>
+      <div className="usermgmt usermgmtsignup">
+        <div className="usermgmttitle">Signup</div>
         <div className="usermgmtfieldrow">
           <input type="text" name="first_name" placeholder="First name" onChange={this.handleChange} />
         </div>

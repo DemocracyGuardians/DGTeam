@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import Login from './Login';
-import Register from './Register';
-import Dashboard from './Dashboard';
+import Register from './Signup';
+import Dashboard from './Workbench';
 
 class Usermgmt extends Component {
   constructor(props) {

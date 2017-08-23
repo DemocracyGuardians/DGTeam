@@ -12,8 +12,8 @@ class Dashboard extends React.Component {
 
   render() {
     return (
-      <div className="dashboard">
-        User dashboard
+      <div className="workbench">
+        User workbench
       </div>
     );
   }
