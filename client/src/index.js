@@ -7,6 +7,7 @@ import { createLogger } from 'redux-logger'
 import { apiMiddleware } from 'redux-api-middleware';
 import { createStore, applyMiddleware } from 'redux'
 import { Provider } from 'react-redux'
+import 'semantic-ui-css/semantic.min.css'
 import './index.css';
 import App from './App';
 import TeamAppReducer from './reducers'

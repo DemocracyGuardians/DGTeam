@@ -1,5 +1,6 @@
 
 import React, { Component } from 'react';
+import { Button, Input } from 'semantic-ui-react'
 
 class Login extends Component {
   constructor(props){
@@ -14,13 +15,13 @@ class Login extends Component {
         <form className="usermgmt usermgmtlogin" onSubmit={this.props.onSubmitLogin} >
           <div className="usermgmttitle">Login</div>
           <div className="usermgmtfieldrow">
-            <input type="text" name="email" placeholder="Email" />
+            <Input name="email" placeholder="Email" />
           </div>
           <div className="usermgmtfieldrow">
-            <input type="password" name="password" placeholder="Password" />
+            <Input type="password" name="password" placeholder="Password" />
           </div>
           <div className="usermgmtbuttonrow">
-            <button type="submit">Login</button>
+            <Button type="submit">Login</Button>
           </div>
         </form>
       </div>

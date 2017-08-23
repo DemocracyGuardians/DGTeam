@@ -1,0 +1,42 @@
+Login
+  <message> <error:boolean>
+  Email
+  Password
+  Forgot my password (link)
+  Forgot my email (link)
+  Not a member? Click here to sign up (link)
+ForgotPassword / Forgot my password
+  Email
+  Send email to reset my password button
+  Return to login screen link
+/team/resetpassword?token=... redirect to /team with cookie go=ResetPasswordSuccess or ResetPasswordFailure
+ResetPassword
+  Reset password for <email>:
+  Password (with password strength indicator) Show/Hide password (Component?)
+  password requirements
+  Reset password button <disable>
+ForgotEmail / Forgot my primary email
+  When you signed up as a member of the Democracy Guardians team,
+  you provided a primary email address, which is what you use to login to
+  the Democracy Guardians team area. If you have forgotten your primary email,
+  you can recovery it by entering
+  identifying information below. We will try to find
+  you in our user database. If we find you the database,
+  we will send a message to your primary email.
+  Enter at least one item of identifying information from your profile,
+  then click the button below.
+  Your mail address(es): <emails>
+  Your urls <urls>
+  Your social media IDs <socials:[{platform, id}]
+  Enter at least one of the Internet IDs in your profile, then click the button below.
+  <message>
+  Find me button (Note: only five tries)
+  Return to login screen link
+ForgotEmailSent
+  We found a match for you and sent an email to the primary email address in the database.
+  Check your various email accounts for a message from Democracy Guardians
+  and follow the instructions
+/team/login?token=... redirect to /team with cookie go=login,token=...  or ResetEmailFailure
+ResetEmailFailure
+  <message>
+  Go to Login page button

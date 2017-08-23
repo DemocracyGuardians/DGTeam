@@ -1,0 +1,68 @@
+{
+  appState {
+    currentScreen
+    isFetching
+    message
+    error
+  }
+  //screens start with uc, everything else lc
+  Signup { see signup.txt }
+  Login { see login.txt }
+  Workbench { ?
+    Thin banner: DGicon(link) DGTeamicon Username(ellipsis) Level:# Trustworthiness(icon)
+      MyUsernameDropdown
+      MyLevelDropdown
+      MyTrustworthinessDropdown
+    Menubar: Notifications(badge) Train Illuminate? Judge Search
+    Notifications {}
+    Train {}
+    Illuminate? {}
+    Judge {}
+    Search {}
+  }
+  session {
+    token
+  }
+  AddJudgment { ? }
+  user / entity { // stored in entity tables?
+    id
+    isOrganization
+    email
+    firstName
+    lastName
+    profile {
+      emails []
+      urls []
+      social []
+      bio
+      residences []
+      education []
+      employment []
+      activities []
+      affiliations []
+      publications [{ // books, audio, visual, knews, magazines, podcasts, etc
+        title
+        authors []
+        publisher
+        year
+        urls []
+        summary
+        notes
+      }]
+      trustworthinessClaims []
+      trustworthinessDeviations []
+    }
+    judgmentsBy []
+    judgmentsOn []
+    researchBy []
+    researchOn []
+    commentsBy []
+    commentsOn []
+    trustworthiness {
+      score
+      confidence
+    }
+    level
+    training
+  }
+}
