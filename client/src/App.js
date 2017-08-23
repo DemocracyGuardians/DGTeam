@@ -4,7 +4,9 @@ import { RSAA } from 'redux-api-middleware';
 import { connect } from 'react-redux'
 import { loginFetch } from './actions/loginActions'
 import './App.css';
-import Usermgmt from './containers/Usermgmt'
+import Login from './containers/Login'
+import Signup from './containers/Signup'
+import Workbench from './containers/Workbench'
 import {
   LOGIN_REQUEST,
   LOGIN_SUCCESS,
@@ -26,7 +28,6 @@ class App extends Component {
       }
     }
     this.onSubmitLogin = this.onSubmitLogin.bind(this)
-    window.setInterval(() => {console.log('App state='+JSON.stringify(this.state));}, 10000);
   }
 
   onSubmitLogin(e) {
@@ -54,9 +55,19 @@ class App extends Component {
 
   render() {
     const { currentScreen } = this.props
+    let screen = null;
+    if (this.props.currentScreen === "show_login") {
+      screen = <Login onSubmitLogin={this.onSubmitLogin} />;
+    } else if (this.props.currentScreen === "show_registration") {
+      screen = <Signup />;
+    } else if (this.props.currentScreen === "show_dashboard") {
+      screen = <Workbench />;
+    } else {
+      screen = <div>Error in value of this.props.currentScreen: {this.props.currentScreen}</div>;
+    }
     return (
       <div className="App">
-        <Usermgmt currentScreen={currentScreen} onSubmitLogin={this.onSubmitLogin} />
+        {screen}
       </div>
     );
   }
