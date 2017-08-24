@@ -1,9 +1,9 @@
 
 import { combineReducers } from 'redux'
-import sessionReducer from './sessionReducer'
+import loginReducer from './loginReducer'
 
 const TeamAppReducer = combineReducers({
-  sessionReducer
+  loginReducer
 })
 
 export default TeamAppReducer

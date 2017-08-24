@@ -5,8 +5,8 @@ import {
   LOGIN_FAILURE
 } from '../actions/loginActions'
 
-function sessionReducer(state = {
-    currentScreen: 'show_login',
+function loginReducer(state = {
+    currentScreen: 'Login',
     isFetching: false,
     message: Date.now().toString()
   }, action) {
@@ -18,13 +18,13 @@ function sessionReducer(state = {
       })
     case LOGIN_SUCCESS:
       return Object.assign({}, state, {
-        currentScreen: 'show_dashboard',
+        currentScreen: 'Workbench',
         isFetching: false,
         message: ''
       })
     case LOGIN_FAILURE:
       return Object.assign({}, state, {
-        currentScreen: 'show_login',
+        currentScreen: 'Login',
         isFetching: false,
         message: 'Login failure: ' + action.errorMessage
       })
@@ -33,4 +33,4 @@ function sessionReducer(state = {
   }
 }
 
-export default sessionReducer
+export default loginReducer

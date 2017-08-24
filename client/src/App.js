@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import injectTapEventPlugin from 'react-tap-event-plugin';
 import { RSAA } from 'redux-api-middleware';
 import { connect } from 'react-redux'
-import { loginFetch } from './actions/loginActions'
 import './App.css';
 import Login from './containers/Login'
 import Signup from './containers/Signup'
@@ -21,8 +20,8 @@ class App extends Component {
   constructor(props){
     super(props);
     this.state = {
-      sessionReducer: {
-        currentScreen: 'show_login',
+      loginReducer: {
+        currentScreen: 'Login',
         isFetching: false,
         message: ''
       }
@@ -54,13 +53,12 @@ class App extends Component {
   }
 
   render() {
-    const { currentScreen } = this.props
     let screen = null;
-    if (this.props.currentScreen === "show_login") {
+    if (this.props.currentScreen === "Login") {
       screen = <Login onSubmitLogin={this.onSubmitLogin} />;
-    } else if (this.props.currentScreen === "show_registration") {
+    } else if (this.props.currentScreen === "Signup") {
       screen = <Signup />;
-    } else if (this.props.currentScreen === "show_dashboard") {
+    } else if (this.props.currentScreen === "Workbench") {
       screen = <Workbench />;
     } else {
       screen = <div>Error in value of this.props.currentScreen: {this.props.currentScreen}</div>;
@@ -74,7 +72,7 @@ class App extends Component {
 }
 
 const mapStateToProps = (state, ownProps) => {
-  const { currentScreen, isFetching, message } = state.sessionReducer || {}
+  const { currentScreen, isFetching, message } = state.loginReducer || {}
   return {
     store: ownProps.store,
     currentScreen: currentScreen,
