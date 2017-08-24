@@ -1,32 +1,38 @@
 
 import React, { Component } from 'react';
-import { Button, Input } from 'semantic-ui-react'
+import { Button, Container, Form, Message } from 'semantic-ui-react'
 
 class Login extends Component {
   constructor(props){
     super(props);
-    this.state = {
-    }
   }
 
   render() {
+    let { message, error, onSubmitLogin } = this.props
     return (
-      <div>
-        <form className="usermgmt usermgmtlogin" onSubmit={this.props.onSubmitLogin} >
-          <div className="usermgmttitle">Login</div>
-          <div className="usermgmtfieldrow">
-            <Input name="email" placeholder="Email" />
-          </div>
-          <div className="usermgmtfieldrow">
-            <Input type="password" name="password" placeholder="Password" />
-          </div>
-          <div className="usermgmtbuttonrow">
-            <Button type="submit">Login</Button>
-          </div>
-        </form>
-      </div>
+      <Container text className='Login'>
+        <Message header='Democracy Guardians Team Login' error={error} attached content={message} />
+        <Form className='attached fluid segment' onSubmit={onSubmitLogin}>
+          <Form.Input name='email' placeholder='Email' />
+          <Form.Input name='password' type='password' placeholder='Password'/>
+          <Button type="submit">Login</Button>
+        </Form>
+        <Message attached='bottom'>
+          <span className='innerBlock'>
+            <div><a href='#'>Forgot your password</a></div>
+            <div>Not yet a team member?&nbsp;<a href='#'>Signup here</a>.</div>
+          </span>
+        </Message>
+      </Container>
     )
   }
 }
 
 export default Login
+
+/*
+<Form.Group widths='equal'>
+  <Form.Input label='First Name' placeholder='First Name' type='text' />
+  <Form.Input label='Last Name' placeholder='Last Name' type='text' />
+</Form.Group>
+*/

@@ -8,7 +8,7 @@ import {
 function loginReducer(state = {
     currentScreen: 'Login',
     isFetching: false,
-    message: Date.now().toString()
+    message: ''
   }, action) {
   switch (action.type) {
     case LOGIN_REQUEST:

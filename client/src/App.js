@@ -23,7 +23,8 @@ class App extends Component {
       loginReducer: {
         currentScreen: 'Login',
         isFetching: false,
-        message: ''
+        message: '',
+        error: false
       }
     }
     this.onSubmitLogin = this.onSubmitLogin.bind(this)
@@ -53,9 +54,10 @@ class App extends Component {
   }
 
   render() {
+    let { message, error } = this.props
     let screen = null;
     if (this.props.currentScreen === "Login") {
-      screen = <Login onSubmitLogin={this.onSubmitLogin} />;
+      screen = <Login onSubmitLogin={this.onSubmitLogin} message={message} error={error} />;
     } else if (this.props.currentScreen === "Signup") {
       screen = <Signup />;
     } else if (this.props.currentScreen === "Workbench") {
@@ -72,12 +74,13 @@ class App extends Component {
 }
 
 const mapStateToProps = (state, ownProps) => {
-  const { currentScreen, isFetching, message } = state.loginReducer || {}
+  const { currentScreen, isFetching, message, error } = state.loginReducer || {}
   return {
     store: ownProps.store,
-    currentScreen: currentScreen,
-    isFetching: isFetching,
-    message: message
+    currentScreen,
+    isFetching,
+    message,
+    error
   }
 }
 
