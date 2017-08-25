@@ -1,12 +1,9 @@
 
 import React, { Component } from 'react';
 import { Button, Container, Form, Message } from 'semantic-ui-react'
+import PropTypes from 'prop-types';
 
 class Login extends Component {
-  constructor(props){
-    super(props);
-  }
-
   render() {
     let { message, error, onSubmitLogin } = this.props
     return (
@@ -26,6 +23,12 @@ class Login extends Component {
       </Container>
     )
   }
+}
+
+Login.propTypes = {
+  message: PropTypes.string.isRequired,
+  error: PropTypes.bool.isRequired,
+  onSubmitLogin: PropTypes.func.isRequired
 }
 
 export default Login
