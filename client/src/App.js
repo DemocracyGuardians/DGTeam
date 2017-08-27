@@ -6,11 +6,8 @@ import './App.css';
 import Login from './containers/Login'
 import Signup from './containers/Signup'
 import Workbench from './containers/Workbench'
-import {
-  LOGIN_REQUEST,
-  LOGIN_SUCCESS,
-  LOGIN_FAILURE
-} from './actions/loginActions'
+import { LOGIN_REQUEST, LOGIN_SUCCESS, LOGIN_FAILURE } from './actions/loginActions'
+import { appstateLoginSuccess } from './actions/appstateActions'
 
 // Needed for onTouchTap
 // http://stackoverflow.com/a/34015469/988941
@@ -31,16 +28,27 @@ class App extends Component {
   }
 
   onSubmitLogin(payload) {
+    let { dispatch } = this.props.store
     const apiAction = {
       [RSAA]: {
         endpoint: "http://localhost:3001/api/login",
         method: 'POST',
-        types: [LOGIN_REQUEST,  LOGIN_SUCCESS, LOGIN_FAILURE],
+        types: [
+          LOGIN_REQUEST,
+          {
+            type: LOGIN_SUCCESS,
+            payload: (action, state) => {
+              dispatch(appstateLoginSuccess())
+              return undefined
+            }
+          },
+          LOGIN_FAILURE
+        ],
         body: JSON.stringify(payload),
         headers: { 'Content-Type': 'application/json' }
       }
     }
-    this.props.store.dispatch(apiAction)
+    dispatch(apiAction)
   }
 
   render() {
@@ -64,25 +72,16 @@ class App extends Component {
 }
 
 const mapStateToProps = (state, ownProps) => {
-  const { currentScreen, isFetching, message, error } = state.loginReducer || {}
+  const { currentScreen } = state.appstate || {}
+  const { message, error } = state.login || {}
   return {
     store: ownProps.store,
     currentScreen,
-    isFetching,
     message,
     error
   }
 }
 
-const mapDispatchToProps = (dispatch, ownProps) => {
-  return {
-  }
-}
-
-App = connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(App)
-
+App = connect(mapStateToProps)(App)
 
 export default App;

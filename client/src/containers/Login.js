@@ -7,6 +7,7 @@
 */
 
 import React from 'react';
+import { connect } from "react-redux";
 import { LocalForm, Control } from 'react-redux-form'
 import { Button, Container, Input, Message } from 'semantic-ui-react'
 import PropTypes from 'prop-types'
@@ -47,4 +48,13 @@ Login.propTypes = {
   onSubmitLogin: PropTypes.func.isRequired
 }
 
-export default Login
+const mapStateToProps = (state, ownProps) => {
+  const { currentScreen, message, error } = state || {}
+  return {
+    store: ownProps.store,
+    currentScreen,
+    message,
+    error
+  }
+}
+export default connect(mapStateToProps)(Login);
