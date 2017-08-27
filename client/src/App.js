@@ -30,17 +30,7 @@ class App extends Component {
     this.onSubmitLogin = this.onSubmitLogin.bind(this)
   }
 
-  onSubmitLogin(e) {
-    e.preventDefault()
-    let f = e.target
-    //validate form
-    //if (!input.value.trim()) {
-      //return
-    //}
-    var payload = {
-      email: f.email.value,
-      password: f.password.value
-    }
+  onSubmitLogin(payload) {
     const apiAction = {
       [RSAA]: {
         endpoint: "http://localhost:3001/api/login",
