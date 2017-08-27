@@ -12,8 +12,8 @@ import { Button, Container, Form, Message } from 'semantic-ui-react'
 import PropTypes from 'prop-types'
 
 // Wrap semantic-ui controls for react-redux-forms
-const wEmail = (props) => <Form.Input name='email' placeholder='Email' {...props} />
-const wPassword = (props) => <Form.Input name='password' type='password' placeholder='Password' {...props} />
+const wEmail = (props) => <Form.Input name='email' placeholder='Email' fluid className="verticalformcontrol" {...props} />
+const wPassword = (props) => <Form.Input name='password' type='password' placeholder='Password' fluid className="verticalformcontrol" {...props} />
 
 class Login extends React.Component {
   handleSubmit(values) {
@@ -23,16 +23,16 @@ class Login extends React.Component {
   render() {
     let { message, error } = this.props
     return (
-      <Container text className='Login'>
-        <Message header='Democracy Guardians Team Login' error={error} attached content={message} />
+      <Container text className='Login verticalformcontainer'>
+        <Message header='Democracy Guardians Team Login' className='verticalformtopmessage' error={error} content={message} />
         <LocalForm onSubmit={(values) => this.handleSubmit(values)} >
           <Control.text model=".email" component={wEmail} />
           <Control.password model=".password" component={wPassword} />
-          <Button type="submit">Login</Button>
+          <Button type="submit" fluid className="verticalformcontrol verticalformbottombutton" >Login</Button>
         </LocalForm>
-        <Message attached='bottom'>
+        <Message className="verticalformbottommessage" >
           <span className='innerBlock'>
-            <div><a href='#'>Forgot your password</a></div>
+            <div><a href='#'>Forgot your password?</a></div>
             <div>Not yet a team member?&nbsp;<a href='#'>Signup here</a>.</div>
           </span>
         </Message>

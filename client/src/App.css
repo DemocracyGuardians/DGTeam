@@ -24,14 +24,28 @@
   to { transform: rotate(360deg); }
 }
 
-.Login.ui.text.container,
-.Signup.ui.text.container {
-  margin-top: 3em;
+.verticalformcontainer.ui.text.container {
+  margin-top: 1.5em;
   max-width: 23em !important;
 }
 
-.Login .ui.bottom.attached.message .innerBlock,
-.Signup .ui.bottom.attached.message .innerBlock {
+.verticalformtopmessage.ui.message {
+  margin-bottom: 1.5em;
+}
+
+.verticalformbottommessage.ui.message {
+  margin-top: 2em;
+}
+
+.verticalformbottommessage.ui.message .innerBlock {
   display: inline-block;
   text-align: left;
+}
+
+.verticalformcontrol {
+  margin: 0.6em 0;
+}
+
+.verticalformbottombutton.ui.fluid.button.verticalformcontrol {
+  margin-top: 2em;
 }
