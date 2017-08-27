@@ -8,12 +8,12 @@
 
 import React from 'react';
 import { LocalForm, Control } from 'react-redux-form'
-import { Button, Container, Form, Message } from 'semantic-ui-react'
+import { Button, Container, Input, Message } from 'semantic-ui-react'
 import PropTypes from 'prop-types'
 
 // Wrap semantic-ui controls for react-redux-forms
-const wEmail = (props) => <Form.Input name='email' placeholder='Email' fluid className="verticalformcontrol" {...props} />
-const wPassword = (props) => <Form.Input name='password' type='password' placeholder='Password' fluid className="verticalformcontrol" {...props} />
+const wEmail = (props) => <Input required name='email' placeholder='Email' fluid className="verticalformcontrol" {...props} />
+const wPassword = (props) => <Input required name='password' placeholder='Password' fluid className="verticalformcontrol" {...props} />
 
 class Login extends React.Component {
   handleSubmit(values) {
@@ -26,8 +26,8 @@ class Login extends React.Component {
       <Container text className='Login verticalformcontainer'>
         <Message header='Democracy Guardians Team Login' className='verticalformtopmessage' error={error} content={message} />
         <LocalForm onSubmit={(values) => this.handleSubmit(values)} >
-          <Control.text model=".email" component={wEmail} />
-          <Control.password model=".password" component={wPassword} />
+          <Control.text model=".email" type="email" component={wEmail} />
+          <Control.password model=".password" type="password" component={wPassword} />
           <Button type="submit" fluid className="verticalformcontrol verticalformbottombutton" >Login</Button>
         </LocalForm>
         <Message className="verticalformbottommessage" >
