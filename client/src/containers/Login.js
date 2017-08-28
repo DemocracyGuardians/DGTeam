@@ -66,8 +66,7 @@ class Login extends React.Component {
 }
 
 Login.propTypes = {
-  message: PropTypes.string.isRequired,
-  error: PropTypes.bool.isRequired
+  store: PropTypes.object.isRequired
 }
 
 const mapStateToProps = (state, ownProps) => {

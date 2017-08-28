@@ -11,24 +11,10 @@ import Workbench from './containers/Workbench'
 injectTapEventPlugin();
 
 class App extends Component {
-  constructor(props){
-    super(props);
-    this.state = {
-      appstate: {
-        currentScreen: 'Login',
-      },
-      loginReducer: {
-        message: '',
-        error: false
-      }
-    }
-  }
-
   render() {
-    let { message, error } = this.props
     let screen = null;
     if (this.props.currentScreen === "Login") {
-      screen = <Login store={this.props.store} message={message} error={error} />;
+      screen = <Login store={this.props.store} />;
     } else if (this.props.currentScreen === "Signup") {
       screen = <Signup />;
     } else if (this.props.currentScreen === "Workbench") {
@@ -46,12 +32,9 @@ class App extends Component {
 
 const mapStateToProps = (state, ownProps) => {
   const { currentScreen } = state.appstate || {}
-  const { message, error } = state.login || {}
   return {
     store: ownProps.store,
-    currentScreen,
-    message,
-    error
+    currentScreen
   }
 }
 

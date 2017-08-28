@@ -2,7 +2,6 @@
 import { LOGIN_REQUEST, LOGIN_SUCCESS, LOGIN_FAILURE } from '../actions/loginActions'
 
 function loginReducer(state = {
-    currentScreen: 'Login',
     message: '',
     error: false
   }, action) {
