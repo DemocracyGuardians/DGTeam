@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import injectTapEventPlugin from 'react-tap-event-plugin';
 import { connect } from 'react-redux'
+import { BrowserRouter, Redirect, Route, Switch } from 'react-router-dom'
 import './App.css';
 import Login from './containers/Login'
 import Signup from './containers/Signup'
@@ -12,21 +13,21 @@ injectTapEventPlugin();
 
 class App extends Component {
   render() {
-    let screen = null;
-    if (this.props.currentScreen === "Login") {
-      screen = <Login store={this.props.store} />;
-    } else if (this.props.currentScreen === "Signup") {
-      screen = <Signup />;
-    } else if (this.props.currentScreen === "Workbench") {
-      screen = <Workbench />;
-    } else {
-      screen = <div>Error in value of this.props.currentScreen: {this.props.currentScreen}</div>;
-    }
+    const LoginComp = (() => (<Login store={this.props.store} />))
+    const SignupComp = (() => (<Signup store={this.props.store} />))
+    const WorkbenchComp = (() => (<Workbench store={this.props.store} />))
     return (
       <div className="App">
-        {screen}
+        <BrowserRouter>
+          <Switch>
+            <Route path='/login' component={LoginComp} />
+            <Route path='/signup' component={SignupComp} />
+            <Route path='/workbench' component={WorkbenchComp} />
+            <Redirect path='*' to="/login" />
+          </Switch>
+        </BrowserRouter>
       </div>
-    );
+    )
   }
 }
 

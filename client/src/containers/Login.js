@@ -9,6 +9,7 @@
 import React from 'react';
 import { connect } from "react-redux";
 import { LocalForm, Control } from 'react-redux-form'
+import { withRouter } from 'react-router-dom'
 import { Button, Container, Input, Message } from 'semantic-ui-react'
 import PropTypes from 'prop-types'
 import { RSAA } from 'redux-api-middleware';
@@ -32,6 +33,7 @@ class Login extends React.Component {
             type: LOGIN_SUCCESS,
             payload: (action, state) => {
               dispatch(appstateLoginSuccess())
+              this.props.history.push('/workbench')
               return undefined
             }
           },
@@ -77,4 +79,4 @@ const mapStateToProps = (state, ownProps) => {
     error
   }
 }
-export default connect(mapStateToProps)(Login);
+export default withRouter(connect(mapStateToProps)(Login));

@@ -9,7 +9,6 @@ export default function appstateReducer(state = {
   switch (action.type) {
     case APPSTATE_LOGIN_SUCCESS:
       return Object.assign({}, state, {
-        currentScreen: 'Workbench'
       })
     default:
       return state || null
