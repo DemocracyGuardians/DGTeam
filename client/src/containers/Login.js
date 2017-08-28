@@ -11,6 +11,9 @@ import { connect } from "react-redux";
 import { LocalForm, Control } from 'react-redux-form'
 import { Button, Container, Input, Message } from 'semantic-ui-react'
 import PropTypes from 'prop-types'
+import { RSAA } from 'redux-api-middleware';
+import { LOGIN_REQUEST, LOGIN_SUCCESS, LOGIN_FAILURE } from '../actions/loginActions'
+import { appstateLoginSuccess } from '../actions/appstateActions'
 
 // Wrap semantic-ui controls for react-redux-forms
 const wEmail = (props) => <Input required name='email' placeholder='Email' fluid className="verticalformcontrol" {...props} />
@@ -18,7 +21,27 @@ const wPassword = (props) => <Input required name='password' placeholder='Passwo
 
 class Login extends React.Component {
   handleSubmit(values) {
-    this.props.onSubmitLogin(values);
+    let { dispatch } = this.props.store
+    const apiAction = {
+      [RSAA]: {
+        endpoint: "http://localhost:3001/api/login",
+        method: 'POST',
+        types: [
+          LOGIN_REQUEST,
+          {
+            type: LOGIN_SUCCESS,
+            payload: (action, state) => {
+              dispatch(appstateLoginSuccess())
+              return undefined
+            }
+          },
+          LOGIN_FAILURE
+        ],
+        body: JSON.stringify(values),
+        headers: { 'Content-Type': 'application/json' }
+      }
+    }
+    dispatch(apiAction)
   }
 
   render() {
@@ -44,15 +67,13 @@ class Login extends React.Component {
 
 Login.propTypes = {
   message: PropTypes.string.isRequired,
-  error: PropTypes.bool.isRequired,
-  onSubmitLogin: PropTypes.func.isRequired
+  error: PropTypes.bool.isRequired
 }
 
 const mapStateToProps = (state, ownProps) => {
-  const { currentScreen, message, error } = state || {}
+  const { message, error } = state || {}
   return {
     store: ownProps.store,
-    currentScreen,
     message,
     error
   }
