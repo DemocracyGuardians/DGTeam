@@ -4,8 +4,8 @@ class Register extends React.Component {
   constructor(props){
     super(props);
     this.state = {
-      first_name: '',
-      last_name: '',
+      firstName: '',
+      lastName: '',
       email: '',
       password: ''
     }
@@ -23,10 +23,10 @@ class Register extends React.Component {
 
   handleClick(event){
     var apiBaseUrl = "http://localhost:3001/api/";
-    console.log("values", this.state.first_name, this.state.last_name, this.state.email, this.state.password);
+    console.log("values", this.state.firstName, this.state.lastName, this.state.email, this.state.password);
     var payload = {
-      "first_name": this.state.first_name,
-      "last_name":this.state.last_name,
+      "firstName": this.state.firstName,
+      "lastName":this.state.lastName,
       "email":this.state.email,
       "password":this.state.password
     }
@@ -57,10 +57,10 @@ class Register extends React.Component {
       <div className="usermgmt usermgmtsignup">
         <div className="usermgmttitle">Signup</div>
         <div className="usermgmtfieldrow">
-          <input type="text" name="first_name" placeholder="First name" onChange={this.handleChange} />
+          <input type="text" name="firstName" placeholder="First name" onChange={this.handleChange} />
         </div>
         <div className="usermgmtfieldrow">
-          <input type="text" name="last_name" placeholder="Last name" onChange={this.handleChange} />
+          <input type="text" name="lastName" placeholder="Last name" onChange={this.handleChange} />
         </div>
         <div className="usermgmtfieldrow">
           <input type="text" name="email" placeholder="Email" onChange={this.handleChange} />

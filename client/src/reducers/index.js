@@ -1,10 +1,10 @@
 
 import { combineReducers } from 'redux'
 import loginReducer from './loginReducer'
-import appstateReducer from './appstateReducer'
+import userReducer from './userReducer'
 
 const TeamAppReducer = combineReducers({
-  appstate: appstateReducer,
+  user: userReducer,
   login: loginReducer
 })
 

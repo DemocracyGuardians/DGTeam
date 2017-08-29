@@ -32,10 +32,8 @@ class App extends Component {
 }
 
 const mapStateToProps = (state, ownProps) => {
-  const { currentScreen } = state.appstate || {}
   return {
-    store: ownProps.store,
-    currentScreen
+    store: ownProps.store
   }
 }
 

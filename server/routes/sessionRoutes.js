@@ -16,31 +16,26 @@ connection.connect(function(error){
 
 exports.register = function(req, res){
   console.log("req", req.body);
-  var now = new Date();
+  let now = new Date();
 
-   var users = {
-     first_name: req.body.first_name,
-     last_name: req.body.last_name,
+  let user = {
+     firstName: req.body.firstName,
+     lastName: req.body.lastName,
      email: req.body.email,
      password: req.body.password,
      created: now,
      modified: now
    }
-   connection.query('INSERT INTO ue_ztm_users SET ?', users, function (error, results, fields) {
+   connection.query('INSERT INTO ue_ztm_users SET ?', user, function (error, results, fields) {
      if (error) {
-       let msg = "Insert new user failure for email '" + users.email + "'";
+       let msg = "Insert new user failure for email '" + user.email + "'";
        console.log(msg + ", error= ", error);
-       res.send({
-         "code": 400,
-         "msg": msg
-       })
+       res.send(400, { msg })
      } else {
-       let msg = "Insert new user success for email '" + users.email + "'";
+       delete user.password
+       let msg = "Insert new user success for email '" + user.email + "'";
        console.log(msg + ", results= ", results);
-       res.send({
-         "code": 200,
-         "msg": msg
-       })
+       res.send({ msg, user })
      }
    });
 }
@@ -55,26 +50,19 @@ exports.login = function(req, res){
     if (error) {
       let msg = "Select user failure for email '" + email + "'";
       console.log(msg + ", error= ", error);
-      res.send({
-        "code": 400,
-        "msg": msg
-      })
+      res.send(400, { msg })
     } else {
       let msg = "Select user success for email '" + email + "'";
       console.log(msg + ", results= ", results);
-      if (results.length > 0){
-        if (results[0].password === password) {
-          let msg = "Passwords match for email '" + email + "'";
-          res.send({
-            "code": 200,
-            "msg": msg
-          })
+      if (results.length > 0) {
+        let user = results[0]
+        if (user.password === password) {
+          delete user.password
+          let msg = "Login success for email '" + email + "'";
+          res.send({ msg, user })
         } else {
-          let msg = "Passwords do not match for email '" + email + "'";
-          res.send({
-            "code": 401,
-            "msg": msg
-          })
+          let msg = "Login failure for email '" + email + "'";
+          res.send(401, { msg })
         }
       }
     }

@@ -14,7 +14,7 @@ import { Button, Container, Input, Message } from 'semantic-ui-react'
 import PropTypes from 'prop-types'
 import { RSAA } from 'redux-api-middleware';
 import { LOGIN_REQUEST, LOGIN_SUCCESS, LOGIN_FAILURE } from '../actions/loginActions'
-import { appstateLoginSuccess } from '../actions/appstateActions'
+import { userLoginSuccess } from '../actions/userActions'
 
 // Wrap semantic-ui controls for react-redux-forms
 const wEmail = (props) => <Input required name='email' placeholder='Email' fluid className="verticalformcontrol" {...props} />
@@ -31,10 +31,16 @@ class Login extends React.Component {
           LOGIN_REQUEST,
           {
             type: LOGIN_SUCCESS,
-            payload: (action, state) => {
-              dispatch(appstateLoginSuccess())
-              this.props.history.push('/workbench')
-              return undefined
+            payload: (action, state, res) => {
+              const contentType = res.headers.get('Content-Type');
+              if (contentType && ~contentType.indexOf('json')) {
+                //FIXME handle error cases
+                return res.json().then((json) => {
+                  dispatch(userLoginSuccess(json.user))
+                  this.props.history.push('/workbench')
+                  return undefined
+                })
+              }
             }
           },
           LOGIN_FAILURE
