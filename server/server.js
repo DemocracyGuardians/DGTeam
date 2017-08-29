@@ -15,6 +15,6 @@ app.use(function(req, res, next) {
 var apiRouter = express.Router();
 
 apiRouter.post('/login', sessionRoutes.login)
-apiRouter.post('/register', sessionRoutes.register);
+apiRouter.post('/signup', sessionRoutes.signup);
 app.use('/api', apiRouter);
 app.listen(3001);

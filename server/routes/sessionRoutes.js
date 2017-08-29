@@ -14,7 +14,7 @@ connection.connect(function(error){
   }
 });
 
-exports.register = function(req, res){
+exports.signup = function(req, res){
   console.log("req", req.body);
   let now = new Date();
 

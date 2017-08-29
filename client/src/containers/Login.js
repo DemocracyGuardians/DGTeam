@@ -9,7 +9,7 @@
 import React from 'react';
 import { connect } from "react-redux";
 import { LocalForm, Control } from 'react-redux-form'
-import { withRouter } from 'react-router-dom'
+import { Link, withRouter } from 'react-router-dom'
 import { Button, Container, Input, Message } from 'semantic-ui-react'
 import PropTypes from 'prop-types'
 import { RSAA } from 'redux-api-middleware';
@@ -65,7 +65,7 @@ class Login extends React.Component {
         <Message className="verticalformbottommessage" >
           <span className='innerBlock'>
             <div><a href='#'>Forgot your password?</a></div>
-            <div>Not yet a team member?&nbsp;<a href='#'>Signup here</a>.</div>
+            <div>Not yet a team member?&nbsp;<Link to="/signup">Signup here</Link>.</div>
           </span>
         </Message>
       </Container>

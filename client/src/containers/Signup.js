@@ -1,79 +1,84 @@
+
 import React from 'react';
+import { connect } from "react-redux";
+import { LocalForm, Control } from 'react-redux-form'
+import { Link, withRouter } from 'react-router-dom'
+import { Button, Container, Input, Message } from 'semantic-ui-react'
+import PropTypes from 'prop-types'
+import { RSAA } from 'redux-api-middleware';
+import { SIGNUP_REQUEST, SIGNUP_SUCCESS, SIGNUP_FAILURE } from '../actions/signupActions'
+import { userSignupSuccess } from '../actions/userActions'
 
-class Register extends React.Component {
-  constructor(props){
-    super(props);
-    this.state = {
-      firstName: '',
-      lastName: '',
-      email: '',
-      password: ''
-    }
-    this.handleChange = this.handleChange.bind(this);
-    this.handleClick = this.handleClick.bind(this);
-  }
+// Wrap semantic-ui controls for react-redux-forms
+const wEmail = (props) => <Input required name='email' placeholder='Email' fluid className="verticalformcontrol" {...props} />
+const wPassword = (props) => <Input required name='password' placeholder='Password' fluid className="verticalformcontrol" {...props} />
+const wFirstName = (props) => <Input required name='firstName' placeholder='First name' fluid className="verticalformcontrol" {...props} />
+const wLastName = (props) => <Input required name='lastName' placeholder='Last name' fluid className="verticalformcontrol" {...props} />
 
-  handleChange(event) {
-    const name = event.target.name;
-    const value = event.target.value;
-    this.setState({
-      [name]: value
-    });
-  }
-
-  handleClick(event){
-    var apiBaseUrl = "http://localhost:3001/api/";
-    console.log("values", this.state.firstName, this.state.lastName, this.state.email, this.state.password);
-    var payload = {
-      "firstName": this.state.firstName,
-      "lastName":this.state.lastName,
-      "email":this.state.email,
-      "password":this.state.password
-    }
-    var that = this;  //FIXME
-    var fetchParams = {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      mode: 'cors',
-      cache: 'default',
-      body: JSON.stringify(payload)
-    };
-    fetch(apiBaseUrl+'/register', fetchParams).then(function(response) {
-      console.log(response);
-      if (response.status === 200) {
-        console.log("Signup success");
-        that.props.parentComponent.setState({screenToShow: "Login", message: "Signup successful" }); //FIXME
-      } else {
-        console.log("registration failure");
+class Signup extends React.Component {
+  handleSubmit(values) {
+    let { dispatch } = this.props.store
+    const apiAction = {
+      [RSAA]: {
+        endpoint: "http://localhost:3001/api/signup",
+        method: 'POST',
+        types: [
+          SIGNUP_REQUEST,
+          {
+            type: SIGNUP_SUCCESS,
+            payload: (action, state, res) => {
+              const contentType = res.headers.get('Content-Type');
+              if (contentType && ~contentType.indexOf('json')) {
+                //FIXME handle error cases
+                return res.json().then((json) => {
+                  dispatch(userSignupSuccess(json.user))
+                  this.props.history.push('/workbench')
+                  return undefined
+                })
+              }
+            }
+          },
+          SIGNUP_FAILURE
+        ],
+        body: JSON.stringify(values),
+        headers: { 'Content-Type': 'application/json' }
       }
-    })
-   .catch(function (error) {
-     console.log('There has been a problem with your fetch operation: ' + error.message);
-   })
- }
+    }
+    dispatch(apiAction)
+  }
 
   render() {
+    let { message, error } = this.props
     return (
-      <div className="usermgmt usermgmtsignup">
-        <div className="usermgmttitle">Signup</div>
-        <div className="usermgmtfieldrow">
-          <input type="text" name="firstName" placeholder="First name" onChange={this.handleChange} />
-        </div>
-        <div className="usermgmtfieldrow">
-          <input type="text" name="lastName" placeholder="Last name" onChange={this.handleChange} />
-        </div>
-        <div className="usermgmtfieldrow">
-          <input type="text" name="email" placeholder="Email" onChange={this.handleChange} />
-        </div>
-        <div className="usermgmtfieldrow">
-          <input type="password" name="password" placeholder="Password" onChange={this.handleChange} />
-        </div>
-        <div className="usermgmtbuttonrow">
-          <button onClick={(event) => this.handleClick(event)}>Register</button>
-        </div>
-      </div>
-    );
+      <Container text className='Signup verticalformcontainer'>
+        <Message header='Democracy Guardians Team Signup' className='verticalformtopmessage' error={error} content={message} />
+        <LocalForm onSubmit={(values) => this.handleSubmit(values)} >
+          <Control.text model=".firstName" type="text" component={wFirstName} />
+          <Control.text model=".lastName" type="text" component={wLastName} />
+          <Control.text model=".email" type="email" component={wEmail} />
+          <Control.password model=".password" type="password" component={wPassword} />
+          <Button type="submit" fluid className="verticalformcontrol verticalformbottombutton" >Signup</Button>
+        </LocalForm>
+        <Message className="verticalformbottommessage" >
+          <span className='innerBlock'>
+            <div>Already a team member?&nbsp;<Link to="/login">Login here</Link>.</div>
+          </span>
+        </Message>
+      </Container>
+    )
   }
 }
 
-export default Register;
+Signup.propTypes = {
+  store: PropTypes.object.isRequired
+}
+
+const mapStateToProps = (state, ownProps) => {
+  const { message, error } = state || {}
+  return {
+    store: ownProps.store,
+    message,
+    error
+  }
+}
+export default withRouter(connect(mapStateToProps)(Signup));
