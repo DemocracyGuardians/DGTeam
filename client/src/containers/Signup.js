@@ -5,6 +5,7 @@ password show
 vows
 members agreement
 banner
+put checkboxes outside of labels
 */
 import React from 'react';
 import { connect } from "react-redux";
@@ -12,7 +13,10 @@ import { LocalForm, Control } from 'react-redux-form'
 import { Link, withRouter } from 'react-router-dom'
 import { Button, Container, Input, Message } from 'semantic-ui-react'
 import PropTypes from 'prop-types'
-import { RSAA } from 'redux-api-middleware';
+import { RSAA } from 'redux-api-middleware'
+import Marked from 'marked'
+import vowsMd from '../components/Trustworthiness_Vows_md'
+import agreementMd from '../components/Members_Agreement_md'
 import { SIGNUP_REQUEST, SIGNUP_SUCCESS, SIGNUP_FAILURE } from '../actions/signupActions'
 import { userSignupSuccess } from '../actions/userActions'
 
@@ -260,6 +264,8 @@ class Signup extends React.Component {
     let emailClass = 'verticalformcontrol ' + (this.state.emailAlreadyRegistered ? 'emailError' : '' )
     let vowsClass = 'verticalformcontrol ' + (this.state.needToValidatePane2 && !this.validatePane2() ? 'checkboxDivError' : '' )
     let agreementClass = 'verticalformcontrol ' + (this.state.needToValidatePane3 && !this.validatePane3() ? 'checkboxDivError' : '' )
+    let vowsHtml = Marked(vowsMd);
+    let agreementHtml = Marked(agreementMd);
     return (
       <Container text className='Signup verticalformcontainer'>
         <LocalForm onSubmit={(values) => this.handleSubmit(values)}
@@ -282,6 +288,7 @@ class Signup extends React.Component {
           </div>
           <div style={pane2style}>
             <Message header='Democracy Guardians Team Signup' className='verticalformtopmessage' error={error} content={message} />
+            <div dangerouslySetInnerHTML={{__html: vowsHtml}} />
             <div className={vowsClass}>
               <label>
                 <Control.checkbox model=".vows" />
@@ -297,6 +304,7 @@ class Signup extends React.Component {
           </div>
           <div style={pane3style}>
             <Message header='Democracy Guardians Team Signup' className='verticalformtopmessage' error={error} content={message} />
+            <div dangerouslySetInnerHTML={{__html: agreementHtml}} />
             <div className={agreementClass}>
               <label>
                 <Control.checkbox model=".agreement" />
