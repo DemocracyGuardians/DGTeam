@@ -65,7 +65,7 @@ class Login extends React.Component {
         <Message className="verticalformbottommessage" >
           <span className='innerBlock'>
             <div><a href='#'>Forgot your password?</a></div>
-            <div>Not yet a team member?&nbsp;<Link to="/signup">Signup here</Link>.</div>
+            <div>Not yet a team member?&nbsp;<Link to="/signup">Signup here</Link></div>
           </span>
         </Message>
       </Container>

@@ -15,7 +15,7 @@ connection.connect(function(error){
 });
 
 exports.signup = function(req, res){
-  console.log("req", req.body);
+  console.log("signup req", req.body);
   let now = new Date();
 
   let user = {
@@ -23,6 +23,8 @@ exports.signup = function(req, res){
      lastName: req.body.lastName,
      email: req.body.email,
      password: req.body.password,
+     vows: req.body.vows ? 1 : 0,
+     agreement: req.body.agreement ? 1 : 0,
      created: now,
      modified: now
    }
@@ -41,7 +43,7 @@ exports.signup = function(req, res){
 }
 
 exports.login = function(req, res){
-  console.log('req.body='+req.body);
+  console.log('login req.body='+req.body);
   console.dir(req.body);
   var email = req.body.email;
   var password = req.body.password;
@@ -65,6 +67,25 @@ exports.login = function(req, res){
           res.send(401, { msg })
         }
       }
+    }
+  });
+}
+
+exports.loginexists = function(req, res){
+  console.log('loginexists req.body='+req.body);
+  console.dir(req.body);
+  var email = req.body.email;
+  console.log('email='+email);
+  connection.query('SELECT email FROM ue_ztm_users WHERE email = ?', [email], function (error, results, fields) {
+    if (error) {
+      let msg = "loginexists failure for email '" + email + "'";
+      console.log(msg + ", error= ", error);
+      res.send(400, { msg })
+    } else {
+      let msg = "loginexists success for email '" + email + "'";
+      console.log(msg + ", results= ", results);
+      let exists = (results.length > 0)
+      res.send({ msg, email, exists })
     }
   });
 }
