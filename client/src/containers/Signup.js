@@ -20,6 +20,8 @@ import agreementMd from '../components/Members_Agreement_md'
 import { SIGNUP_REQUEST, SIGNUP_SUCCESS, SIGNUP_FAILURE } from '../actions/signupActions'
 import { userSignupSuccess } from '../actions/userActions'
 
+const passwordRegexp = "^(?=.{8,32}$)(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])(?=.*[!\"#$%&'()*+,\-./:;<=>?@[\\\]^_`{|}~]).*"
+
 // Wrap semantic-ui controls for react-redux-forms
 const wFirstName = (props) => <Input name='firstName' placeholder='First name' fluid {...props} />
 const wLastName = (props) => <Input name='lastName' placeholder='Last name' fluid {...props} />
@@ -56,17 +58,23 @@ class Signup extends React.Component {
   }
 
   validatePane1() {
-    let f = document.querySelector('.Signup form')
-    if (!f['local.firstName'].validity.valid || !f['local.lastName'].validity.valid ||
-        !f['local.email'].validity.valid || !f['local.password'].validity.valid) {
-      return false
-    } else {
-      return true
-    }
+    let invalidFields = []
+    let f = document.querySelector('.Signup form');
+    ['firstName','lastName','email','password'].forEach(function(field) {
+      let localdot = 'local.' + field
+      if (!f[localdot].validity.valid) {
+        invalidFields.push(field)
+      }
+    })
+    return invalidFields
   }
 
-  validatePane1Error() {
-    this.setState({ error: true, message: 'The highlighted fields are in error', pane: 1 })
+  validatePane1Error(invalidFields) {
+    if (invalidFields.length === 1 && invalidFields[0] === 'password') {
+      this.setState({ error: true, message: 'Password must have at least 8 characters and must include at least one uppercase, one lowercase, one number and one punctuation character', pane: 1 })
+    } else {
+      this.setState({ error: true, message: 'The highlighted fields are in error', pane: 1 })
+    }
   }
 
   validatePane2() {
@@ -105,8 +113,9 @@ class Signup extends React.Component {
     // force rerender, use setTimeout so that html5 required property will kick in on firstName and lastName
     this.forceUpdate()
     setTimeout(() => {
-      if (!this.validatePane1()) {
-        this.validatePane1Error()
+      var invalidFields = this.validatePane1()
+      if (invalidFields.length > 0) {
+        this.validatePane1Error(invalidFields)
         return
       }
       let { dispatch } = this.props.store
@@ -154,8 +163,9 @@ class Signup extends React.Component {
 
   onClickPrev2(event) {
     event.preventDefault()
-    if (!this.validatePane1()) {
-      this.validatePane1Error()
+    var invalidFields = this.validatePane1()
+    if (invalidFields.length > 0) {
+      this.validatePane1Error(invalidFields)
       return
     }
     this.clearErrors()
@@ -169,8 +179,9 @@ class Signup extends React.Component {
       this.validatePane2Error()
       return
     }
-    if (!this.validatePane1()) {
-      this.validatePane1Error()
+    var invalidFields = this.validatePane1()
+    if (invalidFields.length > 0) {
+      this.validatePane1Error(invalidFields)
       return
     }
     this.clearErrors()
@@ -183,8 +194,9 @@ class Signup extends React.Component {
       this.validatePane2Error()
       return
     }
-    if (!this.validatePane1()) {
-      this.validatePane1Error()
+    var invalidFields = this.validatePane1()
+    if (invalidFields.length > 0) {
+      this.validatePane1Error(invalidFields)
       return
     }
     this.clearErrors()
@@ -192,8 +204,9 @@ class Signup extends React.Component {
   }
 
   handleChange(values) {
-    if (this.state.pane === 1 && this.state.needToValidatePane1 && !this.validatePane1()) {
-      this.validatePane1Error()
+    var invalidFields = this.validatePane1()
+    if (this.state.pane === 1 && this.state.needToValidatePane1 && invalidFields.length > 0) {
+      this.validatePane1Error(invalidFields)
       return
     }
     if (this.state.pane === 2 && this.state.needToValidatePane2 && !this.validatePane2()) {
@@ -217,8 +230,9 @@ class Signup extends React.Component {
       this.validatePane2Error()
       return
     }
-    if (!this.validatePane1()) {
-      this.validatePane1Error()
+    var invalidFields = this.validatePane1()
+    if (invalidFields.length > 0) {
+      this.validatePane1Error(invalidFields)
       return
     }
     this.clearErrors()
@@ -253,17 +267,17 @@ class Signup extends React.Component {
   }
 
   render() {
-    let pane = this.state.pane
+    let { pane, error, needToValidatePane1, needToValidatePane2, needToValidatePane3, emailAlreadyRegistered } = this.state
     let message = this.state.message || (this.state.pane <= 3 ? `Step ${pane} of 3` : '')
-    let error = this.state.error
     let pane1style = { display: (pane === 1 ? 'block' : 'none') }
     let pane2style = { display: (pane === 2 ? 'block' : 'none') }
     let pane3style = { display: (pane === 3 ? 'block' : 'none') }
     let pane4style = { display: (pane === 4 ? 'block' : 'none') }
-    let pane1required = this.state.needToValidatePane1
-    let emailClass = 'verticalformcontrol ' + (this.state.emailAlreadyRegistered ? 'emailError' : '' )
-    let vowsClass = 'verticalformcontrol ' + (this.state.needToValidatePane2 && !this.validatePane2() ? 'checkboxDivError' : '' )
-    let agreementClass = 'verticalformcontrol ' + (this.state.needToValidatePane3 && !this.validatePane3() ? 'checkboxDivError' : '' )
+    let pane1required = needToValidatePane1
+    let passwordPattern = needToValidatePane1 ? passwordRegexp : '.*'
+    let emailClass = 'verticalformcontrol ' + (emailAlreadyRegistered ? 'emailError' : '' )
+    let vowsClass = 'verticalformcontrol ' + (needToValidatePane2 && !this.validatePane2() ? 'checkboxDivError' : '' )
+    let agreementClass = 'verticalformcontrol ' + (needToValidatePane3 && !this.validatePane3() ? 'checkboxDivError' : '' )
     let vowsHtml = Marked(vowsMd);
     let agreementHtml = Marked(agreementMd);
     return (
@@ -275,7 +289,7 @@ class Signup extends React.Component {
             <Control.text model=".firstName" type="text" className="verticalformcontrol" component={wFirstName} required={pane1required} />
             <Control.text model=".lastName" type="text" className="verticalformcontrol" component={wLastName} required={pane1required} />
             <Control.text model=".email" type="email" className={emailClass} component={wEmail} required={pane1required} />
-            <Control.password model=".password" type="password" className="verticalformcontrol" component={wPassword} required={pane1required} />
+            <Control.password model=".password" type="password" className="verticalformcontrol" pattern={passwordPattern} component={wPassword} required={pane1required} />
             <div className='verticalformbuttonrow'>
               <Button className="verticalformcontrol verticalformbottombutton" onClick={this.onClickNext1} floated='right'>Next</Button>
               <div style={{clear:'both' }} ></div>
