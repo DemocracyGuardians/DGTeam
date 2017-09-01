@@ -44,7 +44,8 @@ class Signup extends React.Component {
       needToValidatePane1: false,
       needToValidatePane2: false,
       needToValidatePane3: false,
-      pane: 1
+      pane: 1,
+      email: null // only given a value after successful submit
     }
     this.validatePane1 = this.validatePane1.bind(this)
     this.validatePane2 = this.validatePane2.bind(this)
@@ -58,6 +59,7 @@ class Signup extends React.Component {
     this.onClickNext2 = this.onClickNext2.bind(this)
     this.onClickPrev3 = this.onClickPrev3.bind(this)
     this.toggleShowPassword = this.toggleShowPassword.bind(this)
+    this.resendVerificationEmail = this.resendVerificationEmail.bind(this)
   }
 
   validatePane1() {
@@ -254,7 +256,7 @@ class Signup extends React.Component {
                 //FIXME handle error cases
                 return res.json().then((json) => {
                   dispatch(userSignupSuccess(json.user))
-                  this.setState({ pane: 4 })
+                  this.setState({ email: json.user.email, pane: 4 })
                   return undefined
                 })
               }
@@ -271,14 +273,16 @@ class Signup extends React.Component {
 
   toggleShowPassword(event) {
     event.preventDefault()
-    // Use setTimeout because can't update state while rendering
-    setTimeout(() => {
-      this.setState({ showPassword: !this.state.showPassword })
-    })
+    this.setState({ showPassword: !this.state.showPassword })
+  }
+
+  resendVerificationEmail(event) {
+    event.stopPropagation()
+    alert('not yet implemented')
   }
 
   render() {
-    let { pane, error, needToValidatePane1, needToValidatePane2, needToValidatePane3, emailAlreadyRegistered, showPassword } = this.state
+    let { pane, error, needToValidatePane1, needToValidatePane2, needToValidatePane3, emailAlreadyRegistered, showPassword, email } = this.state
     let message = this.state.message || (this.state.pane <= 3 ? `Step ${pane} of 3` : '')
     let pane1style = { display: (pane === 1 ? 'block' : 'none') }
     let pane2style = { display: (pane === 2 ? 'block' : 'none') }
@@ -351,7 +355,18 @@ class Signup extends React.Component {
             </div>
           </div>
           <div style={pane4style}>
-            <Message header='Almost done!' className='verticalformtopmessage' content={message} />
+            <Message header='Almost done' className='verticalformtopmessage' content={message} />
+            <div className="signupVerificationEmailSent">
+              <p>Congratulations! You are now a member of the Democracy Guardians team.</p>
+              <p>You still have a bit more to do to complete the signup process.</p>
+              <p>A verification email has been sent to <strong>{email}</strong>.
+                Check your email (including your spam folder) and follow the instructions there.
+              </p>
+            </div>
+            <div className='verticalformbuttonrow'>
+              <Button className="verticalformcontrol verticalformbottombutton" onClick={this.resendVerificationEmail}>Resend verification email</Button>
+              <div style={{clear:'both' }} ></div>
+            </div>
           </div>
         </LocalForm>
       </Container>

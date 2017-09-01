@@ -63,10 +63,7 @@ class Login extends React.Component {
 
   toggleShowPassword(event) {
     event.preventDefault()
-    // Use setTimeout because can't update state while rendering
-    setTimeout(() => {
-      this.setState({ showPassword: !this.state.showPassword })
-    })
+    this.setState({ showPassword: !this.state.showPassword })
   }
 
   render() {

@@ -61,3 +61,7 @@
   font-size: 80%;
   margin-top: -.5em;
 }
+
+.signupVerificationEmailSent {
+  text-align: left;
+}
