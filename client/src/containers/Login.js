@@ -17,10 +17,19 @@ import { LOGIN_REQUEST, LOGIN_SUCCESS, LOGIN_FAILURE } from '../actions/loginAct
 import { userLoginSuccess } from '../actions/userActions'
 
 // Wrap semantic-ui controls for react-redux-forms
-const wEmail = (props) => <Input required name='email' placeholder='Email' fluid className="verticalformcontrol" {...props} />
-const wPassword = (props) => <Input required name='password' placeholder='Password' fluid className="verticalformcontrol" {...props} />
+const wEmail = (props) => <Input name='email' placeholder='Email' fluid className="verticalformcontrol" {...props} />
+const wPassword = (props) => <Input name='password' placeholder='Password' fluid className="verticalformcontrol" {...props} />
 
 class Login extends React.Component {
+
+  constructor(props) {
+    super(props)
+    this.state = {
+      showPassword: false
+    }
+    this.toggleShowPassword = this.toggleShowPassword.bind(this)
+  }
+
   handleSubmit(values) {
     let { dispatch } = this.props.store
     const apiAction = {
@@ -52,15 +61,32 @@ class Login extends React.Component {
     dispatch(apiAction)
   }
 
+  toggleShowPassword(event) {
+    event.preventDefault()
+    // Use setTimeout because can't update state while rendering
+    setTimeout(() => {
+      this.setState({ showPassword: !this.state.showPassword })
+    })
+  }
+
   render() {
     let { message, error } = this.props
+    let { showPassword } = this.state
+    let passwordType = showPassword ? 'input' : 'password'
+    let showHidePasswordText = showPassword ? 'Hide password' : 'Show password'
     return (
       <Container text className='Login verticalformcontainer'>
         <Message header='Democracy Guardians Team Login' className='verticalformtopmessage' error={error} content={message} />
         <LocalForm onSubmit={(values) => this.handleSubmit(values)} >
           <Control.text model=".email" type="email" component={wEmail} />
-          <Control.password model=".password" type="password" component={wPassword} />
-          <Button type="submit" fluid className="verticalformcontrol verticalformbottombutton" >Login</Button>
+          <Control.password type={passwordType} model=".password" component={wPassword} />
+          <div className="showPasswordRow">
+            <a href="" className="showPasswordLink" onClick={this.toggleShowPassword} >{showHidePasswordText}</a>
+          </div>
+          <div className='verticalformbuttonrow'>
+            <Button type="submit" className="verticalformcontrol verticalformbottombutton" >Login</Button>
+            <div style={{clear:'both' }} ></div>
+          </div>
         </LocalForm>
         <Message className="verticalformbottommessage" >
           <span className='innerBlock'>

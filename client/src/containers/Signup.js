@@ -39,6 +39,7 @@ class Signup extends React.Component {
       // this.state.error is a boolean that indicates whether message is an error
       error: this.props.error,
       emailAlreadyRegistered: false,
+      showPassword: false,
       needToValidatePane1: false,
       needToValidatePane2: false,
       needToValidatePane3: false,
@@ -55,6 +56,7 @@ class Signup extends React.Component {
     this.onClickPrev2 = this.onClickPrev2.bind(this)
     this.onClickNext2 = this.onClickNext2.bind(this)
     this.onClickPrev3 = this.onClickPrev3.bind(this)
+    this.toggleShowPassword = this.toggleShowPassword.bind(this)
   }
 
   validatePane1() {
@@ -266,8 +268,16 @@ class Signup extends React.Component {
     dispatch(apiAction)
   }
 
+  toggleShowPassword(event) {
+    event.preventDefault()
+    // Use setTimeout because can't update state while rendering
+    setTimeout(() => {
+      this.setState({ showPassword: !this.state.showPassword })
+    })
+  }
+
   render() {
-    let { pane, error, needToValidatePane1, needToValidatePane2, needToValidatePane3, emailAlreadyRegistered } = this.state
+    let { pane, error, needToValidatePane1, needToValidatePane2, needToValidatePane3, emailAlreadyRegistered, showPassword } = this.state
     let message = this.state.message || (this.state.pane <= 3 ? `Step ${pane} of 3` : '')
     let pane1style = { display: (pane === 1 ? 'block' : 'none') }
     let pane2style = { display: (pane === 2 ? 'block' : 'none') }
@@ -275,6 +285,8 @@ class Signup extends React.Component {
     let pane4style = { display: (pane === 4 ? 'block' : 'none') }
     let pane1required = needToValidatePane1
     let passwordPattern = needToValidatePane1 ? passwordRegexp : '.*'
+    let passwordType = showPassword ? 'input' : 'password'
+    let showHidePasswordText = showPassword ? 'Hide password' : 'Show password'
     let emailClass = 'verticalformcontrol ' + (emailAlreadyRegistered ? 'emailError' : '' )
     let vowsClass = 'verticalformcontrol ' + (needToValidatePane2 && !this.validatePane2() ? 'checkboxDivError' : '' )
     let agreementClass = 'verticalformcontrol ' + (needToValidatePane3 && !this.validatePane3() ? 'checkboxDivError' : '' )
@@ -289,7 +301,10 @@ class Signup extends React.Component {
             <Control.text model=".firstName" type="text" className="verticalformcontrol" component={wFirstName} required={pane1required} />
             <Control.text model=".lastName" type="text" className="verticalformcontrol" component={wLastName} required={pane1required} />
             <Control.text model=".email" type="email" className={emailClass} component={wEmail} required={pane1required} />
-            <Control.password model=".password" type="password" className="verticalformcontrol" pattern={passwordPattern} component={wPassword} required={pane1required} />
+            <Control.password model=".password" type={passwordType} className="verticalformcontrol" pattern={passwordPattern} component={wPassword} required={pane1required} />
+            <div className="showPasswordRow">
+              <a href="" className="showPasswordLink" onClick={this.toggleShowPassword} >{showHidePasswordText}</a>
+            </div>
             <div className='verticalformbuttonrow'>
               <Button className="verticalformcontrol verticalformbottombutton" onClick={this.onClickNext1} floated='right'>Next</Button>
               <div style={{clear:'both' }} ></div>
