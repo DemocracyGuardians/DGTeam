@@ -1,9 +1,10 @@
 
 /* todo
-password rules
-password show
 vows
 members agreement
+text for pane 4
+button on pane 4 to resend email
+login if user is not yet confirmed screen to send email again, also if user clicks forgot password?
 banner
 put checkboxes outside of labels
 */
@@ -253,7 +254,7 @@ class Signup extends React.Component {
                 //FIXME handle error cases
                 return res.json().then((json) => {
                   dispatch(userSignupSuccess(json.user))
-                  this.props.history.push('/workbench')
+                  this.setState({ pane: 4 })
                   return undefined
                 })
               }
