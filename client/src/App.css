@@ -56,10 +56,17 @@
   border: 2px dashed red;
   background: #fee;
 }
+
 .showPasswordRow {
   text-align: right;
   font-size: 80%;
   margin-top: -.5em;
+}
+
+.passwordRules {
+  text-align: left;
+  font-size: 70%;
+  margin-top: .5em;
 }
 
 .signupVerificationEmailSent {

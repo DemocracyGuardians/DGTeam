@@ -310,6 +310,7 @@ class Signup extends React.Component {
             <div className="showPasswordRow">
               <a href="" className="showPasswordLink" onClick={this.toggleShowPassword} >{showHidePasswordText}</a>
             </div>
+            <div className="passwordRules">At least: 1 lowercase, 1 uppercase, 1 number, 1 punctuation, 8 chars total</div>
             <div className='verticalformbuttonrow'>
               <Button className="verticalformcontrol verticalformbottombutton" onClick={this.onClickNext1} floated='right'>Next</Button>
               <div style={{clear:'both' }} ></div>
@@ -355,13 +356,10 @@ class Signup extends React.Component {
             </div>
           </div>
           <div style={pane4style}>
-            <Message header='Almost done' className='verticalformtopmessage' content={message} />
+            <Message header='Check your email!' className='verticalformtopmessage' content={message} />
             <div className="signupVerificationEmailSent">
               <p>Congratulations! You are now a member of the Democracy Guardians team.</p>
-              <p>You still have a bit more to do to complete the signup process.</p>
-              <p>A verification email has been sent to <strong>{email}</strong>.
-                Check your email (including your spam folder) and follow the instructions there.
-              </p>
+              <p>We’ve sent a message to <strong>{email}</strong>. Open it and click Activate My Account.</p>
             </div>
             <div className='verticalformbuttonrow'>
               <Button className="verticalformcontrol verticalformbottombutton" onClick={this.resendVerificationEmail}>Resend verification email</Button>
