@@ -21,6 +21,7 @@
     "express": "4.15.x",
     "express-session": "1.15.x",
     "less-middleware": "2.2.x",
+    "mandrill-api": "^1.0.45",
     "mysql": "2.13.x",
     "passport": "0.3.x",
     "passport-local": "1.0.x",

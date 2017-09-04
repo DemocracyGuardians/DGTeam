@@ -10,8 +10,10 @@ CREATE TABLE `ue_ztm_users` (
  `vows` TINYINT unsigned NOT NULL,
  `agreement` TINYINT unsigned NOT NULL,
  `created` datetime NOT NULL,
- `emailValidated` datetime DEFAULT NULL, 
+ `emailValidateToken` varchar(20) NOT NULL,
+ `emailValidateTokenDateTime` datetime NOT NULL,
+ `emailValidated` datetime DEFAULT NULL,
  `modified` datetime NOT NULL,
  PRIMARY KEY (`id`),
- INDEX(email(100))
+ INDEX(email(100),emailValidateToken)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
