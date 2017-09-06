@@ -1,5 +1,9 @@
 
-// Not currently used 
+import { TEAM_BASE_URL, TEAM_API_PORT, TEAM_API_RELATIVE_PATH } from '../envvars'
+
+const baseApiUrl = TEAM_BASE_URL + ':'  + TEAM_API_PORT + TEAM_API_RELATIVE_PATH
+
+// Not currently used
 export const CALL_API = Symbol('callApi');
 
 export default store => next => action => {
@@ -10,7 +14,7 @@ export default store => next => action => {
   let { path, payload, responseActions, defaultAction } = request;
   let { dispatch } = store;
 
-  var apiBaseUrl = "http://localhost:3001/api/";
+  var apiBaseUrl = baseApiUrl;
   var fetchParams = {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },

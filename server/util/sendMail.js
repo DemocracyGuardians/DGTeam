@@ -1,17 +1,15 @@
 /**
  * Sends a one-off email
  */
-
-var MANDRILL_API_KEY = process.env.MANDRILL_API_KEY;
-var domain = 'democracyguardians.org';
-var org = 'Democracy Guardians';
+ var TEAM_MANDRILL_API_KEY = process.env.TEAM_MANDRILL_API_KEY;
+ var TEAM_MANDRILL_DOMAIN = process.env.TEAM_MANDRILL_DOMAIN;
+ var TEAM_ORG = process.env.TEAM_ORG;
 
 var mandrill = require('mandrill-api');
-var mandrill_client = new mandrill.Mandrill(MANDRILL_API_KEY);
+var mandrill_client = new mandrill.Mandrill(TEAM_MANDRILL_API_KEY);
 
 /**
  * Sends a one-off email using Mandrill (part of mailchimp)
- * Mandrill account assigned to user=email=karenkang@democracyguardians.org
  *
  * @param {object} params Various parameters
  * @params {string} params.html HTML version of mail body
@@ -21,7 +19,7 @@ var mandrill_client = new mandrill.Mandrill(MANDRILL_API_KEY);
  * @params {string} params.name Name for recipient
  * @params {function} callback  Parameters(err, result)
  *    where result looks like this:
- *       [ { email: 'jonferraiolo@gmail.com',
+ *       [ { email: 'joe@example.com',
  *           status: 'sent',
  *           _id: 'd1cdca9c780f4fcfaef5c28c16e31fb6',
  *           reject_reason: null } ]
@@ -44,11 +42,11 @@ return;
 	    "text": params.text,
 	    /*"subject": "example subject #2",*/
 	    "subject": params.subject,
-	    "from_email": "no-reply@"+domain,
-	    "from_name": org,
+	    "from_email": "no-reply@"+TEAM_MANDRILL_DOMAIN,
+	    "from_name": TEAM_ORG,
 	    /*
 	    "to": [{
-	            "email": "jon@"+domain,
+	            "email": "jon@"+TEAM_MANDRILL_DOMAIN,
 	            "name": "Jon Ferraiolo",
 	            "type": "to"
 	        }],
@@ -59,7 +57,7 @@ return;
 	            "type": "to"
 	        }],
 	    "headers": {
-	        "Reply-To": "no-reply@"+domain
+	        "Reply-To": "no-reply@"+TEAM_MANDRILL_DOMAIN
 	    },
 	    "important": false,
 	    "track_opens": null,
@@ -70,7 +68,7 @@ return;
 	    "url_strip_qs": null,
 	    "preserve_recipients": null,
 	    "view_content_link": null,
-	    /* "bcc_address": "admin@"+domain, */
+	    /* "bcc_address": "admin@"+TEAM_MANDRILL_DOMAIN, */
 	    "tracking_domain": null,
 	    "signing_domain": null,
 	    "return_path_domain": null,
@@ -79,18 +77,18 @@ return;
 	    "global_merge_vars": [],
 	    "merge_vars": [],
 	    "tags": [
-	        org
+	        TEAM_ORG
 	    ],
-	    /* "subaccount": "jon@"+domain,*/
+	    /* "subaccount": "jon@"+TEAM_MANDRILL_DOMAIN,*/
 	    "google_analytics_domains": [
-	        "democracyguardians.org"
+	       TEAM_MANDRILL_DOMAIN
 	    ],
 	    /* "google_analytics_campaign": "", */
 	    "metadata": {
-	        "website": domain
+	        "website": TEAM_MANDRILL_DOMAIN
 	    },
 	    "recipient_metadata": [{
-	            /*"rcpt": "jon@"+domain*/
+	            /*"rcpt": "jon@"+TEAM_MANDRILL_DOMAIN*/
 	            "rcpt": params.email,
 	        }],
 	    "attachments": [],

@@ -20,6 +20,11 @@ import vowsMd from '../components/Trustworthiness_Vows_md'
 import agreementMd from '../components/Members_Agreement_md'
 import { SIGNUP_REQUEST, SIGNUP_SUCCESS, SIGNUP_FAILURE } from '../actions/signupActions'
 import { userSignupSuccess } from '../actions/userActions'
+import { TEAM_ORG, TEAM_BASE_URL, TEAM_API_RELATIVE_PATH } from '../envvars'
+
+const baseApiUrl = TEAM_BASE_URL + TEAM_API_RELATIVE_PATH
+const loginexistsApiUrl = baseApiUrl+ '/loginexists'
+const signupApiUrl = baseApiUrl+ '/signup'
 
 const passwordRegexp = "^(?=.{8,32}$)(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])(?=.*[!\"#$%&'()*+,\-./:;<=>?@[\\\]^_`{|}~]).*"
 
@@ -129,7 +134,7 @@ class Signup extends React.Component {
       var payload = { email }
       const apiAction = {
         [RSAA]: {
-          endpoint: "http://localhost:3001/api/loginexists",
+          endpoint: loginexistsApiUrl,
           method: 'POST',
           types: [
             'ignored',
@@ -244,7 +249,7 @@ class Signup extends React.Component {
     let { dispatch } = this.props.store
     const apiAction = {
       [RSAA]: {
-        endpoint: "http://localhost:3001/api/signup",
+        endpoint: signupApiUrl,
         method: 'POST',
         types: [
           SIGNUP_REQUEST,
@@ -297,12 +302,13 @@ class Signup extends React.Component {
     let agreementClass = 'verticalformcontrol ' + (needToValidatePane3 && !this.validatePane3() ? 'checkboxDivError' : '' )
     let vowsHtml = Marked(vowsMd);
     let agreementHtml = Marked(agreementMd);
+    let hdr = TEAM_ORG+' Team Signup'
     return (
       <Container text className='Signup verticalformcontainer'>
         <LocalForm onSubmit={(values) => this.handleSubmit(values)}
             onChange={(values) => this.handleChange(values)}>
           <div style={pane1style}>
-            <Message header='Democracy Guardians Team Signup' className='verticalformtopmessage' error={error} content={message} />
+            <Message header={hdr} className='verticalformtopmessage' error={error} content={message} />
             <Control.text model=".firstName" type="text" className="verticalformcontrol" component={wFirstName} required={pane1required} />
             <Control.text model=".lastName" type="text" className="verticalformcontrol" component={wLastName} required={pane1required} />
             <Control.text model=".email" type="email" className={emailClass} component={wEmail} required={pane1required} />
@@ -322,7 +328,7 @@ class Signup extends React.Component {
             </Message>
           </div>
           <div style={pane2style}>
-            <Message header='Democracy Guardians Team Signup' className='verticalformtopmessage' error={error} content={message} />
+            <Message header={hdr} className='verticalformtopmessage' error={error} content={message} />
             <div dangerouslySetInnerHTML={{__html: vowsHtml}} />
             <div className={vowsClass}>
               <label>
@@ -338,15 +344,15 @@ class Signup extends React.Component {
             </div>
           </div>
           <div style={pane3style}>
-            <Message header='Democracy Guardians Team Signup' className='verticalformtopmessage' error={error} content={message} />
+            <Message header={hdr} className='verticalformtopmessage' error={error} content={message} />
             <div dangerouslySetInnerHTML={{__html: agreementHtml}} />
             <div className={agreementClass}>
               <label>
                 <Control.checkbox model=".agreement" />
                 &nbsp;
                 I agree to the terms and conditions listed in the above
-                Democracy Guardians Members Agreement
-                and thereby become a member of the Democracy Guardians team.
+                {TEAM_ORG} Members Agreement
+                and thereby become a member of the {TEAM_ORG} team.
               </label>
             </div>
             <div className='verticalformbuttonrow'>
@@ -358,7 +364,7 @@ class Signup extends React.Component {
           <div style={pane4style}>
             <Message header='Check your email!' className='verticalformtopmessage' content={message} />
             <div className="signupVerificationEmailSent">
-              <p>Congratulations! You are now a member of the Democracy Guardians team.</p>
+              <p>Congratulations! You are now a member of the {TEAM_ORG} team.</p>
               <p>We’ve sent a message to <strong>{email}</strong>. Open it and click Activate My Account.</p>
             </div>
             <div className='verticalformbuttonrow'>

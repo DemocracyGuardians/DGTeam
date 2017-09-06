@@ -15,6 +15,9 @@ import PropTypes from 'prop-types'
 import { RSAA } from 'redux-api-middleware';
 import { LOGIN_REQUEST, LOGIN_SUCCESS, LOGIN_FAILURE } from '../actions/loginActions'
 import { userLoginSuccess } from '../actions/userActions'
+import { TEAM_ORG, TEAM_BASE_URL, TEAM_API_RELATIVE_PATH } from '../envvars'
+
+const loginApiUrl = TEAM_BASE_URL + TEAM_API_RELATIVE_PATH + '/login'
 
 // Wrap semantic-ui controls for react-redux-forms
 const wEmail = (props) => <Input name='email' placeholder='Email' fluid className="verticalformcontrol" {...props} />
@@ -34,7 +37,7 @@ class Login extends React.Component {
     let { dispatch } = this.props.store
     const apiAction = {
       [RSAA]: {
-        endpoint: "http://localhost:3001/api/login",
+        endpoint: loginApiUrl,
         method: 'POST',
         types: [
           LOGIN_REQUEST,
@@ -71,9 +74,10 @@ class Login extends React.Component {
     let { showPassword } = this.state
     let passwordType = showPassword ? 'input' : 'password'
     let showHidePasswordText = showPassword ? 'Hide password' : 'Show password'
+    let hdr = TEAM_ORG+' Team Login'
     return (
       <Container text className='Login verticalformcontainer'>
-        <Message header='Democracy Guardians Team Login' className='verticalformtopmessage' error={error} content={message} />
+        <Message header={hdr} className='verticalformtopmessage' error={error} content={message} />
         <LocalForm onSubmit={(values) => this.handleSubmit(values)} >
           <Control.text model=".email" type="email" component={wEmail} />
           <Control.password type={passwordType} model=".password" component={wPassword} />

@@ -3,17 +3,24 @@ const mysql = require('mysql')
 const sendMail = require('../util/sendMail')
 const crypto = require('crypto')
 
-var rootUrl = 'http://democracyguardians.org'
-var apiUrl = rootUrl + '/api'
-var teamUrl = rootUrl + '/team'
-var org = 'Democracy Guardians'
+var TEAM_ORG = process.env.TEAM_ORG
+var TEAM_BASE_URL = process.env.TEAM_BASE_URL
+var TEAM_API_RELATIVE_PATH = process.env.TEAM_API_RELATIVE_PATH
+var TEAM_UI_RELATIVE_PATH = process.env.TEAM_UI_RELATIVE_PATH
+var TEAM_DB_HOST = process.env.TEAM_DB_HOST
+var TEAM_DB_USER = process.env.TEAM_DB_USER
+var TEAM_DB_PASSWORD = process.env.TEAM_DB_PASSWORD
+var TEAM_DB_DATABASE = process.env.TEAM_DB_DATABASE
+
+var apiUrl = TEAM_BASE_URL + TEAM_API_RELATIVE_PATH
+var teamUrl = TEAM_BASE_URL + TEAM_UI_RELATIVE_PATH
 
 var connection = mysql.createConnection({
-  host: 'localhost',
-  user: "tdamysqlwp",
-  password: "ue3466428#",
-  database: 'ue',
-  debug: true
+  host: TEAM_DB_HOST,
+  user: TEAM_DB_USER,
+  password: TEAM_DB_PASSWORD,
+  database: TEAM_DB_DATABASE,
+  debug: false
 });
 connection.connect(function(error){
   if (!error) {
@@ -114,12 +121,12 @@ function sendAccountVerificationEmail(user, callback) {
   var url = apiUrl + '/verifyaccount/' + user.emailValidateToken
   var name = user.firstName+' '+user.lastName;
   var params = {
-    html: `<p>Welcome to the ${org} team!</p>
+    html: `<p>Welcome to the ${TEAM_ORG} team!</p>
   <p>Please click on this link: </p>
   <p>&nbsp;&nbsp;&nbsp;&nbsp;<a href="${url}" style="font-size:110%;color:darkblue;font-weight:bold;">Activate My Account</a></p>
   to complete the signup process.</p>`,
-    text: 'Welcome to the '+org+' team!\n\nPlease go to the following URL in a Web browser to Activate Your Account and complete the signup process:\n\n'+url,
-    subject: 'Please confirm your '+org+' account',
+    text: 'Welcome to the '+TEAM_ORG+' team!\n\nPlease go to the following URL in a Web browser to Activate Your Account and complete the signup process:\n\n'+url,
+    subject: 'Please confirm your '+TEAM_ORG+' account',
     email: user.email,
     name: name
   };
@@ -159,7 +166,7 @@ exports.verifyAccount = function(req, res, next) {
       if (tokenTime < twentyfourHoursAgo) {
         let html = `<html><body>
 <h1>Sorry! Verification expiration</h1>
-<p>Please send email to info@${rootUrl} to report the problem.</p>
+<p>Please send email to info@${TEAM_BASE_URL} to report the problem.</p>
 </body></html>`
         res.send(html)
       } else {
@@ -171,7 +178,7 @@ exports.verifyAccount = function(req, res, next) {
             console.log(msg + ", error= ", error);
             let html = `<html><body>
   <h1>Sorry! Unknown system error</h1>
-  <p>Please send email to info@${rootUrl} to report the problem.</p>
+  <p>Please send email to info@${TEAM_BASE_URL} to report the problem.</p>
 </body></html>`
 console.log('html='+html) ;
             res.send(html)
@@ -179,7 +186,7 @@ console.log('html='+html) ;
             console.log('before setting html ')
             let html = `<html><body>
   <h1>Account verified!</h1>
-  <p> Now you can go to <a href="${teamUrl}">${teamUrl}</a> to start contributing to ${org}.</p>
+  <p> Now you can go to <a href="${teamUrl}">${teamUrl}</a> to start contributing to ${TEAM_ORG}.</p>
 </body></html>`
             res.send(html)
           }
