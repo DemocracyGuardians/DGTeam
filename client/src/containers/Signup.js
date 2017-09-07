@@ -18,6 +18,7 @@ import { RSAA } from 'redux-api-middleware'
 import Marked from 'marked'
 import vowsMd from '../components/Trustworthiness_Vows_md'
 import agreementMd from '../components/Members_Agreement_md'
+import AccountVerificationSent from '../components/AccountVerificationSent'
 import { SIGNUP_REQUEST, SIGNUP_SUCCESS, SIGNUP_FAILURE } from '../actions/signupActions'
 import { userSignupSuccess } from '../actions/userActions'
 import { TEAM_ORG, TEAM_BASE_URL, TEAM_API_RELATIVE_PATH } from '../envvars'
@@ -25,6 +26,9 @@ import { TEAM_ORG, TEAM_BASE_URL, TEAM_API_RELATIVE_PATH } from '../envvars'
 const baseApiUrl = TEAM_BASE_URL + TEAM_API_RELATIVE_PATH
 const loginexistsApiUrl = baseApiUrl+ '/loginexists'
 const signupApiUrl = baseApiUrl+ '/signup'
+
+var UNSPECIFIED_SYSTEM_ERROR = 'UNSPECIFIED_SYSTEM_ERROR'
+var USER_ALREADY_EXISTS = 'USER_ALREADY_EXISTS'
 
 const passwordRegexp = "^(?=.{8,32}$)(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])(?=.*[!\"#$%&'()*+,\-./:;<=>?@[\\\]^_`{|}~]).*"
 
@@ -143,7 +147,6 @@ class Signup extends React.Component {
               payload: (action, state, res) => {
                 const contentType = res.headers.get('Content-Type');
                 if (contentType && ~contentType.indexOf('json')) {
-                  //FIXME handle error cases
                   return res.json().then((json) => {
                     if (json.exists) {
                       this.setState({ error: true, message: 'Email '+email+' already has an account', emailAlreadyRegistered: true })
@@ -152,14 +155,21 @@ class Signup extends React.Component {
                       this.setState({ pane: 2 })
                     }
                     return undefined
+                  }).catch((error)  => {
+                    console.error('signup_loginexists_success json() error='+error)
+                    this.props.history.push('/systemerror')
                   })
+                } else {
+                  console.error('signup_loginexists_success contentType not parseable json')
+                  this.props.history.push('/systemerror')
                 }
               }
             },
             {
               type: 'signup_loginexists_failure',
               payload: (action, state, res) => {
-                this.setState({ error: true, message: 'Unknown error. Maybe server is unavailable.' })
+                console.error('signup_loginexists_success Unknown error. Maybe server is unavailable.')
+                this.props.history.push('/systemerror')
               }
             }
           ],
@@ -258,16 +268,43 @@ class Signup extends React.Component {
             payload: (action, state, res) => {
               const contentType = res.headers.get('Content-Type');
               if (contentType && ~contentType.indexOf('json')) {
-                //FIXME handle error cases
                 return res.json().then((json) => {
                   dispatch(userSignupSuccess(json.user))
                   this.setState({ email: json.user.email, pane: 4 })
                   return undefined
+                }).catch((error)  => {
+                  console.error('SIGNUP_SUCCESS json() error='+error)
+                  this.props.history.push('/systemerror')
                 })
+              } else {
+                console.error('SIGNUP_SUCCESS contentType not parseable json')
+                this.props.history.push('/systemerror')
               }
             }
           },
-          SIGNUP_FAILURE //FIXME Need error handling
+          {
+            type: SIGNUP_FAILURE,
+            payload: (action, state, res) => {
+              const contentType = res.headers.get('Content-Type');
+              if (contentType && ~contentType.indexOf('json')) {
+                return res.json().then((json) => {
+                  if (json.error === USER_ALREADY_EXISTS) {
+                    this.setState({ message: 'Email address already has an account', error: true })
+                  } else {
+                    console.error('SIGNUP_FAILURE unrecognized error='+json.error+', msg:'+json.msg)
+                    this.props.history.push('/systemerror')
+                  }
+                  return undefined
+                }).catch((error)  => {
+                  console.error('SIGNUP_FAILURE json() error='+error)
+                  this.props.history.push('/systemerror')
+                })
+              } else {
+                console.error('SIGNUP_FAILURE contentType not parseable json')
+                this.props.history.push('/systemerror')
+              }
+            }
+          }
         ],
         body: JSON.stringify(values),
         headers: { 'Content-Type': 'application/json' }
@@ -303,6 +340,7 @@ class Signup extends React.Component {
     let vowsHtml = Marked(vowsMd);
     let agreementHtml = Marked(agreementMd);
     let hdr = TEAM_ORG+' Team Signup'
+    let congrats = 'Congratulations! You are now a member of the '+TEAM_ORG+' team.'
     return (
       <Container text className='Signup verticalformcontainer'>
         <LocalForm onSubmit={(values) => this.handleSubmit(values)}
@@ -362,15 +400,7 @@ class Signup extends React.Component {
             </div>
           </div>
           <div style={pane4style}>
-            <Message header='Check your email!' className='verticalformtopmessage' content={message} />
-            <div className="signupVerificationEmailSent">
-              <p>Congratulations! You are now a member of the {TEAM_ORG} team.</p>
-              <p>We’ve sent a message to <strong>{email}</strong>. Open it and click Activate My Account.</p>
-            </div>
-            <div className='verticalformbuttonrow'>
-              <Button className="verticalformcontrol verticalformbottombutton" onClick={this.resendVerificationEmail}>Resend verification email</Button>
-              <div style={{clear:'both' }} ></div>
-            </div>
+            <AccountVerificationSent email={email} message={congrats} />
           </div>
         </LocalForm>
       </Container>

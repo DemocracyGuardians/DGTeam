@@ -15,6 +15,13 @@ var TEAM_DB_DATABASE = process.env.TEAM_DB_DATABASE
 var apiUrl = TEAM_BASE_URL + TEAM_API_RELATIVE_PATH
 var teamUrl = TEAM_BASE_URL + TEAM_UI_RELATIVE_PATH
 
+var UNSPECIFIED_SYSTEM_ERROR = 'UNSPECIFIED_SYSTEM_ERROR'
+var USER_ALREADY_EXISTS = 'USER_ALREADY_EXISTS'
+var EMAIL_NOT_REGISTERED = 'EMAIL_NOT_REGISTERED'
+var EMAIL_NOT_VERIFIED = 'EMAIL_NOT_VERIFIED'
+var EMAIL_ALREADY_VERIFIED = 'EMAIL_ALREADY_VERIFIED'
+var INCORRECT_PASSWORD = 'INCORRECT_PASSWORD'
+
 var connection = mysql.createConnection({
   host: TEAM_DB_HOST,
   user: TEAM_DB_USER,
@@ -26,15 +33,14 @@ connection.connect(function(error){
   if (!error) {
       console.log("Database connected");
   } else {
-      console.log("Database connection error");
+      console.error("Database connection error");
+      process.exit(1);
   }
 });
 
 exports.signup = function(req, res, next) {
   console.log("signup req", req.body);
   let now = new Date();
-  const buf = crypto.randomBytes(8);
-  let token = buf.toString('hex')
   let user = {
      firstName: req.body.firstName,
      lastName: req.body.lastName,
@@ -42,29 +48,50 @@ exports.signup = function(req, res, next) {
      password: req.body.password,
      vows: req.body.vows ? 1 : 0,
      agreement: req.body.agreement ? 1 : 0,
-     emailValidateToken: token,
+     emailValidateToken: null,
      emailValidateTokenDateTime: now,
      created: now,
      modified: now
    }
-   connection.query('INSERT INTO ue_ztm_users SET ?', user, function (error, results, fields) {
+   var token = makeToken(user)
+   user.emailValidateToken = token
+   connection.query('SELECT email FROM ue_ztm_users WHERE email = ?', [user.email], function (error, results, fields) {
      if (error) {
-       let msg = "Insert new user insert database failure for email '" + user.email + "'";
+       let msg = "signup select user database failure for email '" + user.email + "'";
        console.log(msg + ", error= ", error);
-       res.send(401, { msg })
+       res.send(500, { msg, error: UNSPECIFIED_SYSTEM_ERROR })
      } else {
-       sendAccountVerificationEmail(user, function(error, result) {
-         delete user.password
-         if (error) {
-           let msg = "Insert new user email send failure for email '" + user.email + "'";
-           console.log(msg + ", error= ", error);
-           res.send(402, { msg })
-         } else {
-           let msg = "Insert new user success for email '" + user.email + "'";
-           console.log(msg + ", results= ", results);
-           res.send({ msg, user })
-         }
-       })
+       if (results.length >= 1) {
+         let msg = "signup user already exists: '" + user.email + "'";
+         console.log(msg + ", error= ", error);
+         res.send(401, { msg, error: USER_ALREADY_EXISTS })
+       } else {
+         connection.query('INSERT INTO ue_ztm_users SET ?', user, function (error, results, fields) {
+           if (error) {
+             let msg = "Insert new user insert database failure for email '" + user.email + "'";
+             console.log(msg + ", error= ", error);
+             res.send(500, { msg, error: UNSPECIFIED_SYSTEM_ERROR })
+           } else {
+             sendAccountVerificationEmail(user, function(error, result) {
+               delete user.password
+               if (error) {
+                 let msg = "Insert new user email send failure for email '" + user.email + "'";
+                 console.log(msg + ", error= ", error);
+                 connection.query('DELETE FROM ue_ztm_users WHERE email = ?', [user.email], function (error, results, fields) {
+                   if (error) {
+                     console.error('DELETE failed after sendMail failure. error='+error)
+                   }
+                   res.send(500, { msg, error: UNSPECIFIED_SYSTEM_ERROR })
+                 });
+               } else {
+                 let msg = "Insert new user success for email '" + user.email + "'";
+                 console.log(msg + ", results= ", results);
+                 res.send({ msg, user })
+               }
+             });
+           }
+         });
+       }
      }
    });
 }
@@ -78,20 +105,30 @@ exports.login = function(req, res, next) {
   connection.query('SELECT * FROM ue_ztm_users WHERE email = ?', [email], function (error, results, fields) {
     if (error) {
       let msg = "Select user failure for email '" + email + "'";
-      console.log(msg + ", error= ", error);
-      res.send(400, { msg })
+      console.error(msg + ", error= ", error);
+      res.send(500, { msg, error: UNSPECIFIED_SYSTEM_ERROR })
     } else {
       let msg = "Select user success for email '" + email + "'";
       console.log(msg + ", results= ", results);
-      if (results.length > 0) {
+      if (results.length < 1) {
+        let msg = "No account for '" + email + "'";
+        console.error(msg);
+        res.send(401, { msg, error: EMAIL_NOT_REGISTERED })
+      } else {
         let user = results[0]
-        if (user.password === password) {
-          delete user.password
-          let msg = "Login success for email '" + email + "'";
-          res.send({ msg, user })
+        if (!user.emailValidated) {
+          let msg = "Account for '" + email + "' has not been verified yet via email";
+          console.error(msg);
+          res.send(401, { msg, error: EMAIL_NOT_VERIFIED })
         } else {
-          let msg = "Login failure for email '" + email + "'";
-          res.send(401, { msg })
+          if (user.password === password) {
+            delete user.password
+            let msg = "Login success for email '" + email + "'";
+            res.send({ msg, user })
+          } else {
+            let msg = "Login failure for email '" + email + "'";
+            res.send(401, { msg, error: INCORRECT_PASSWORD })
+          }
         }
       }
     }
@@ -107,7 +144,7 @@ exports.loginexists = function(req, res, next) {
     if (error) {
       let msg = "loginexists failure for email '" + email + "'";
       console.log(msg + ", error= ", error);
-      res.send(400, { msg })
+      res.send(500, { msg, error: UNSPECIFIED_SYSTEM_ERROR })
     } else {
       let msg = "loginexists success for email '" + email + "'";
       console.log(msg + ", results= ", results);
@@ -117,26 +154,56 @@ exports.loginexists = function(req, res, next) {
   });
 }
 
-function sendAccountVerificationEmail(user, callback) {
-  var url = apiUrl + '/verifyaccount/' + user.emailValidateToken
-  var name = user.firstName+' '+user.lastName;
-  var params = {
-    html: `<p>Welcome to the ${TEAM_ORG} team!</p>
-  <p>Please click on this link: </p>
-  <p>&nbsp;&nbsp;&nbsp;&nbsp;<a href="${url}" style="font-size:110%;color:darkblue;font-weight:bold;">Activate My Account</a></p>
-  to complete the signup process.</p>`,
-    text: 'Welcome to the '+TEAM_ORG+' team!\n\nPlease go to the following URL in a Web browser to Activate Your Account and complete the signup process:\n\n'+url,
-    subject: 'Please confirm your '+TEAM_ORG+' account',
-    email: user.email,
-    name: name
-  };
-  sendMail(params, function(err, result) {
-    if (err) {
-      console.error('sendAccountVerificationEmail sendMail failed! err='+JSON.stringify(err));
+exports.resendVerificationEmail = function(req, res, next) {
+  console.log('resendVerificationEmail req.body='+req.body);
+  console.dir(req.body);
+  var email = req.body.email;
+  console.log('email='+email);
+  connection.query('SELECT * FROM ue_ztm_users WHERE email = ?', [email], function (error, results, fields) {
+    if (error) {
+      let msg = "resendVerificationEmail database failure for email '" + email + "'";
+      console.log(msg + ", error= ", error);
+      res.send(500, { msg, error: UNSPECIFIED_SYSTEM_ERROR })
     } else {
-      console.log('sendAccountVerificationEmail sendMail no errors.  result='+JSON.stringify(result));
+      let msg = "resendVerificationEmail database success for email '" + email + "'";
+      console.log(msg + ", results= ", results);
+      let exists = (results.length > 0)
+      if (exists) {
+        var user = results[0]
+        if (user.emailValidated) {
+          let msg = "resendVerificationEmail account already verified for email '" + email + "'";
+          console.log(msg + ", error= ", error);
+          res.send(400, { msg, error: EMAIL_ALREADY_VERIFIED })
+        } else {
+          var token = makeToken(user)
+          let now = new Date();
+          connection.query('UPDATE ue_ztm_users SET emailValidateToken = ?, emailValidateTokenDateTime = ?, modified = ? WHERE email = ?', [token, now, now, email], function (error, results, fields) {
+            if (error) {
+              let msg = "resendVerificationEmail update database failure for email '" + user.email + "'";
+              console.log(msg + ", error= ", error);
+              res.send(500, { msg, error: UNSPECIFIED_SYSTEM_ERROR })
+            } else {
+              sendAccountVerificationEmail(user, function(error, result) {
+                delete user.password
+                if (error) {
+                  let msg = "resendVerificationEmail email send failure for email '" + user.email + "'";
+                  console.log(msg + ", error= ", error);
+                  res.send(500, { msg, error: UNSPECIFIED_SYSTEM_ERROR })
+                } else {
+                  let msg = "resendVerificationEmail success for email '" + user.email + "'";
+                  console.log(msg + ", results= ", results);
+                  res.send({ msg, user })
+                }
+              });
+            }
+          });
+        }
+      } else {
+        let msg = "No account for '" + email + "'";
+        console.error(msg);
+        res.send(401, { msg, error: EMAIL_NOT_REGISTERED })
+      }
     }
-    callback(err, result)
   });
 }
 
@@ -194,4 +261,33 @@ console.log('html='+html) ;
       }
     }
   });
+}
+
+function sendAccountVerificationEmail(user, callback) {
+  var url = apiUrl + '/verifyaccount/' + user.emailValidateToken
+  var name = user.firstName+' '+user.lastName;
+  var params = {
+    html: `<p>Welcome to the ${TEAM_ORG} team!</p>
+  <p>Please click on this link: </p>
+  <p>&nbsp;&nbsp;&nbsp;&nbsp;<a href="${url}" style="font-size:110%;color:darkblue;font-weight:bold;">Activate My Account</a></p>
+  to complete the signup process.</p>`,
+    text: 'Welcome to the '+TEAM_ORG+' team!\n\nPlease go to the following URL in a Web browser to Activate Your Account and complete the signup process:\n\n'+url,
+    subject: 'Please confirm your '+TEAM_ORG+' account',
+    email: user.email,
+    name: name
+  };
+  sendMail(params, function(err, result) {
+    if (err) {
+      console.error('sendAccountVerificationEmail sendMail failed! err='+JSON.stringify(err));
+    } else {
+      console.log('sendAccountVerificationEmail sendMail no errors.  result='+JSON.stringify(result));
+    }
+    callback(err, result)
+  });
+}
+
+function makeToken(user) {
+  const buf = crypto.randomBytes(8);
+  let token = buf.toString('hex')
+  return token
 }

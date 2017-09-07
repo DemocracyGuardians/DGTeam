@@ -22,9 +22,10 @@ app.use(function(req, res, next) { // allow CORS
 });
 
 var apiRouter = express.Router();
+apiRouter.post('/signup', sessionRoutes.signup);
 apiRouter.post('/login', sessionRoutes.login)
 apiRouter.post('/loginexists', sessionRoutes.loginexists)
-apiRouter.post('/signup', sessionRoutes.signup);
+apiRouter.post('/resendverification', sessionRoutes.resendVerificationEmail)
 apiRouter.get('/verifyaccount/:token', sessionRoutes.verifyAccount);
 app.use(TEAM_API_RELATIVE_PATH, apiRouter);
 

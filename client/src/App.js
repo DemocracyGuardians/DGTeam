@@ -6,6 +6,8 @@ import './App.css';
 import Login from './containers/Login'
 import Signup from './containers/Signup'
 import Workbench from './containers/Workbench'
+import ResendAccountVerification from './components/ResendAccountVerification'
+import SystemError from './components/SystemError'
 
 // Needed for onTouchTap
 // http://stackoverflow.com/a/34015469/988941
@@ -23,6 +25,8 @@ class App extends Component {
             <Route path='/login' component={LoginComp} />
             <Route path='/signup' component={SignupComp} />
             <Route path='/workbench' component={WorkbenchComp} />
+            <Route path='/resendverification' component={ResendAccountVerification} />
+            <Route path='/systemerror' component={SystemError} />
             <Redirect path='*' to="/login" />
           </Switch>
         </BrowserRouter>
