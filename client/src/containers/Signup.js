@@ -7,6 +7,7 @@ button on pane 4 to resend email
 login if user is not yet confirmed screen to send email again, also if user clicks forgot password?
 banner
 put checkboxes outside of labels
+pull pane 4 out to a different route
 */
 import React from 'react';
 import { connect } from "react-redux";
@@ -18,19 +19,17 @@ import { RSAA } from 'redux-api-middleware'
 import Marked from 'marked'
 import vowsMd from '../components/Trustworthiness_Vows_md'
 import agreementMd from '../components/Members_Agreement_md'
-import AccountVerificationSent from '../components/AccountVerificationSent'
 import { SIGNUP_REQUEST, SIGNUP_SUCCESS, SIGNUP_FAILURE } from '../actions/signupActions'
-import { userSignupSuccess } from '../actions/userActions'
+import { userSignupSuccess, userVerificationEmailSent } from '../actions/userActions'
 import { TEAM_ORG, TEAM_BASE_URL, TEAM_API_RELATIVE_PATH } from '../envvars'
 
 const baseApiUrl = TEAM_BASE_URL + TEAM_API_RELATIVE_PATH
 const loginexistsApiUrl = baseApiUrl+ '/loginexists'
 const signupApiUrl = baseApiUrl+ '/signup'
 
-var UNSPECIFIED_SYSTEM_ERROR = 'UNSPECIFIED_SYSTEM_ERROR'
 var USER_ALREADY_EXISTS = 'USER_ALREADY_EXISTS'
 
-const passwordRegexp = "^(?=.{8,32}$)(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])(?=.*[!\"#$%&'()*+,\-./:;<=>?@[\\\]^_`{|}~]).*"
+const passwordRegexp = "^(?=.{8,32}$)(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])(?=.*[!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~]).*"
 
 // Wrap semantic-ui controls for react-redux-forms
 const wFirstName = (props) => <Input name='firstName' placeholder='First name' fluid {...props} />
@@ -53,8 +52,7 @@ class Signup extends React.Component {
       needToValidatePane1: false,
       needToValidatePane2: false,
       needToValidatePane3: false,
-      pane: 1,
-      email: null // only given a value after successful submit
+      pane: 1
     }
     this.validatePane1 = this.validatePane1.bind(this)
     this.validatePane2 = this.validatePane2.bind(this)
@@ -270,7 +268,8 @@ class Signup extends React.Component {
               if (contentType && ~contentType.indexOf('json')) {
                 return res.json().then((json) => {
                   dispatch(userSignupSuccess(json.user))
-                  this.setState({ email: json.user.email, pane: 4 })
+                  dispatch(userVerificationEmailSent(json.user.email))
+                  this.props.history.push('/verificationsent')
                   return undefined
                 }).catch((error)  => {
                   console.error('SIGNUP_SUCCESS json() error='+error)
@@ -324,12 +323,11 @@ class Signup extends React.Component {
   }
 
   render() {
-    let { pane, error, needToValidatePane1, needToValidatePane2, needToValidatePane3, emailAlreadyRegistered, showPassword, email } = this.state
+    let { pane, error, needToValidatePane1, needToValidatePane2, needToValidatePane3, emailAlreadyRegistered, showPassword } = this.state
     let message = this.state.message || (this.state.pane <= 3 ? `Step ${pane} of 3` : '')
     let pane1style = { display: (pane === 1 ? 'block' : 'none') }
     let pane2style = { display: (pane === 2 ? 'block' : 'none') }
     let pane3style = { display: (pane === 3 ? 'block' : 'none') }
-    let pane4style = { display: (pane === 4 ? 'block' : 'none') }
     let pane1required = needToValidatePane1
     let passwordPattern = needToValidatePane1 ? passwordRegexp : '.*'
     let passwordType = showPassword ? 'input' : 'password'
@@ -340,7 +338,6 @@ class Signup extends React.Component {
     let vowsHtml = Marked(vowsMd);
     let agreementHtml = Marked(agreementMd);
     let hdr = TEAM_ORG+' Team Signup'
-    let congrats = 'Congratulations! You are now a member of the '+TEAM_ORG+' team.'
     return (
       <Container text className='Signup verticalformcontainer'>
         <LocalForm onSubmit={(values) => this.handleSubmit(values)}
@@ -398,9 +395,6 @@ class Signup extends React.Component {
               <Button type="submit" className="verticalformcontrol verticalformbottombutton" floated='right'>Finish</Button>
               <div style={{clear:'both' }} ></div>
             </div>
-          </div>
-          <div style={pane4style}>
-            <AccountVerificationSent email={email} message={congrats} />
           </div>
         </LocalForm>
       </Container>

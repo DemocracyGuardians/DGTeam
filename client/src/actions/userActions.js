@@ -16,3 +16,12 @@ export function userSignupSuccess(user) {
     user
   }
 }
+
+export const USER_VERIFICATION_EMAIL_SENT = 'USER_VERIFICATION_EMAIL_SENT'
+
+export function userVerificationEmailSent(email) {
+  return {
+    type: USER_VERIFICATION_EMAIL_SENT,
+    email
+  }
+}

@@ -14,6 +14,7 @@ var TEAM_DB_DATABASE = process.env.TEAM_DB_DATABASE
 
 var apiUrl = TEAM_BASE_URL + TEAM_API_RELATIVE_PATH
 var teamUrl = TEAM_BASE_URL + TEAM_UI_RELATIVE_PATH
+var resendUrl = teamUrl + '/resendverification'
 
 var UNSPECIFIED_SYSTEM_ERROR = 'UNSPECIFIED_SYSTEM_ERROR'
 var USER_ALREADY_EXISTS = 'USER_ALREADY_EXISTS'
@@ -183,6 +184,9 @@ exports.resendVerificationEmail = function(req, res, next) {
               console.log(msg + ", error= ", error);
               res.send(500, { msg, error: UNSPECIFIED_SYSTEM_ERROR })
             } else {
+              user.emailValidateToken = token
+              user.emailValidateTokenDateTime = now
+              user.modified = now
               sendAccountVerificationEmail(user, function(error, result) {
                 delete user.password
                 if (error) {
@@ -217,8 +221,12 @@ exports.verifyAccount = function(req, res, next) {
       let msg = "verifyAccount failure for token '" + token + "'";
       console.log(msg + ", error= ", error, 'results=', JSON.stringify(results));
       let html = `<html><body>
-  <h1>Invalid token in URL</h1>
-  <p>If you copy/pasted the URL, could you have made a copy/paste error?</p>
+  <h1>Account Verification Failure</h1>
+  <p>This is most likely because you clicked on Activate My Account from an older account verification email. 
+    Only the most recent account verification email will work correctly.
+    If you are unsure which email is the most recent,
+    put all existing verification emails into the Trash,
+    then go to <a href="${resendUrl}">${resendUrl}</a> to request a brand new account verification email.</p>
 </body></html>`
       res.send(html)
     } else {
@@ -238,7 +246,7 @@ exports.verifyAccount = function(req, res, next) {
         res.send(html)
       } else {
         console.log('now='+now+', email='+email)
-        connection.query('UPDATE ue_ztm_users SET emailValidated = ? WHERE email = ?', [now, email], function (error, results, fields) {
+        connection.query('UPDATE ue_ztm_users SET emailValidated = ?, modified = ? WHERE email = ?', [now, now, email], function (error, results, fields) {
           console.log('error='+error+", results= ", JSON.stringify(results));
           if (error) {
             let msg = "verifyAccount update emailValidated database failure for email '" + user.email + "'";
