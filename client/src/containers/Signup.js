@@ -1,14 +1,4 @@
 
-/* todo
-vows
-members agreement
-text for pane 4
-button on pane 4 to resend email
-login if user is not yet confirmed screen to send email again, also if user clicks forgot password?
-banner
-put checkboxes outside of labels
-pull pane 4 out to a different route
-*/
 import React from 'react';
 import { connect } from "react-redux";
 import { LocalForm, Control } from 'react-redux-form'
@@ -333,8 +323,8 @@ class Signup extends React.Component {
     let passwordType = showPassword ? 'input' : 'password'
     let showHidePasswordText = showPassword ? 'Hide password' : 'Show password'
     let emailClass = 'verticalformcontrol ' + (emailAlreadyRegistered ? 'emailError' : '' )
-    let vowsClass = 'verticalformcontrol ' + (needToValidatePane2 && !this.validatePane2() ? 'checkboxDivError' : '' )
-    let agreementClass = 'verticalformcontrol ' + (needToValidatePane3 && !this.validatePane3() ? 'checkboxDivError' : '' )
+    let vowsClass = 'verticalformcontrol checkboxlabelrow ' + (needToValidatePane2 && !this.validatePane2() ? 'checkboxDivError' : '' )
+    let agreementClass = 'verticalformcontrol checkboxlabelrow ' + (needToValidatePane3 && !this.validatePane3() ? 'checkboxDivError' : '' )
     let vowsHtml = Marked(vowsMd);
     let agreementHtml = Marked(agreementMd);
     let hdr = TEAM_ORG+' Team Signup'
@@ -366,9 +356,8 @@ class Signup extends React.Component {
             <Message header={hdr} className='verticalformtopmessage' error={error} content={message} />
             <div dangerouslySetInnerHTML={{__html: vowsHtml}} />
             <div className={vowsClass}>
+              <Control.checkbox model=".vows" />
               <label>
-                <Control.checkbox model=".vows" />
-                &nbsp;
                 I agree with these vows and will commit to them in my public and professional life.
               </label>
             </div>
@@ -382,12 +371,9 @@ class Signup extends React.Component {
             <Message header={hdr} className='verticalformtopmessage' error={error} content={message} />
             <div dangerouslySetInnerHTML={{__html: agreementHtml}} />
             <div className={agreementClass}>
+              <Control.checkbox model=".agreement" />
               <label>
-                <Control.checkbox model=".agreement" />
-                &nbsp;
-                I agree to the terms and conditions listed in the above
-                {TEAM_ORG} Members Agreement
-                and thereby become a member of the {TEAM_ORG} team.
+                I agree to the terms and conditions listed in the above {TEAM_ORG} Members Agreement and thereby become a member of the {TEAM_ORG} team.
               </label>
             </div>
             <div className='verticalformbuttonrow'>
