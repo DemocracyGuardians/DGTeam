@@ -128,6 +128,7 @@ class Signup extends React.Component {
         [RSAA]: {
           endpoint: loginexistsApiUrl,
           method: 'POST',
+          credentials: 'include',
           types: [
             'ignored',
             {
@@ -249,6 +250,7 @@ class Signup extends React.Component {
       [RSAA]: {
         endpoint: signupApiUrl,
         method: 'POST',
+        credentials: 'include',
         types: [
           SIGNUP_REQUEST,
           {

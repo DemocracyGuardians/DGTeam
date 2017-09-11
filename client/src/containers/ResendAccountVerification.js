@@ -32,6 +32,7 @@ class ResendAccountVerification extends React.Component {
     headers.append("Content-Type", 'application/json');
     fetch(resendverificationApiUrl, {
       method: "POST",
+      credentials: 'include',
       body: JSON.stringify(values),
       //mode: 'cors',
       //cache: 'default',

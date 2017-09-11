@@ -21,8 +21,9 @@ exports.check = function() {
     'TEAM_DB_PASSWORD',
     'TEAM_DB_DATABASE',
     'TEAM_MANDRILL_API_KEY',
-    'TEAM_MANDRILL_DOMAIN'
-
+    'TEAM_MANDRILL_DOMAIN', // democracyguardians.org
+    'TEAM_EXPRESS_SESSION_SECRET',
+    'TEAM_CORS_ALLOWED_DOMAIN'
   ].forEach(function(e) {
     inner(e)
   });

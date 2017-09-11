@@ -1,5 +1,5 @@
 
-const mysql = require('mysql')
+const dbconnection = require('../util/dbconnection')
 const sendMail = require('../util/sendMail')
 const crypto = require('crypto')
 
@@ -18,26 +18,13 @@ var resendUrl = teamUrl + '/resendverification'
 
 var UNSPECIFIED_SYSTEM_ERROR = 'UNSPECIFIED_SYSTEM_ERROR'
 var USER_ALREADY_EXISTS = 'USER_ALREADY_EXISTS'
+var USER_ALREADY_LOGGED_IN = 'USER_ALREADY_LOGGED_IN'
 var EMAIL_NOT_REGISTERED = 'EMAIL_NOT_REGISTERED'
 var EMAIL_NOT_VERIFIED = 'EMAIL_NOT_VERIFIED'
 var EMAIL_ALREADY_VERIFIED = 'EMAIL_ALREADY_VERIFIED'
 var INCORRECT_PASSWORD = 'INCORRECT_PASSWORD'
 
-var connection = mysql.createConnection({
-  host: TEAM_DB_HOST,
-  user: TEAM_DB_USER,
-  password: TEAM_DB_PASSWORD,
-  database: TEAM_DB_DATABASE,
-  debug: false
-});
-connection.connect(function(error){
-  if (!error) {
-      console.log("Database connected");
-  } else {
-      console.error("Database connection error");
-      process.exit(1);
-  }
-});
+var connection = dbconnection.getConnection();
 
 exports.signup = function(req, res, next) {
   console.log("signup req", req.body);
@@ -100,6 +87,7 @@ exports.signup = function(req, res, next) {
 exports.login = function(req, res, next) {
   console.log('login req.body='+req.body);
   console.dir(req.body);
+  console.log('req.session.id='+req.session.id);
   var email = req.body.email;
   var password = req.body.password;
   console.log('email='+email);
@@ -124,14 +112,66 @@ exports.login = function(req, res, next) {
         } else {
           if (user.password === password) {
             delete user.password
-            let msg = "Login success for email '" + email + "'";
-            res.send({ msg, user })
+            console.log('Before calling session login.  User='+user);
+            console.dir(user);
+            console.log('req.session.id='+req.session.id);
+            // regenerate and resave are likely overkill but login/logout don't happen often
+            req.session.regenerate(function(err){
+              if (err){
+                let msg = "session regenerate failure for email '" + email + "'";
+                console.error(msg + ", error= ", err);
+                res.send(500, { msg, error: UNSPECIFIED_SYSTEM_ERROR })
+              } else {
+                console.log('login after regenerate req.session.id='+req.session.id);
+                req.session.user = user;
+                req.session.save(function(err) {
+                  if (err){
+                    let msg = "session save failure for email '" + email + "'";
+                    console.error(msg + ", error= ", err);
+                    res.send(500, { msg, error: UNSPECIFIED_SYSTEM_ERROR })
+                  } else {
+                    let msg = "Login success for email '" + email + "'";
+                    console.log(msg);
+                    console.log('req.session.id='+req.session.id);
+                    res.send({ msg, user })
+                  }
+                });
+              }
+            });
           } else {
             let msg = "Login failure for email '" + email + "'";
             res.send(401, { msg, error: INCORRECT_PASSWORD })
           }
         }
       }
+    }
+  });
+}
+
+exports.logout = function(req, res, next) {
+  console.log('logout req.body='+req.body);
+  console.dir(req.body);
+  console.log('req.session.id='+req.session.id);
+  req.session.user = null;
+  // regenerate and resave are likely overkill but login/logout don't happen often
+  req.session.regenerate(function(err){
+    if (err){
+      let msg = "session regenerate failure for logout";
+      console.error(msg + ", error= ", error);
+      res.send(500, { msg, error: UNSPECIFIED_SYSTEM_ERROR })
+    } else {
+      req.session.save(function(err) {
+        if (err){
+          let msg = "logout session save failure";
+          console.error(msg + ", error= ", err);
+          res.send(500, { msg, error: UNSPECIFIED_SYSTEM_ERROR })
+        } else {
+          let msg = "Logout success";
+          console.log(msg);
+          console.log('req.session.id='+req.session.id);
+          res.send({ msg })
+        }
+      });
     }
   });
 }
@@ -222,7 +262,7 @@ exports.verifyAccount = function(req, res, next) {
       console.log(msg + ", error= ", error, 'results=', JSON.stringify(results));
       let html = `<html><body>
   <h1>Account Verification Failure</h1>
-  <p>This is most likely because you clicked on Activate My Account from an older account verification email. 
+  <p>This is most likely because you clicked on Activate My Account from an older account verification email.
     Only the most recent account verification email will work correctly.
     If you are unsure which email is the most recent,
     put all existing verification emails into the Trash,

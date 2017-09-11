@@ -39,6 +39,7 @@ class Login extends React.Component {
       [RSAA]: {
         endpoint: loginApiUrl,
         method: 'POST',
+        credentials: 'include',
         types: [
           LOGIN_REQUEST,
           {
