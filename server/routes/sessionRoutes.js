@@ -116,19 +116,10 @@ exports.login = function(req, res, next) {
             console.dir(user);
             console.log('req.session.id='+req.session.id);
             req.session.user = user;
-            // regenerate and resave are likely overkill but login/logout don't happen often
-            req.session.regenerate(function(err){
-              if (err){
-                let msg = "session regenerate failure for email '" + email + "'";
-                console.error(msg + ", error= ", err);
-                res.send(500, { msg, error: UNSPECIFIED_SYSTEM_ERROR })
-              } else {
-                console.log('login after regenerate req.session.id='+req.session.id);
-                let msg = "Login success for email '" + email + "'";
-                console.log(msg);
-                res.send({ msg, user })
-              }
-            });
+            console.log('login after regenerate req.session.id='+req.session.id);
+            let msg = "Login success for email '" + email + "'";
+            console.log(msg);
+            res.send({ msg, user })
           } else {
             let msg = "Login failure for email '" + email + "'";
             res.send(401, { msg, error: INCORRECT_PASSWORD })
@@ -144,19 +135,11 @@ exports.logout = function(req, res, next) {
   console.dir(req.body);
   console.log('req.session.id='+req.session.id);
   req.session.user = null;
-  // regenerate is likely overkill but login/logout don't happen often
-  req.session.regenerate(function(err){
-    if (err){
-      let msg = "session regenerate failure for logout";
-      console.error(msg + ", error= ", error);
-      res.send(500, { msg, error: UNSPECIFIED_SYSTEM_ERROR })
-    } else {
-      let msg = "Logout success";
-      console.log(msg);
-      console.log('req.session.id='+req.session.id);
-      res.send({ msg })
-    }
-  });
+  let msg = "Logout success";
+  console.log(msg);
+  console.log('req.session.id='+req.session.id);
+  res.send({ msg })
+
 }
 
 exports.loginexists = function(req, res, next) {

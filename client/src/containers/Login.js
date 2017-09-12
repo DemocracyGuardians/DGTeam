@@ -6,7 +6,6 @@ import { Link, withRouter } from 'react-router-dom'
 import { Button, Container, Input, Message } from 'semantic-ui-react'
 import PropTypes from 'prop-types'
 import { RSAA } from 'redux-api-middleware';
-import { LOGIN_REQUEST, LOGIN_SUCCESS, LOGIN_FAILURE } from '../actions/loginActions'
 import { userLoginSuccess } from '../actions/userActions'
 import { TEAM_ORG, TEAM_BASE_URL, TEAM_API_RELATIVE_PATH } from '../envvars'
 
@@ -41,9 +40,9 @@ class Login extends React.Component {
         method: 'POST',
         credentials: 'include',
         types: [
-          LOGIN_REQUEST,
+          'LOGIN_REQUEST',
           {
-            type: LOGIN_SUCCESS,
+            type: 'LOGIN_SUCCESS',
             payload: (action, state, res) => {
               const contentType = res.headers.get('Content-Type');
               if (contentType && ~contentType.indexOf('json')) {
@@ -62,7 +61,7 @@ class Login extends React.Component {
             }
           },
           {
-            type: LOGIN_FAILURE,
+            type: 'LOGIN_FAILURE',
             payload: (action, state, res) => {
               const contentType = res.headers.get('Content-Type');
               if (contentType && ~contentType.indexOf('json')) {

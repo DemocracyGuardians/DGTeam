@@ -8,7 +8,6 @@ import { Button, Container, Input, Message } from 'semantic-ui-react'
 import { userVerificationEmailSent } from '../actions/userActions'
 import { TEAM_BASE_URL, TEAM_API_RELATIVE_PATH } from '../envvars'
 
-var UNSPECIFIED_SYSTEM_ERROR = 'UNSPECIFIED_SYSTEM_ERROR'
 var EMAIL_NOT_REGISTERED = 'EMAIL_NOT_REGISTERED'
 var EMAIL_ALREADY_VERIFIED = 'EMAIL_ALREADY_VERIFIED'
 

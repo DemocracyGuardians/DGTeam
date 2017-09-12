@@ -9,7 +9,6 @@ import { RSAA } from 'redux-api-middleware'
 import Marked from 'marked'
 import vowsMd from '../components/Trustworthiness_Vows_md'
 import agreementMd from '../components/Members_Agreement_md'
-import { SIGNUP_REQUEST, SIGNUP_SUCCESS, SIGNUP_FAILURE } from '../actions/signupActions'
 import { userSignupSuccess, userVerificationEmailSent } from '../actions/userActions'
 import { TEAM_ORG, TEAM_BASE_URL, TEAM_API_RELATIVE_PATH } from '../envvars'
 
@@ -252,9 +251,9 @@ class Signup extends React.Component {
         method: 'POST',
         credentials: 'include',
         types: [
-          SIGNUP_REQUEST,
+          'SIGNUP_REQUEST',
           {
-            type: SIGNUP_SUCCESS,
+            type: 'SIGNUP_SUCCESS',
             payload: (action, state, res) => {
               const contentType = res.headers.get('Content-Type');
               if (contentType && ~contentType.indexOf('json')) {
@@ -274,7 +273,7 @@ class Signup extends React.Component {
             }
           },
           {
-            type: SIGNUP_FAILURE,
+            type: 'SIGNUP_FAILURE',
             payload: (action, state, res) => {
               const contentType = res.headers.get('Content-Type');
               if (contentType && ~contentType.indexOf('json')) {
