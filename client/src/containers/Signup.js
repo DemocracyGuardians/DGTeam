@@ -11,14 +11,13 @@ import vowsMd from '../components/Trustworthiness_Vows_md'
 import agreementMd from '../components/Members_Agreement_md'
 import { userSignupSuccess, userVerificationEmailSent } from '../actions/userActions'
 import { TEAM_ORG, TEAM_BASE_URL, TEAM_API_RELATIVE_PATH } from '../envvars'
+import passwordRegexp from '../util/passwordRegexp'
 
 const baseApiUrl = TEAM_BASE_URL + TEAM_API_RELATIVE_PATH
 const loginexistsApiUrl = baseApiUrl+ '/loginexists'
 const signupApiUrl = baseApiUrl+ '/signup'
 
 var USER_ALREADY_EXISTS = 'USER_ALREADY_EXISTS'
-
-const passwordRegexp = "^(?=.{8,32}$)(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])(?=.*[!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~]).*"
 
 // Wrap semantic-ui controls for react-redux-forms
 const wFirstName = (props) => <Input name='firstName' placeholder='First name' fluid {...props} />

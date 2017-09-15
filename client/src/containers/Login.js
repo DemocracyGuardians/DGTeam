@@ -124,7 +124,7 @@ class Login extends React.Component {
         </LocalForm>
         <Message className="verticalformbottommessage" >
           <span className='innerBlock'>
-            <div style={forgotPasswordStyle} ><Link to='#'>Forgot your password?</Link></div>
+            <div style={forgotPasswordStyle} ><Link to='/forgotpassword'>Forgot your password?</Link></div>
             <div style={resendVerificationStyle} ><Link to='/resendverification'>Need to resend account verification email?</Link></div>
             <div>Not yet a team member?&nbsp;<Link to="/signup">Signup here</Link></div>
           </span>

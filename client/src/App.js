@@ -8,6 +8,10 @@ import Signup from './containers/Signup'
 import Workbench from './containers/Workbench'
 import ResendAccountVerification from './containers/ResendAccountVerification'
 import AccountVerificationSent from './components/AccountVerificationSent'
+import ForgotPassword from './containers/ForgotPassword'
+import ResetPasswordSent from './components/ResetPasswordSent'
+import ResetPassword from './containers/ResetPassword'
+import ResetPasswordSuccess from './components/ResetPasswordSuccess'
 import SystemError from './components/SystemError'
 
 // Needed for onTouchTap
@@ -20,6 +24,10 @@ class App extends Component {
     const SignupComp = (() => (<Signup store={this.props.store} />))
     const ResendAccountVerificationComp = (() => (<ResendAccountVerification store={this.props.store} />))
     const AccountVerificationSentComp = (() => (<AccountVerificationSent store={this.props.store} />))
+    const ForgotPasswordComp = (() => (<ForgotPassword store={this.props.store} />))
+    const ResetPasswordSentComp = (() => (<ResetPasswordSent store={this.props.store} />))
+    const ResetPasswordComp = (() => (<ResetPassword store={this.props.store} />))
+    const ResetPasswordSuccessComp = (() => (<ResetPasswordSuccess store={this.props.store} />))
     const WorkbenchComp = (() => (<Workbench store={this.props.store} />))
     return (
       <div className="App">
@@ -30,6 +38,10 @@ class App extends Component {
             <Route path='/workbench' component={WorkbenchComp} />
             <Route path='/resendverification' component={ResendAccountVerificationComp} />
             <Route path='/verificationsent' component={AccountVerificationSentComp} />
+            <Route path='/forgotpassword' component={ForgotPasswordComp} />
+            <Route path='/resetpasswordsent' component={ResetPasswordSentComp} />
+            <Route path='/resetpassword' component={ResetPasswordComp} />
+            <Route path='/resetpasswordsuccess' component={ResetPasswordSuccessComp} />
             <Route path='/systemerror' component={SystemError} />
             <Redirect path='*' to="/login" />
           </Switch>

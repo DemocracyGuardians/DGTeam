@@ -14,7 +14,9 @@ var TEAM_DB_DATABASE = process.env.TEAM_DB_DATABASE
 
 var apiUrl = TEAM_BASE_URL + TEAM_API_RELATIVE_PATH
 var teamUrl = TEAM_BASE_URL + TEAM_UI_RELATIVE_PATH
-var resendUrl = teamUrl + '/resendverification'
+var resendVerificationUrl = teamUrl + '/resendverification'
+var forgotPasswordUrl = teamUrl + '/forgot'
+var resetPasswordUrl = teamUrl + '/resetpassword'
 
 var UNSPECIFIED_SYSTEM_ERROR = 'UNSPECIFIED_SYSTEM_ERROR'
 var USER_ALREADY_EXISTS = 'USER_ALREADY_EXISTS'
@@ -23,6 +25,8 @@ var EMAIL_NOT_REGISTERED = 'EMAIL_NOT_REGISTERED'
 var EMAIL_NOT_VERIFIED = 'EMAIL_NOT_VERIFIED'
 var EMAIL_ALREADY_VERIFIED = 'EMAIL_ALREADY_VERIFIED'
 var INCORRECT_PASSWORD = 'INCORRECT_PASSWORD'
+var TOKEN_NOT_FOUND = 'TOKEN_NOT_FOUND'
+var TOKEN_EXPIRED = 'TOKEN_EXPIRED'
 
 var connection = dbconnection.getConnection();
 
@@ -60,7 +64,7 @@ exports.signup = function(req, res, next) {
              console.log(msg + ", error= ", error);
              res.send(500, { msg, error: UNSPECIFIED_SYSTEM_ERROR })
            } else {
-             sendAccountVerificationEmail(user, function(error, result) {
+             sendAccountVerificationEmailToUser(user, function(error, result) {
                delete user.password
                if (error) {
                  let msg = "Insert new user email send failure for email '" + user.email + "'";
@@ -193,7 +197,7 @@ exports.resendVerificationEmail = function(req, res, next) {
               user.emailValidateToken = token
               user.emailValidateTokenDateTime = now
               user.modified = now
-              sendAccountVerificationEmail(user, function(error, result) {
+              sendAccountVerificationEmailToUser(user, function(error, result) {
                 delete user.password
                 if (error) {
                   let msg = "resendVerificationEmail email send failure for email '" + user.email + "'";
@@ -208,6 +212,56 @@ exports.resendVerificationEmail = function(req, res, next) {
             }
           });
         }
+      } else {
+        let msg = "No account for '" + email + "'";
+        console.error(msg);
+        res.send(401, { msg, error: EMAIL_NOT_REGISTERED })
+      }
+    }
+  });
+}
+
+exports.sendResetPasswordEmail = function(req, res, next) {
+  console.log('sendResetPasswordEmail req.body='+req.body);
+  console.dir(req.body);
+  var email = req.body.email;
+  console.log('email='+email);
+  connection.query('SELECT * FROM ue_ztm_users WHERE email = ?', [email], function (error, results, fields) {
+    if (error) {
+      let msg = "sendResetPasswordEmail database failure for email '" + email + "'";
+      console.log(msg + ", error= ", error);
+      res.send(500, { msg, error: UNSPECIFIED_SYSTEM_ERROR })
+    } else {
+      let msg = "sendResetPasswordEmail database success for email '" + email + "'";
+      console.log(msg + ", results= ", results);
+      let exists = (results.length > 0)
+      if (exists) {
+        var user = results[0]
+        var token = makeToken(user)
+        let now = new Date();
+        connection.query('UPDATE ue_ztm_users SET resetPasswordToken = ?, resetPasswordTokenDateTime = ?, modified = ? WHERE email = ?', [token, now, now, email], function (error, results, fields) {
+          if (error) {
+            let msg = "sendResetPasswordEmail update database failure for email '" + user.email + "'";
+            console.log(msg + ", error= ", error);
+            res.send(500, { msg, error: UNSPECIFIED_SYSTEM_ERROR })
+          } else {
+            user.resetPasswordToken = token
+            user.resetPasswordTokenDateTime = now
+            user.modified = now
+            sendResetPasswordEmailToUser(user, function(error, result) {
+              delete user.password
+              if (error) {
+                let msg = "sendResetPasswordEmail email send failure for email '" + user.email + "'";
+                console.log(msg + ", error= ", error);
+                res.send(500, { msg, error: UNSPECIFIED_SYSTEM_ERROR })
+              } else {
+                let msg = "sendResetPasswordEmail success for email '" + user.email + "'";
+                console.log(msg + ", results= ", results);
+                res.send({ msg, user })
+              }
+            });
+          }
+        });
       } else {
         let msg = "No account for '" + email + "'";
         console.error(msg);
@@ -232,7 +286,7 @@ exports.verifyAccount = function(req, res, next) {
     Only the most recent account verification email will work correctly.
     If you are unsure which email is the most recent,
     put all existing verification emails into the Trash,
-    then go to <a href="${resendUrl}">${resendUrl}</a> to request a brand new account verification email.</p>
+    then go to <a href="${resendVerificationUrl}">${resendVerificationUrl}</a> to request a brand new account verification email.</p>
 </body></html>`
       res.send(html)
     } else {
@@ -247,7 +301,7 @@ exports.verifyAccount = function(req, res, next) {
       if (tokenTime < twentyfourHoursAgo) {
         let html = `<html><body>
 <h1>Sorry! Verification expiration</h1>
-<p>Please send email to info@${TEAM_BASE_URL} to report the problem.</p>
+<p>Please go to <a href="${resendVerificationUrl}">${resendVerificationUrl}</a> to request a new account verification email.</p>
 </body></html>`
         res.send(html)
       } else {
@@ -277,14 +331,97 @@ console.log('html='+html) ;
   });
 }
 
-function sendAccountVerificationEmail(user, callback) {
+exports.gotoResetPasswordPage = function(req, res, next) {
+  console.log('gotoResetPasswordPage req.params='+req.params);
+  console.dir(req.params);
+  let token = req.params.token
+  res.type('html')
+  connection.query('SELECT email, resetPasswordTokenDateTime FROM ue_ztm_users WHERE resetPasswordToken = ?', [token], function (error, results, fields) {
+    if (error || results.length !== 1) {
+      let msg = "gotoResetPasswordPage failure for token '" + token + "'";
+      console.log(msg + ", error= ", error, 'results=', JSON.stringify(results));
+      let html = `<html><body>
+  <h1>Reset Password Failure</h1>
+  <p>This is most likely because you clicked on Reset My Password from an older password reset email.
+    Only the most recent password reset email will work correctly.
+    If you are unsure which email is the most recent,
+    put all existing password reset emails into the Trash,
+    then go to <a href="${forgotPasswordUrl}">${forgotPasswordUrl}</a> to request a brand new password reset email.</p>
+</body></html>`
+      res.send(html)
+    } else {
+      console.log("results= ", JSON.stringify(results));
+      let { email, resetPasswordTokenDateTime } = results[0]
+      console.log('typeof resetPasswordTokenDateTime= ', typeof resetPasswordTokenDateTime)
+      let msg = "gotoResetPasswordPage success for email '" + email + "'";
+      let now = new Date();
+      let twentyfourHoursAgo = (new Date().getTime() - (24 * 60 * 60 * 1000));
+      let tokenTime = resetPasswordTokenDateTime.getTime()
+      console.log('tokenTime='+tokenTime+', twentyfourHoursAgo='+twentyfourHoursAgo)
+      if (tokenTime < twentyfourHoursAgo) {
+        let html = `<html><body>
+<h1>Reset password expiration</h1>
+<p>Please go to <a href="${forgotPasswordUrl}">${forgotPasswordUrl}</a> to request a new password reset email.</p>
+</body></html>`
+        res.send(html)
+      } else {
+        console.log('before sending redirect')
+        res.redirect(302, resetPasswordUrl+'?t='+token)
+      }
+    }
+  });
+}
+
+exports.resetPassword = function(req, res, next) {
+  console.log('login req.body='+req.body);
+  console.dir(req.body);
+  var password = req.body.password;
+  var token = req.body.token;
+  console.log('req.session.id='+req.session.id);
+  connection.query('SELECT email, resetPasswordTokenDateTime FROM ue_ztm_users WHERE resetPasswordToken = ?', [token], function (error, results, fields) {
+    if (error || results.length !== 1) {
+      let msg = "resetPassword select failure for token '" + token + "'";
+      console.log(msg + ", error= ", error, 'results=', JSON.stringify(results));
+      res.send(400, { msg, error: TOKEN_NOT_FOUND })
+    } else {
+      console.log("results= ", JSON.stringify(results));
+      let { email, resetPasswordTokenDateTime } = results[0]
+      console.log('typeof resetPasswordTokenDateTime= ', typeof resetPasswordTokenDateTime)
+      let msg = "resetPassword success for email '" + email + "'";
+      let now = new Date();
+      let twentyfourHoursAgo = (new Date().getTime() - (24 * 60 * 60 * 1000));
+      let tokenTime = resetPasswordTokenDateTime.getTime()
+      console.log('tokenTime='+tokenTime+', twentyfourHoursAgo='+twentyfourHoursAgo)
+      if (tokenTime < twentyfourHoursAgo) {
+        let msg = "resetPassword expired token for email '" + email + "'";
+        console.log(msg);
+        res.send(400, { msg, error: TOKEN_EXPIRED })
+      } else {
+        console.log('now='+now+', email='+email)
+        connection.query('UPDATE ue_ztm_users SET password = ?, resetPasswordToken = NULL, resetPasswordTokenDateTime = NULL, modified = ? WHERE email = ?', [password, now, email], function (error, results, fields) {
+          console.log('error='+error+", results= ", JSON.stringify(results));
+          if (error) {
+            let msg = "resetPassword update resetPasswordToken database failure for email '" + user.email + "'";
+            console.log(msg + ", error= ", error);
+            res.send(500, { msg, error: UNSPECIFIED_SYSTEM_ERROR })
+          } else {
+            console.log('before sending change password success')
+            res.send({ msg })
+          }
+        });
+      }
+    }
+  });
+}
+
+function sendAccountVerificationEmailToUser(user, callback) {
   var url = apiUrl + '/verifyaccount/' + user.emailValidateToken
   var name = user.firstName+' '+user.lastName;
   var params = {
     html: `<p>Welcome to the ${TEAM_ORG} team!</p>
   <p>Please click on this link: </p>
   <p>&nbsp;&nbsp;&nbsp;&nbsp;<a href="${url}" style="font-size:110%;color:darkblue;font-weight:bold;">Activate My Account</a></p>
-  to complete the signup process.</p>`,
+  <p>to complete the signup process.</p>`,
     text: 'Welcome to the '+TEAM_ORG+' team!\n\nPlease go to the following URL in a Web browser to Activate Your Account and complete the signup process:\n\n'+url,
     subject: 'Please confirm your '+TEAM_ORG+' account',
     email: user.email,
@@ -292,9 +429,31 @@ function sendAccountVerificationEmail(user, callback) {
   };
   sendMail(params, function(err, result) {
     if (err) {
-      console.error('sendAccountVerificationEmail sendMail failed! err='+JSON.stringify(err));
+      console.error('sendAccountVerificationEmailToUser sendMail failed! err='+JSON.stringify(err));
     } else {
-      console.log('sendAccountVerificationEmail sendMail no errors.  result='+JSON.stringify(result));
+      console.log('sendAccountVerificationEmailToUser sendMail no errors.  result='+JSON.stringify(result));
+    }
+    callback(err, result)
+  });
+}
+
+function sendResetPasswordEmailToUser(user, callback) {
+  var url = apiUrl + '/gotoresetpasswordpage/' + user.resetPasswordToken
+  var name = user.firstName+' '+user.lastName;
+  var params = {
+    html: `<p>Reset your ${TEAM_ORG} password</p>
+  <p>Please click on this link to reset your password: </p>
+  <p>&nbsp;&nbsp;&nbsp;&nbsp;<a href="${url}" style="font-size:110%;color:darkblue;font-weight:bold;">Reset My Password</a></p>`,
+    text: 'Please go to the following URL in a Web browser to reset your password:\n\n'+url,
+    subject: 'Reset your '+TEAM_ORG+' password',
+    email: user.email,
+    name: name
+  };
+  sendMail(params, function(err, result) {
+    if (err) {
+      console.error('sendResetPasswordEmailToUser sendMail failed! err='+JSON.stringify(err));
+    } else {
+      console.log('sendResetPasswordEmailToUser sendMail no errors.  result='+JSON.stringify(result));
     }
     callback(err, result)
   });

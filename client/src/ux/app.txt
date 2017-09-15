@@ -1,29 +1,59 @@
+
+Site name candidates:
+  Trust Network
+  Trust Judges
+  Trust Judgments *** (domain acquired)
+  Trust Winners *** (domain acquired)
+  Winning Trust *** (.Org acquired, .Com owned by squatter)
 {
-  appState {
-    currentScreen
-    isFetching
-    message
-    error
-  }
   //screens start with uc, everything else lc
   Signup { see signup.txt }
   Login { see login.txt }
+  First login after signup: go to profile tab, with welcome popup, explaining why you want to fill out profile
+  Second popup tells user they can find quick tour on help menu
   Workbench { ?
-    Thin banner: DGicon(link) DGTeamicon Username(ellipsis) Level:# Trustworthiness(icon)
-      MyUsernameDropdown
-      MyLevelDropdown
-      MyTrustworthinessDropdown
-    Menubar: Notifications(badge) Train Illuminate? Judge Search
-    Notifications {}
-    Train {}
-    Illuminate? {}
-    Judge {}
-    Search {}
+    Thin banner:
+      DGicon(link to site home page)
+      DGTeamicon
+      Level (icon with one number)
+        MyLevelDropdown
+      Trustworthiness(icon with two numbers)
+        MyTrustworthinessDropdown
+      Rewards(icon with one number: user's percentile among all users)
+        MyRewardsDropdown
+      Headshot
+        MyUsernameDropdown
+    Menubar: Home (home icon with badge for #notifications) Learn Evidence Judge Search (typein with search icon) Help
+      Home (home icon with red exclamation or yellow warning if insufficient profile)
+        Desktop or tablet: Breadcrumbs: Home on second level banner, with two column layout
+          Left column on desktop or tablet:
+            Profile (same icons)
+              Short explanation why a complete and accurate profile is important (with a more button)
+              Summary about current profile information, submitted by you, submitted by others
+              Feedback on your profile
+              Update my profile button, which takes user to Update Profile page
+            Level
+            Trustworthiness Score
+            Rewards
+            Learning
+              Importance of learning, with more button
+              Courses completed
+              Recommended next courses
+              Go to Learning Center
+          Right column: News and notifications (and ads from orgs with high trustworthiness scores)
+        Phone
+          Top n lines hold abbreviated version of banner plus above left column
+          Timer shows profile info or level info, etc.
+          User can touch button to see his Account Summary, which is above left column  
+      Learn {}
+      Notifications {}
+        Includes organization news
+      Evidence {}
+      Judge {}
+      Search {}
+      Help { Quick tour }
   }
-  session {
-    token
-  }
-  AddJudgment { ? }
+  Judge { ? }
   user / entity { // stored in entity tables?
     id
     isOrganization

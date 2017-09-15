@@ -25,3 +25,12 @@ export function userVerificationEmailSent(email) {
     email
   }
 }
+
+export const RESET_PASSWORD_EMAIL_SENT = 'RESET_PASSWORD_EMAIL_SENT'
+
+export function resetPasswordEmailSent(email) {
+  return {
+    type: RESET_PASSWORD_EMAIL_SENT,
+    email
+  }
+}

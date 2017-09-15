@@ -13,8 +13,6 @@ var TEAM_API_RELATIVE_PATH = process.env.TEAM_API_RELATIVE_PATH;
 var TEAM_API_PORT = process.env.TEAM_API_PORT;
 var TEAM_CORS_ALLOWED_DOMAIN = process.env.TEAM_CORS_ALLOWED_DOMAIN;
 
-console.log('TEAM_CORS_ALLOWED_DOMAIN='+TEAM_CORS_ALLOWED_DOMAIN);
-
 var connection = dbconnection.getConnection();
 
 var app = express();
@@ -34,12 +32,16 @@ app.use(function(req, res, next) {
 });
 
 var apiRouter = express.Router();
-apiRouter.post('/signup', sessionRoutes.signup);
+apiRouter.post('/signup', sessionRoutes.signup)
 apiRouter.post('/login', sessionRoutes.login)
 apiRouter.post('/logout', sessionRoutes.logout)
 apiRouter.post('/loginexists', sessionRoutes.loginexists)
 apiRouter.post('/resendverification', sessionRoutes.resendVerificationEmail)
-apiRouter.get('/verifyaccount/:token', sessionRoutes.verifyAccount);
+apiRouter.get('/verifyaccount/:token', sessionRoutes.verifyAccount)
+apiRouter.post('/sendresetpassword', sessionRoutes.sendResetPasswordEmail)
+apiRouter.get('/gotoresetpasswordpage/:token', sessionRoutes.gotoResetPasswordPage)
+apiRouter.post('/resetpassword', sessionRoutes.resetPassword)
+
 apiRouter.post('/workbenchinit', authMiddleware, workbenchRoutes.workbenchinit)
 app.use(TEAM_API_RELATIVE_PATH, apiRouter);
 

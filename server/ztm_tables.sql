@@ -13,6 +13,8 @@ CREATE TABLE `ue_ztm_users` (
  `emailValidateToken` varchar(20) NOT NULL,
  `emailValidateTokenDateTime` datetime NOT NULL,
  `emailValidated` datetime DEFAULT NULL,
+ `resetPasswordToken` varchar(20) DEFAULT NULL,
+ `resetPasswordTokenDateTime` datetime DEFAULT NULL,
  `modified` datetime NOT NULL,
  PRIMARY KEY (`id`),
  INDEX(email(100),emailValidateToken)
