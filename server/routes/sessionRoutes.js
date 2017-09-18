@@ -2,6 +2,10 @@
 const dbconnection = require('../util/dbconnection')
 const sendMail = require('../util/sendMail')
 const crypto = require('crypto')
+const logSend = require('../util/logSend')
+var logSendOK = logSend.logSendOK
+var logSendCE = logSend.logSendCE
+var logSendSE = logSend.logSendSE
 
 var TEAM_ORG = process.env.TEAM_ORG
 var TEAM_BASE_URL = process.env.TEAM_BASE_URL
@@ -18,7 +22,6 @@ var resendVerificationUrl = teamUrl + '/resendverification'
 var forgotPasswordUrl = teamUrl + '/forgot'
 var resetPasswordUrl = teamUrl + '/resetpassword'
 
-var UNSPECIFIED_SYSTEM_ERROR = 'UNSPECIFIED_SYSTEM_ERROR'
 var USER_ALREADY_EXISTS = 'USER_ALREADY_EXISTS'
 var USER_ALREADY_LOGGED_IN = 'USER_ALREADY_LOGGED_IN'
 var EMAIL_NOT_REGISTERED = 'EMAIL_NOT_REGISTERED'
@@ -49,26 +52,19 @@ exports.signup = function(req, res, next) {
    user.emailValidateToken = token
    connection.query('SELECT email FROM ue_ztm_users WHERE email = ?', [user.email], function (error, results, fields) {
      if (error) {
-       let msg = "signup select user database failure for email '" + user.email + "'";
-       console.log(msg + ", error= ", error);
-       res.send(500, { msg, error: UNSPECIFIED_SYSTEM_ERROR })
+       logSendSE(res, error, "signup select user database failure for email '" + user.email + "'");
      } else {
        if (results.length >= 1) {
-         let msg = "signup user already exists: '" + user.email + "'";
-         console.log(msg + ", error= ", error);
-         res.send(401, { msg, error: USER_ALREADY_EXISTS })
+         logSendCE(res, 401, USER_ALREADY_EXISTS, "signup user already exists: '" + user.email + "'");
        } else {
          connection.query('INSERT INTO ue_ztm_users SET ?', user, function (error, results, fields) {
            if (error) {
-             let msg = "Insert new user insert database failure for email '" + user.email + "'";
-             console.log(msg + ", error= ", error);
-             res.send(500, { msg, error: UNSPECIFIED_SYSTEM_ERROR })
+             logSendSE(res, 500, error, UNSPECIFIED_SYSTEM_ERROR, "Insert new user insert database failure for email '" + user.email + "'");
            } else {
              sendAccountVerificationEmailToUser(user, function(error, result) {
                delete user.password
                if (error) {
-                 let msg = "Insert new user email send failure for email '" + user.email + "'";
-                 console.log(msg + ", error= ", error);
+                 console.error("Insert new user email send failure for email '" + user.email + "', error= ", error);
                  connection.query('DELETE FROM ue_ztm_users WHERE email = ?', [user.email], function (error, results, fields) {
                    if (error) {
                      console.error('DELETE failed after sendMail failure. error='+error)
@@ -76,9 +72,7 @@ exports.signup = function(req, res, next) {
                    res.send(500, { msg, error: UNSPECIFIED_SYSTEM_ERROR })
                  });
                } else {
-                 let msg = "Insert new user success for email '" + user.email + "'";
-                 console.log(msg + ", results= ", results);
-                 res.send({ msg, user })
+                 logSendOK(res, {user}, "Insert new user success for email '" + user.email + "'");
                }
              });
            }
@@ -97,22 +91,16 @@ exports.login = function(req, res, next) {
   console.log('email='+email);
   connection.query('SELECT * FROM ue_ztm_users WHERE email = ?', [email], function (error, results, fields) {
     if (error) {
-      let msg = "Select user failure for email '" + email + "'";
-      console.error(msg + ", error= ", error);
-      res.send(500, { msg, error: UNSPECIFIED_SYSTEM_ERROR })
+      logSendSE(res, error, "Select user failure for email '" + email + "'");
     } else {
       let msg = "Select user success for email '" + email + "'";
       console.log(msg + ", results= ", results);
       if (results.length < 1) {
-        let msg = "No account for '" + email + "'";
-        console.error(msg);
-        res.send(401, { msg, error: EMAIL_NOT_REGISTERED })
+        logSendCE(res, 401, EMAIL_NOT_REGISTERED, "No account for '" + email + "'");
       } else {
         let user = results[0]
         if (!user.emailValidated) {
-          let msg = "Account for '" + email + "' has not been verified yet via email";
-          console.error(msg);
-          res.send(401, { msg, error: EMAIL_NOT_VERIFIED })
+          logSendCE(res, 401, EMAIL_NOT_VERIFIED, "Account for '" + email + "' has not been verified yet via email");
         } else {
           if (user.password === password) {
             delete user.password
@@ -121,12 +109,9 @@ exports.login = function(req, res, next) {
             console.log('req.session.id='+req.session.id);
             req.session.user = user;
             console.log('login after regenerate req.session.id='+req.session.id);
-            let msg = "Login success for email '" + email + "'";
-            console.log(msg);
-            res.send({ msg, user })
+            logSendOK(res, {user}, "Login success for email '" + email + "'");
           } else {
-            let msg = "Login failure for email '" + email + "'";
-            res.send(401, { msg, error: INCORRECT_PASSWORD })
+            logSendCE(res, 401, INCORRECT_PASSWORD, "Login failure for email '" + email + "'");
           }
         }
       }
@@ -139,11 +124,7 @@ exports.logout = function(req, res, next) {
   console.dir(req.body);
   console.log('req.session.id='+req.session.id);
   req.session.user = null;
-  let msg = "Logout success";
-  console.log(msg);
-  console.log('req.session.id='+req.session.id);
-  res.send({ msg })
-
+  logSendOK(res, null, "Logout success");
 }
 
 exports.loginexists = function(req, res, next) {
@@ -153,14 +134,10 @@ exports.loginexists = function(req, res, next) {
   console.log('email='+email);
   connection.query('SELECT email FROM ue_ztm_users WHERE email = ?', [email], function (error, results, fields) {
     if (error) {
-      let msg = "loginexists failure for email '" + email + "'";
-      console.log(msg + ", error= ", error);
-      res.send(500, { msg, error: UNSPECIFIED_SYSTEM_ERROR })
+      logSendSE(res, error, "loginexists failure for email '" + email + "'");
     } else {
-      let msg = "loginexists success for email '" + email + "'";
-      console.log(msg + ", results= ", results);
       let exists = (results.length > 0)
-      res.send({ msg, email, exists })
+      logSendOK(res, { email, exists }, "loginexists success for email '" + email + "'");
     }
   });
 }
@@ -172,9 +149,7 @@ exports.resendVerificationEmail = function(req, res, next) {
   console.log('email='+email);
   connection.query('SELECT * FROM ue_ztm_users WHERE email = ?', [email], function (error, results, fields) {
     if (error) {
-      let msg = "resendVerificationEmail database failure for email '" + email + "'";
-      console.log(msg + ", error= ", error);
-      res.send(500, { msg, error: UNSPECIFIED_SYSTEM_ERROR })
+      logSendSE(res, error, "resendVerificationEmail database failure for email '" + email + "'");
     } else {
       let msg = "resendVerificationEmail database success for email '" + email + "'";
       console.log(msg + ", results= ", results);
@@ -182,17 +157,13 @@ exports.resendVerificationEmail = function(req, res, next) {
       if (exists) {
         var user = results[0]
         if (user.emailValidated) {
-          let msg = "resendVerificationEmail account already verified for email '" + email + "'";
-          console.log(msg + ", error= ", error);
-          res.send(400, { msg, error: EMAIL_ALREADY_VERIFIED })
+          logSendCE(res, 400, EMAIL_ALREADY_VERIFIED, "resendVerificationEmail account already verified for email '" + email + "'");
         } else {
           var token = makeToken(user)
           let now = new Date();
           connection.query('UPDATE ue_ztm_users SET emailValidateToken = ?, emailValidateTokenDateTime = ?, modified = ? WHERE email = ?', [token, now, now, email], function (error, results, fields) {
             if (error) {
-              let msg = "resendVerificationEmail update database failure for email '" + user.email + "'";
-              console.log(msg + ", error= ", error);
-              res.send(500, { msg, error: UNSPECIFIED_SYSTEM_ERROR })
+              logSendSE(res, error, "resendVerificationEmail update database failure for email '" + user.email + "'");
             } else {
               user.emailValidateToken = token
               user.emailValidateTokenDateTime = now
@@ -200,13 +171,9 @@ exports.resendVerificationEmail = function(req, res, next) {
               sendAccountVerificationEmailToUser(user, function(error, result) {
                 delete user.password
                 if (error) {
-                  let msg = "resendVerificationEmail email send failure for email '" + user.email + "'";
-                  console.log(msg + ", error= ", error);
-                  res.send(500, { msg, error: UNSPECIFIED_SYSTEM_ERROR })
+                  logSendSE(res, error, "resendVerificationEmail email send failure for email '" + user.email + "'");
                 } else {
-                  let msg = "resendVerificationEmail success for email '" + user.email + "'";
-                  console.log(msg + ", results= ", results);
-                  res.send({ msg, user })
+                  logSendOK(res, { user }, "resendVerificationEmail success for email '" + user.email + "'");
                 }
               });
             }
@@ -228,9 +195,7 @@ exports.sendResetPasswordEmail = function(req, res, next) {
   console.log('email='+email);
   connection.query('SELECT * FROM ue_ztm_users WHERE email = ?', [email], function (error, results, fields) {
     if (error) {
-      let msg = "sendResetPasswordEmail database failure for email '" + email + "'";
-      console.log(msg + ", error= ", error);
-      res.send(500, { msg, error: UNSPECIFIED_SYSTEM_ERROR })
+      logSendSE(res, error, "sendResetPasswordEmail database failure for email '" + email + "'");
     } else {
       let msg = "sendResetPasswordEmail database success for email '" + email + "'";
       console.log(msg + ", results= ", results);
@@ -241,9 +206,7 @@ exports.sendResetPasswordEmail = function(req, res, next) {
         let now = new Date();
         connection.query('UPDATE ue_ztm_users SET resetPasswordToken = ?, resetPasswordTokenDateTime = ?, modified = ? WHERE email = ?', [token, now, now, email], function (error, results, fields) {
           if (error) {
-            let msg = "sendResetPasswordEmail update database failure for email '" + user.email + "'";
-            console.log(msg + ", error= ", error);
-            res.send(500, { msg, error: UNSPECIFIED_SYSTEM_ERROR })
+            logSendSE(res, error, "sendResetPasswordEmail update database failure for email '" + user.email + "'");
           } else {
             user.resetPasswordToken = token
             user.resetPasswordTokenDateTime = now
@@ -251,21 +214,16 @@ exports.sendResetPasswordEmail = function(req, res, next) {
             sendResetPasswordEmailToUser(user, function(error, result) {
               delete user.password
               if (error) {
-                let msg = "sendResetPasswordEmail email send failure for email '" + user.email + "'";
-                console.log(msg + ", error= ", error);
-                res.send(500, { msg, error: UNSPECIFIED_SYSTEM_ERROR })
+                logSendSE(res, error, "sendResetPasswordEmail email send failure for email '" + user.email + "'");
               } else {
-                let msg = "sendResetPasswordEmail success for email '" + user.email + "'";
-                console.log(msg + ", results= ", results);
-                res.send({ msg, user })
+                console.log("results= ", results);
+                logSendOK(res, { user }, "sendResetPasswordEmail success for email '" + user.email + "'");
               }
             });
           }
         });
       } else {
-        let msg = "No account for '" + email + "'";
-        console.error(msg);
-        res.send(401, { msg, error: EMAIL_NOT_REGISTERED })
+        logSendCE(res, 401, EMAIL_NOT_REGISTERED, "No account for '" + email + "'");
       }
     }
   });
@@ -373,16 +331,14 @@ exports.gotoResetPasswordPage = function(req, res, next) {
 }
 
 exports.resetPassword = function(req, res, next) {
-  console.log('login req.body='+req.body);
+  console.log('resetpassword req.body='+req.body);
   console.dir(req.body);
   var password = req.body.password;
   var token = req.body.token;
   console.log('req.session.id='+req.session.id);
   connection.query('SELECT email, resetPasswordTokenDateTime FROM ue_ztm_users WHERE resetPasswordToken = ?', [token], function (error, results, fields) {
     if (error || results.length !== 1) {
-      let msg = "resetPassword select failure for token '" + token + "'";
-      console.log(msg + ", error= ", error, 'results=', JSON.stringify(results));
-      res.send(400, { msg, error: TOKEN_NOT_FOUND })
+      logSendCE(res, 400, TOKEN_NOT_FOUND, "resetPassword select failure for token '" + token + "'");
     } else {
       console.log("results= ", JSON.stringify(results));
       let { email, resetPasswordTokenDateTime } = results[0]
@@ -393,20 +349,15 @@ exports.resetPassword = function(req, res, next) {
       let tokenTime = resetPasswordTokenDateTime.getTime()
       console.log('tokenTime='+tokenTime+', twentyfourHoursAgo='+twentyfourHoursAgo)
       if (tokenTime < twentyfourHoursAgo) {
-        let msg = "resetPassword expired token for email '" + email + "'";
-        console.log(msg);
-        res.send(400, { msg, error: TOKEN_EXPIRED })
+        logSendCE(res, 400, TOKEN_EXPIRED, "resetPassword expired token for email '" + email + "'");
       } else {
         console.log('now='+now+', email='+email)
         connection.query('UPDATE ue_ztm_users SET password = ?, resetPasswordToken = NULL, resetPasswordTokenDateTime = NULL, modified = ? WHERE email = ?', [password, now, email], function (error, results, fields) {
           console.log('error='+error+", results= ", JSON.stringify(results));
           if (error) {
-            let msg = "resetPassword update resetPasswordToken database failure for email '" + user.email + "'";
-            console.log(msg + ", error= ", error);
-            res.send(500, { msg, error: UNSPECIFIED_SYSTEM_ERROR })
+            logSendSE(res, error, "resetPassword update resetPasswordToken database failure for email '" + user.email + "'");
           } else {
-            console.log('before sending change password success')
-            res.send({ msg })
+            logSendOK(res, null, 'resetpassword success');
           }
         });
       }
