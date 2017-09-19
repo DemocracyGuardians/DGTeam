@@ -12,6 +12,7 @@ import agreementMd from '../components/Members_Agreement_md'
 import { userSignupSuccess, userVerificationEmailSent } from '../actions/userActions'
 import { TEAM_ORG, TEAM_BASE_URL, TEAM_API_RELATIVE_PATH } from '../envvars'
 import passwordRegexp from '../util/passwordRegexp'
+import parseJsonPayload from '../util/parseJsonPayload'
 
 const baseApiUrl = TEAM_BASE_URL + TEAM_API_RELATIVE_PATH
 const loginexistsApiUrl = baseApiUrl+ '/loginexists'
@@ -132,24 +133,14 @@ class Signup extends React.Component {
             {
               type: 'signup_loginexists_success',
               payload: (action, state, res) => {
-                const contentType = res.headers.get('Content-Type');
-                if (contentType && ~contentType.indexOf('json')) {
-                  return res.json().then((json) => {
-                    if (json.exists) {
-                      this.setState({ error: true, message: 'Email '+email+' already has an account', emailAlreadyRegistered: true })
-                    } else {
-                      this.clearErrors()
-                      this.setState({ pane: 2 })
-                    }
-                    return undefined
-                  }).catch((error)  => {
-                    console.error('signup_loginexists_success json() error='+error)
-                    this.props.history.push('/systemerror')
-                  })
-                } else {
-                  console.error('signup_loginexists_success contentType not parseable json')
-                  this.props.history.push('/systemerror')
-                }
+                parseJsonPayload.bind(this)(res, action.type, json => {
+                  if (json.exists) {
+                    this.setState({ error: true, message: 'Email '+email+' already has an account', emailAlreadyRegistered: true })
+                  } else {
+                    this.clearErrors()
+                    this.setState({ pane: 2 })
+                  }
+                })
               }
             },
             {
@@ -254,44 +245,24 @@ class Signup extends React.Component {
           {
             type: 'SIGNUP_SUCCESS',
             payload: (action, state, res) => {
-              const contentType = res.headers.get('Content-Type');
-              if (contentType && ~contentType.indexOf('json')) {
-                return res.json().then((json) => {
-                  dispatch(userSignupSuccess(json.user))
-                  dispatch(userVerificationEmailSent(json.user.email))
-                  this.props.history.push('/verificationsent')
-                  return undefined
-                }).catch((error)  => {
-                  console.error('SIGNUP_SUCCESS json() error='+error)
-                  this.props.history.push('/systemerror')
-                })
-              } else {
-                console.error('SIGNUP_SUCCESS contentType not parseable json')
-                this.props.history.push('/systemerror')
-              }
+              parseJsonPayload.bind(this)(res, action.type, json => {
+                dispatch(userSignupSuccess(json.user))
+                dispatch(userVerificationEmailSent(json.user.email))
+                this.props.history.push('/verificationsent')
+              })
             }
           },
           {
             type: 'SIGNUP_FAILURE',
             payload: (action, state, res) => {
-              const contentType = res.headers.get('Content-Type');
-              if (contentType && ~contentType.indexOf('json')) {
-                return res.json().then((json) => {
-                  if (json.error === USER_ALREADY_EXISTS) {
-                    this.setState({ message: 'Email address already has an account', error: true })
-                  } else {
-                    console.error('SIGNUP_FAILURE unrecognized error='+json.error+', msg:'+json.msg)
-                    this.props.history.push('/systemerror')
-                  }
-                  return undefined
-                }).catch((error)  => {
-                  console.error('SIGNUP_FAILURE json() error='+error)
+              parseJsonPayload.bind(this)(res, action.type, json => {
+                if (json.error === USER_ALREADY_EXISTS) {
+                  this.setState({ message: 'Email address already has an account', error: true })
+                } else {
+                  console.error('SIGNUP_FAILURE unrecognized error='+json.error+', msg:'+json.msg)
                   this.props.history.push('/systemerror')
-                })
-              } else {
-                console.error('SIGNUP_FAILURE contentType not parseable json')
-                this.props.history.push('/systemerror')
-              }
+                }
+              })
             }
           }
         ],

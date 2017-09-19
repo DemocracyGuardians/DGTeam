@@ -7,6 +7,7 @@ import { Button, Container, Input, Message } from 'semantic-ui-react'
 import PropTypes from 'prop-types'
 import { RSAA } from 'redux-api-middleware';
 import { userLoginSuccess } from '../actions/userActions'
+import parseJsonPayload from '../util/parseJsonPayload'
 import { TEAM_ORG, TEAM_BASE_URL, TEAM_API_RELATIVE_PATH } from '../envvars'
 
 var EMAIL_NOT_REGISTERED = 'EMAIL_NOT_REGISTERED'
@@ -44,47 +45,27 @@ class Login extends React.Component {
           {
             type: 'LOGIN_SUCCESS',
             payload: (action, state, res) => {
-              const contentType = res.headers.get('Content-Type');
-              if (contentType && ~contentType.indexOf('json')) {
-                return res.json().then((json) => {
-                  dispatch(userLoginSuccess(json.user))
-                  this.props.history.push('/workbench')
-                  return undefined
-                }).catch((error)  => {
-                  console.error('LOGIN_SUCCESS json() error='+error)
-                  this.props.history.push('/systemerror')
-                })
-              } else {
-                console.error('LOGIN_SUCCESS contentType not parseable json')
-                this.props.history.push('/systemerror')
-              }
+              parseJsonPayload.bind(this)(res, action.type, json => {
+                dispatch(userLoginSuccess(json.user))
+                this.props.history.push('/workbench')
+              })
             }
           },
           {
             type: 'LOGIN_FAILURE',
             payload: (action, state, res) => {
-              const contentType = res.headers.get('Content-Type');
-              if (contentType && ~contentType.indexOf('json')) {
-                return res.json().then((json) => {
-                  if (json.error === EMAIL_NOT_REGISTERED) {
-                    this.setState({ message: 'No account for this email', error: true })
-                  } else if (json.error === INCORRECT_PASSWORD) {
-                    this.setState({ message: 'Incorrect password', error: true })
-                  } else if (json.error === EMAIL_NOT_VERIFIED) {
-                    this.setState({ message: 'Account\'s email address not yet verified', error: true, accountNotVerified: true })
-                  } else {
-                    console.error('LOGIN_FAILURE unrecognized error='+json.error+', msg:'+json.msg)
-                    this.props.history.push('/systemerror')
-                  }
-                  return undefined
-                }).catch((error)  => {
-                  console.error('LOGIN_FAILURE json() error='+error)
+              parseJsonPayload.bind(this)(res, action.type, json => {
+                if (json.error === EMAIL_NOT_REGISTERED) {
+                  this.setState({ message: 'No account for this email', error: true })
+                } else if (json.error === INCORRECT_PASSWORD) {
+                  this.setState({ message: 'Incorrect password', error: true })
+                } else if (json.error === EMAIL_NOT_VERIFIED) {
+                  this.setState({ message: 'Account\'s email address not yet verified', error: true, accountNotVerified: true })
+                } else {
+                  console.error('LOGIN_FAILURE unrecognized error='+json.error+', msg:'+json.msg)
                   this.props.history.push('/systemerror')
-                })
-              } else {
-                console.error('LOGIN_FAILURE contentType not parseable json')
-                this.props.history.push('/systemerror')
-              }
+                }
+              })
             }
           }
         ],

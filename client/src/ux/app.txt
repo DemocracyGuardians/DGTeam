@@ -2,97 +2,106 @@
 Site name candidates:
   Trust Network
   Trust Judges
-  Trust Judgments *** (domain acquired)
-  Trust Winners *** (domain acquired)
+  Trust Judgments ** (domain acquired: org and com)
+  Trust Winners * (domain acquired: org and com)
   Winning Trust *** (.Org acquired, .Com owned by squatter)
-{
-  //screens start with uc, everything else lc
-  Signup { see signup.txt }
-  Login { see login.txt }
-  First login after signup: go to profile tab, with welcome popup, explaining why you want to fill out profile
-  Second popup tells user they can find quick tour on help menu
-  Workbench { ?
-    Thin banner:
-      DGicon(link to site home page)
-      DGTeamicon
-      Level (icon with one number)
-        MyLevelDropdown
-      Trustworthiness(icon with two numbers)
-        MyTrustworthinessDropdown
-      Rewards(icon with one number: user's percentile among all users)
-        MyRewardsDropdown
-      Headshot
-        MyUsernameDropdown
-    Menubar: Home (home icon with badge for #notifications) Learn Evidence Judge Search (typein with search icon) Help
-      Home (home icon with red exclamation or yellow warning if insufficient profile)
-        Desktop or tablet: Breadcrumbs: Home on second level banner, with two column layout
-          Left column on desktop or tablet:
-            Profile (same icons)
-              Short explanation why a complete and accurate profile is important (with a more button)
-              Summary about current profile information, submitted by you, submitted by others
-              Feedback on your profile
-              Update my profile button, which takes user to Update Profile page
-            Level
-            Trustworthiness Score
-            Rewards
-            Learning
-              Importance of learning, with more button
-              Courses completed
-              Recommended next courses
-              Go to Learning Center
-          Right column: News and notifications (and ads from orgs with high trustworthiness scores)
-        Phone
-          Top n lines hold abbreviated version of banner plus above left column
-          Timer shows profile info or level info, etc.
-          User can touch button to see his Account Summary, which is above left column  
-      Learn {}
-      Notifications {}
-        Includes organization news
-      Evidence {}
-      Judge {}
-      Search {}
-      Help { Quick tour }
-  }
-  Judge { ? }
-  user / entity { // stored in entity tables?
-    id
-    isOrganization
-    email
-    firstName
-    lastName
-    profile {
-      emails []
+  TrustPays  (org taken by crime stopper site)
+  Earning Trust *** (.Org acquired, .Com is an investment firm)
+  Trust Rewards *** (.Org acquired, .Com is an empty website)
+  Rewarding Trust *** (domain acquired: org and com)
+  Trust.who *** (domain owned by someone, not used)
+
+//screens start with uc, everything else lc
+Signup { see signup.txt }
+Login { see login.txt }
+After login: cell phone
+  Banner: DG Team  Home icon <Parent  Current topic   Search icon More icon
+  Initial: Home (menulist on phone, tabs on desktop/tablet)
+    My Work (I:#, P:#, T:#/#, L:#, R:#)
+    Learn
+    Add Evidence
+    Judge
+    More
+  My Work (menulist on mobile, second-level tabs on desktop/tablet)
+    "Inbox" with badge showing #notifications
+      Includes notifications of events relating to your work, announcements, ads from trusted sponsors
+    "Profile" (with warning icon and rating of completeness)
+    Trustworthiness icon (with two numbers)
+    "Level" with one number
+    "Rewards" with one number
+After login: desktop/tablet
+  Banner: DG Team  Headshot(logout)
+    DGicon(link to site home page) Team
+  Three column
+    left-side: user info
+      Profile (with indication of completeness, perhaps percentile number of entries and judgments average)
+        (see data structures below)
+      Trustworthiness icon (with two numbers)
+        Click here and instructions and clickables about improving your score
+      "Level" with one number
+      "Rewards" with one number
+    Middle holds main content, as long flow, with Menubar at top
+      Left and middle Menubar act as a combined l-shaped tab menu
+    right side content: social media feeds
+      only appears if screen is wide enough
+  Menubar (words under icons, operates as tab menu)
+    Inbox (with badge for notifications)
+    Learn
+    Add To
+    Judge
+    Search icon
+    More icon(about, tour, settings)
+  Inbox with badge showing #notifications
+    Open initially
+    Includes notifications of events relating to your work, announcements, ads from trusted sponsors
+  Learn
+    Importance of learning, with more button
+    Courses completed
+    Recommended next courses
+    Go to Learning Center
+  Add to
+    ?
+  Judge
+    ?
+
+user / entity { // stored in entity tables?
+  id
+  isOrganization
+  email
+  firstName
+  lastName
+  profile {
+    emails []
+    urls []
+    social []
+    bio
+    residences []
+    education []
+    employment []
+    activities []
+    affiliations []
+    publications [{ // books, audio, visual, knews, magazines, podcasts, etc
+      title
+      authors []
+      publisher
+      year
       urls []
-      social []
-      bio
-      residences []
-      education []
-      employment []
-      activities []
-      affiliations []
-      publications [{ // books, audio, visual, knews, magazines, podcasts, etc
-        title
-        authors []
-        publisher
-        year
-        urls []
-        summary
-        notes
-      }]
-      trustworthinessClaims []
-      trustworthinessDeviations []
-    }
-    judgmentsBy []
-    judgmentsOn []
-    researchBy []
-    researchOn []
-    commentsBy []
-    commentsOn []
-    trustworthiness {
-      score
-      confidence
-    }
-    level
-    training
+      summary
+      notes
+    }]
+    trustworthinessClaims []
+    trustworthinessDeviations []
   }
+  judgmentsBy []
+  judgmentsOn []
+  researchBy []
+  researchOn []
+  commentsBy []
+  commentsOn []
+  trustworthiness {
+    score
+    confidence
+  }
+  level
+  training
 }

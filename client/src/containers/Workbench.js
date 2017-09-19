@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Link, withRouter } from 'react-router-dom'
-import { RSAA } from 'redux-api-middleware';
+import { RSAA } from 'redux-api-middleware'
 import PropTypes from 'prop-types'
 import { TEAM_BASE_URL, TEAM_API_RELATIVE_PATH } from '../envvars'
 

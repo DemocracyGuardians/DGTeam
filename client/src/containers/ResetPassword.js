@@ -7,6 +7,8 @@ import PropTypes from 'prop-types'
 import { Button, Container, Input, Message } from 'semantic-ui-react'
 import { TEAM_BASE_URL, TEAM_API_RELATIVE_PATH } from '../envvars'
 import passwordRegexp from '../util/passwordRegexp'
+import { RSAA } from 'redux-api-middleware';
+import parseJsonPayload from '../util/parseJsonPayload'
 
 var UNSPECIFIED_SYSTEM_ERROR = 'UNSPECIFIED_SYSTEM_ERROR'
 var TOKEN_NOT_FOUND = 'TOKEN_NOT_FOUND'
@@ -64,45 +66,42 @@ class ResetPassword extends React.Component {
         return
       }
       let payload = Object.assign({}, values, { token })
-      var headers = new Headers();
-      headers.append("Content-Type", 'application/json');
-      fetch(resetpasswordApiUrl, {
-        method: "POST",
-        credentials: 'include',
-        body: JSON.stringify(payload),
-        //mode: 'cors',
-        //cache: 'default',
-        headers
-      }).then(res => {
-        if (res.status === 200) {
-          this.props.history.push('/resetpasswordsuccess')
-        } else {
-          const contentType = res.headers.get('Content-Type');
-          if (contentType && ~contentType.indexOf('json')) {
-            return res.json().then((json) => {
-              console.error('ResetPassword post error. status='+res.status+', json='+JSON.stringify(json))
-              let { error } = json
-              let retry = 'Please go to login screen and press Forgot Password again'
-              if (error === TOKEN_NOT_FOUND) {
-                this.setState({ message: 'Invalid token. '+retry,  error: true })
-              } else if (error === TOKEN_EXPIRED) {
-                this.setState({ message: 'Expired token. '+retry,  error: true })
-              } else {
-                this.props.history.push('/systemerror')
+      let { dispatch } = this.props.store
+      const apiAction = {
+        [RSAA]: {
+          endpoint: resetpasswordApiUrl,
+          method: 'POST',
+          credentials: 'include',
+          types: [
+            'RESET_PASSWORD_REQUEST',
+            {
+              type: 'RESET_PASSWORD_SUCCESS',
+              payload: (action, state, res) => {
+                this.props.history.push('/resetpasswordsuccess')
               }
-            }).catch((error)  => {
-              console.error('ResetPassword json() error='+error)
-              this.props.history.push('/systemerror')
-            })
-          } else {
-            console.error('ResetPassword contentType not parseable json')
-            this.props.history.push('/systemerror')
-          }
+            },
+            {
+              type: 'RESET_PASSWORD_FAILURE',
+              payload: (action, state, res) => {
+                parseJsonPayload.bind(this)(res, action.type, json => {
+                  let { error } = json
+                  let retry = 'Please go to login screen and press Forgot Password again'
+                  if (error === TOKEN_NOT_FOUND) {
+                    this.setState({ message: 'Invalid token. '+retry,  error: true })
+                  } else if (error === TOKEN_EXPIRED) {
+                    this.setState({ message: 'Expired token. '+retry,  error: true })
+                  } else {
+                    this.props.history.push('/systemerror')
+                  }
+                })
+              }
+            }
+          ],
+          body: JSON.stringify(payload),
+          headers: { 'Content-Type': 'application/json' }
         }
-      }).catch(error => {
-        console.error('ResetPassword post error. error='+error)
-        this.props.history.push('/systemerror')
-      });
+      }
+      dispatch(apiAction)
     }, 0)
   }
 

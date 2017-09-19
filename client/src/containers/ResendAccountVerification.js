@@ -6,6 +6,8 @@ import { Link, withRouter } from 'react-router-dom'
 import PropTypes from 'prop-types'
 import { Button, Container, Input, Message } from 'semantic-ui-react'
 import { userVerificationEmailSent } from '../actions/userActions'
+import { RSAA } from 'redux-api-middleware';
+import parseJsonPayload from '../util/parseJsonPayload'
 import { TEAM_BASE_URL, TEAM_API_RELATIVE_PATH } from '../envvars'
 
 var EMAIL_NOT_REGISTERED = 'EMAIL_NOT_REGISTERED'
@@ -27,45 +29,42 @@ class ResendAccountVerification extends React.Component {
   }
 
   handleSubmit(values) {
-    var headers = new Headers();
-    headers.append("Content-Type", 'application/json');
-    fetch(resendverificationApiUrl, {
-      method: "POST",
-      credentials: 'include',
-      body: JSON.stringify(values),
-      //mode: 'cors',
-      //cache: 'default',
-      headers
-    }).then(res => {
-      if (res.status === 200) {
-        this.props.store.dispatch(userVerificationEmailSent(values.email))
-        this.props.history.push('/verificationsent')
-      } else {
-        const contentType = res.headers.get('Content-Type');
-        if (contentType && ~contentType.indexOf('json')) {
-          return res.json().then((json) => {
-            console.error('ResendAccountVerification post error. status='+res.status+', json='+JSON.stringify(json))
-            let { error } = json
-            if (error === EMAIL_ALREADY_VERIFIED) {
-              this.setState({ message: 'Email has already been verified. Please login.',  error: true })
-            } else if (error === EMAIL_NOT_REGISTERED) {
-              this.setState({ message: 'Email has not been registered yet. Please enter a different email or sign up.',  error: true })
-            } else {
-              this.props.history.push('/systemerror')
+    let { dispatch } = this.props.store
+    const apiAction = {
+      [RSAA]: {
+        endpoint: resendverificationApiUrl,
+        method: 'POST',
+        credentials: 'include',
+        types: [
+          'RESEND_VERIFICATION_REQUEST',
+          {
+            type: 'RESEND_VERIFICATION_SUCCESS',
+            payload: (action, state, res) => {
+              this.props.store.dispatch(userVerificationEmailSent(values.email))
+              this.props.history.push('/verificationsent')
             }
-          }).catch((error)  => {
-            console.error('ResendAccountVerification json() error='+error)
-            this.props.history.push('/systemerror')
-          })
-        } else {
-          console.error('ResendAccountVerification contentType not parseable json')
-          this.props.history.push('/systemerror')
-        }
+          },
+          {
+            type: 'RESEND_VERIFICATION_FAILURE',
+            payload: (action, state, res) => {
+              parseJsonPayload.bind(this)(res, action.type, json => {
+                let { error } = json
+                if (error === EMAIL_ALREADY_VERIFIED) {
+                  this.setState({ message: 'Email has already been verified. Please login.',  error: true })
+                } else if (error === EMAIL_NOT_REGISTERED) {
+                  this.setState({ message: 'Email has not been registered yet. Please enter a different email or sign up.',  error: true })
+                } else {
+                  this.props.history.push('/systemerror')
+                }
+              })
+            }
+          }
+        ],
+        body: JSON.stringify(values),
+        headers: { 'Content-Type': 'application/json' }
       }
-    }).catch(error => {
-      console.error('ResendAccountVerification post error. error='+error)
-      this.props.history.push('/systemerror')
-    });
+    }
+    dispatch(apiAction)
   }
 
   render() {

@@ -6,6 +6,8 @@ import { Link, withRouter } from 'react-router-dom'
 import PropTypes from 'prop-types'
 import { Button, Container, Input, Message } from 'semantic-ui-react'
 import { resetPasswordEmailSent } from '../actions/userActions'
+import { RSAA } from 'redux-api-middleware';
+import parseJsonPayload from '../util/parseJsonPayload'
 import { TEAM_BASE_URL, TEAM_API_RELATIVE_PATH } from '../envvars'
 
 var EMAIL_NOT_REGISTERED = 'EMAIL_NOT_REGISTERED'
@@ -47,43 +49,40 @@ class ForgotPassword extends React.Component {
       if (!this.validateEmail()) {
         return
       }
-      var headers = new Headers();
-      headers.append("Content-Type", 'application/json');
-      fetch(sendresetpasswordemailApiUrl, {
-        method: "POST",
-        credentials: 'include',
-        body: JSON.stringify(values),
-        //mode: 'cors',
-        //cache: 'default',
-        headers
-      }).then(res => {
-        if (res.status === 200) {
-          this.props.store.dispatch(resetPasswordEmailSent(values.email))
-          this.props.history.push('/resetpasswordsent')
-        } else {
-          const contentType = res.headers.get('Content-Type');
-          if (contentType && ~contentType.indexOf('json')) {
-            return res.json().then((json) => {
-              console.error('ForgotPassword post error. status='+res.status+', json='+JSON.stringify(json))
-              let { error } = json
-              if (error === EMAIL_NOT_REGISTERED) {
-                this.setState({ message: 'Email has not been registered yet. Please enter a different email or sign up.',  error: true })
-              } else {
-                this.props.history.push('/systemerror')
+      let { dispatch } = this.props.store
+      const apiAction = {
+        [RSAA]: {
+          endpoint: sendresetpasswordemailApiUrl,
+          method: 'POST',
+          credentials: 'include',
+          types: [
+            'FORGOT_PASSWORD_REQUEST',
+            {
+              type: 'FORGOT_PASSWORD_SUCCESS',
+              payload: (action, state, res) => {
+                this.props.store.dispatch(resetPasswordEmailSent(values.email))
+                this.props.history.push('/resetpasswordsent')
               }
-            }).catch((error)  => {
-              console.error('ForgotPassword json() error='+error)
-              this.props.history.push('/systemerror')
-            })
-          } else {
-            console.error('ForgotPassword contentType not parseable json')
-            this.props.history.push('/systemerror')
-          }
+            },
+            {
+              type: 'FORGOT_PASSWORD_FAILURE',
+              payload: (action, state, res) => {
+                parseJsonPayload.bind(this)(res, action.type, json => {
+                  let { error } = json
+                  if (error === EMAIL_NOT_REGISTERED) {
+                    this.setState({ message: 'Email has not been registered yet. Please enter a different email or sign up.',  error: true })
+                  } else {
+                    this.props.history.push('/systemerror')
+                  }
+                })
+              }
+            }
+          ],
+          body: JSON.stringify(values),
+          headers: { 'Content-Type': 'application/json' }
         }
-      }).catch(error => {
-        console.error('ForgotPassword post error. error='+error)
-        this.props.history.push('/systemerror')
-      });
+      }
+      dispatch(apiAction)
     }, 0)
   }
 
