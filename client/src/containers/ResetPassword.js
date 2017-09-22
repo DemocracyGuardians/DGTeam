@@ -10,7 +10,6 @@ import passwordRegexp from '../util/passwordRegexp'
 import { RSAA } from 'redux-api-middleware';
 import parseJsonPayload from '../util/parseJsonPayload'
 
-var UNSPECIFIED_SYSTEM_ERROR = 'UNSPECIFIED_SYSTEM_ERROR'
 var TOKEN_NOT_FOUND = 'TOKEN_NOT_FOUND'
 var TOKEN_EXPIRED = 'TOKEN_EXPIRED'
 

@@ -1,0 +1,19 @@
+
+.WideLayout .outer > * {
+  display: flex;
+}
+
+.WideLayout .outer > * {
+  display: inline-block;
+  vertical-align: top;
+}
+
+.WideLayout .columns {
+  border: 2px solid rgba(45,104,196,1); /*trueblue: #2d68c4;*/
+  border-radius: 4px;
+}
+
+.WideLayout .columns > * {
+  display: inline-block;
+  vertical-align: top;
+}

@@ -8,6 +8,14 @@ export function userLoginSuccess(user) {
   }
 }
 
+export const USER_LOGOUT_SUCCESS = 'USER_LOGOUT_SUCCESS'
+
+export function userLogoutSuccess() {
+  return {
+    type: USER_LOGOUT_SUCCESS
+  }
+}
+
 export const USER_SIGNUP_SUCCESS = 'USER_SIGNUP_SUCCESS'
 
 export function userSignupSuccess(user) {

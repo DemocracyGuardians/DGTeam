@@ -47,7 +47,7 @@ class Login extends React.Component {
             payload: (action, state, res) => {
               parseJsonPayload.bind(this)(res, action.type, json => {
                 dispatch(userLoginSuccess(json.user))
-                this.props.history.push('/workbench')
+                this.props.history.push('/inbox')
               })
             }
           },

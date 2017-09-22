@@ -11,7 +11,6 @@ import parseJsonPayload from '../util/parseJsonPayload'
 import { TEAM_BASE_URL, TEAM_API_RELATIVE_PATH } from '../envvars'
 
 var EMAIL_NOT_REGISTERED = 'EMAIL_NOT_REGISTERED'
-var EMAIL_NOT_VERIFIED = 'EMAIL_NOT_VERIFIED'
 
 var sendresetpasswordemailApiUrl = TEAM_BASE_URL + TEAM_API_RELATIVE_PATH + '/sendresetpassword'
 

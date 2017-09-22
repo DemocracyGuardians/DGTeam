@@ -35,13 +35,13 @@ class App extends Component {
           <Switch>
             <Route path='/login' component={LoginComp} />
             <Route path='/signup' component={SignupComp} />
-            <Route path='/workbench' component={WorkbenchComp} />
             <Route path='/resendverification' component={ResendAccountVerificationComp} />
             <Route path='/verificationsent' component={AccountVerificationSentComp} />
             <Route path='/forgotpassword' component={ForgotPasswordComp} />
             <Route path='/resetpasswordsent' component={ResetPasswordSentComp} />
             <Route path='/resetpassword' component={ResetPasswordComp} />
             <Route path='/resetpasswordsuccess' component={ResetPasswordSuccessComp} />
+            <Route exact path='/(inbox|learn|addto|judge|search|profile|trustworthiness|level|rewards)' component={WorkbenchComp} />
             <Route path='/systemerror' component={SystemError} />
             <Redirect path='*' to="/login" />
           </Switch>

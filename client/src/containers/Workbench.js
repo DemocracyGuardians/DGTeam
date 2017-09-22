@@ -1,12 +1,14 @@
 
 import React from 'react';
-import { Link, withRouter } from 'react-router-dom'
+import { withRouter } from 'react-router-dom'
+import MediaQuery from 'react-responsive'
 import { RSAA } from 'redux-api-middleware'
 import PropTypes from 'prop-types'
+import WideLayout from '../components/WideLayout'
+import ThinLayout from '../components/ThinLayout'
 import { TEAM_BASE_URL, TEAM_API_RELATIVE_PATH } from '../envvars'
 
 var workbenchinitApiUrl = TEAM_BASE_URL + TEAM_API_RELATIVE_PATH + '/workbenchinit'
-var logoutApiUrl = TEAM_BASE_URL + TEAM_API_RELATIVE_PATH + '/logout'
 
 class Workbench extends React.Component {
   constructor(props){
@@ -15,7 +17,6 @@ class Workbench extends React.Component {
       //password: ''
     }
     this.workbenchinit = this.workbenchinit.bind(this);
-    this.logout = this.logout.bind(this);
   }
 
   workbenchinit() {
@@ -48,42 +49,20 @@ class Workbench extends React.Component {
     dispatch(apiAction)
   }
 
-  logout() {
-    let values = {}
-    let { dispatch } = this.props.store
-    const apiAction = {
-      [RSAA]: {
-        endpoint: logoutApiUrl,
-        method: 'POST',
-        credentials: 'include',
-        types: [
-          'logout_request', // ignored
-          {
-            type: 'logout_success',
-            payload: (action, state, res) => {
-              console.log('logout_success')
-            }
-          },
-          {
-            type: 'logout_failure',
-            payload: (action, state, res) => {
-              console.log('logout_failure')
-            }
-          }
-        ],
-        body: JSON.stringify(values),
-        headers: { 'Content-Type': 'application/json' }
-      }
-    }
-    dispatch(apiAction)
-  }
-
   render() {
     this.workbenchinit()
+    let { store } = this.props
     return (
       <div className="workbench">
-        <div>User workbench</div>
-        <div><Link onClick={this.logout} to="/login">Logout</Link></div>
+        <MediaQuery minWidth={1024}>
+          <WideLayout store={store} showRightColumn={true}  />
+        </MediaQuery>
+        <MediaQuery minWidth={250} maxWidth={1023}>
+          <WideLayout store={store} showRightColumn={false}  />
+        </MediaQuery>
+        <MediaQuery maxWidth={249}>
+          <ThinLayout store={store} />
+        </MediaQuery>
       </div>
     );
   }
