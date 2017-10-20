@@ -18,29 +18,32 @@ class WideCenter extends React.Component {
     let { store } = this.props
     return (
       <div className="WideCenter">
-        <Menu icon='labeled' >
-          <Menu.Item name='inbox' active={activePage === 'inbox'} onClick={this.handleItemClick}>
-            <Icon name={getIconFromPageName('inbox')} />
-            {getLabelFromPageName('inbox')}
-          </Menu.Item>
-          <Menu.Item name='learn' active={activePage === 'learn'} onClick={this.handleItemClick}>
-            <Icon name={getIconFromPageName('learn')} />
-            {getLabelFromPageName('learn')}
-          </Menu.Item>
-          <Menu.Item name='addto' active={activePage === 'addto'} onClick={this.handleItemClick}>
-            <Icon name={getIconFromPageName('addto')} />
-            {getLabelFromPageName('addto')}
-          </Menu.Item>
-          <Menu.Item name='judge' active={activePage === 'judge'} onClick={this.handleItemClick}>
-            <Icon name={getIconFromPageName('judge')} />
-            {getLabelFromPageName('judge')}
-          </Menu.Item>
-          <Menu.Item name='search' active={activePage === 'search'} onClick={this.handleItemClick}>
-            <Icon name={getIconFromPageName('search')} />
-            {getLabelFromPageName('search')}
-          </Menu.Item>
-          <MoreMenu store={store} />
-        </Menu>
+        <div className="WideCenterPrimaryMenu">
+          <Menu icon='labeled' >
+            <Menu.Item name='inbox' active={activePage === 'inbox'} onClick={this.handleItemClick}>
+              <Icon name={getIconFromPageName('inbox')} />
+              {getLabelFromPageName('inbox')}
+            </Menu.Item>
+            <Menu.Item name='learn' active={activePage === 'learn'} onClick={this.handleItemClick}>
+              <Icon name={getIconFromPageName('learn')} />
+              {getLabelFromPageName('learn')}
+            </Menu.Item>
+            <Menu.Item name='evidence' active={activePage === 'evidence'} onClick={this.handleItemClick}>
+              <Icon name={getIconFromPageName('evidence')} />
+              {getLabelFromPageName('evidence')}
+            </Menu.Item>
+            <Menu.Item name='judge' active={activePage === 'judge'} onClick={this.handleItemClick}>
+              <Icon name={getIconFromPageName('judge')} />
+              {getLabelFromPageName('judge')}
+            </Menu.Item>
+            <Menu.Item name='search' active={activePage === 'search'} onClick={this.handleItemClick}>
+              <Icon name={getIconFromPageName('search')} />
+              {getLabelFromPageName('search')}
+            </Menu.Item>
+            <MoreMenu store={store} />
+          </Menu>
+        </div>
+        <div>Content</div>
       </div>
     );
   }

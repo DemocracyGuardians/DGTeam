@@ -30,7 +30,7 @@ After login: cell phone
   Initial: Home (menulist on phone, tabs on desktop/tablet) /home
     My Work (I:#, P:#, T:#/#, L:#, R:#) /mywork
     Learn /learn
-    Add To /addto
+    Evidence /evidence
     Judge /judge
     More /home/more
   My Work (menulist on mobile, second-level tabs on desktop/tablet)
@@ -59,7 +59,7 @@ After login: desktop/tablet
   Menubar (words under icons, operates as tab menu)
     Inbox (with badge for notifications) /inbox
     Learn /learn
-    Add To /addto
+    Evidence /evidence
     Judge /judge
     Search icon /search
     More icon(about, tour, settings) /about, /tour, /settings

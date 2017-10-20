@@ -2,7 +2,7 @@
 const pageNameXref = {
   inbox: { icon: 'inbox', label: 'Inbox' },
   learn: { icon: 'student', label: 'Learn' },
-  addto: { icon: 'write', label: 'Add To' },
+  evidence: { icon: 'detective', label: 'Evidence' },
   judge: { icon: 'legal', label: 'Judge' },
   search: { icon: 'search', label: 'Search' },
   profile: { icon: 'id card outline', label: 'My Profile' },
