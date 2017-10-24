@@ -3,7 +3,7 @@ import React from 'react';
 import { withRouter } from 'react-router-dom'
 import PropTypes from 'prop-types'
 import { Icon, Menu, Label } from 'semantic-ui-react'
-import { getPageNameFromUrl, getIconFromPageName, getLabelFromPageName } from '../util/workbenchPages'
+import { getPageNameFromUrl, getIconFromPageName, getLabelFromPageName } from '../../util/workbenchPages'
 import './WideLeft.css'
 
 class WideLeft extends React.Component {
@@ -21,22 +21,22 @@ class WideLeft extends React.Component {
             <i className="icon"><span className="logotext">Logo</span></i>
             &nbsp;
           </Menu.Item>
-          <Menu.Item name='profile' active={activePage === 'profile'} onClick={this.handleItemClick}>
+          <Menu.Item name='Profile' active={activePage === 'Profile'} onClick={this.handleItemClick}>
             <Label color="teal">1</Label>
-            <Icon name={getIconFromPageName('profile')} />
-            {getLabelFromPageName('profile')}
+            <Icon name={getIconFromPageName('Profile')} />
+            {getLabelFromPageName('Profile')}
           </Menu.Item>
-          <Menu.Item name='trustworthiness' active={activePage === 'trustworthiness'} onClick={this.handleItemClick}>
-            <Icon name={getIconFromPageName('trustworthiness')} />
-            {getLabelFromPageName('trustworthiness')}
+          <Menu.Item name='Trustworthiness' active={activePage === 'Trustworthiness'} onClick={this.handleItemClick}>
+            <Icon name={getIconFromPageName('Trustworthiness')} />
+            {getLabelFromPageName('Trustworthiness')}
           </Menu.Item>
-          <Menu.Item name='level' active={activePage === 'level'} onClick={this.handleItemClick}>
-            <Icon name={getIconFromPageName('level')} />
-            {getLabelFromPageName('level')}
+          <Menu.Item name='Level' active={activePage === 'Level'} onClick={this.handleItemClick}>
+            <Icon name={getIconFromPageName('Level')} />
+            {getLabelFromPageName('Level')}
           </Menu.Item>
-          <Menu.Item name='rewards' active={activePage === 'rewards'} onClick={this.handleItemClick}>
-            <Icon name={getIconFromPageName('rewards')} />
-            {getLabelFromPageName('rewards')}
+          <Menu.Item name='Rewards' active={activePage === 'Rewards'} onClick={this.handleItemClick}>
+            <Icon name={getIconFromPageName('Rewards')} />
+            {getLabelFromPageName('Rewards')}
           </Menu.Item>
         </Menu>
       </div>

@@ -12,7 +12,7 @@ class ResetPasswordSuccess extends React.Component {
         <div className="ResetPasswordSuccess">
           <Message header='Your password has been updated' className='verticalformtopmessage' content={message} />
           <div className='verticalformbuttonrow'>
-            <div>To go your home screen, &nbsp;<Link to='/inbox'>click here</Link></div>
+            <div>To go your home screen, &nbsp;<Link to='/Inbox'>click here</Link></div>
             <div style={{clear:'both' }} ></div>
           </div>
         </div>

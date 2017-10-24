@@ -3,8 +3,8 @@ import React from 'react'
 import { Icon, Menu, Popup } from 'semantic-ui-react'
 import { RSAA } from 'redux-api-middleware';
 import { withRouter } from 'react-router-dom'
-import { userLogoutSuccess } from '../actions/userActions'
-import { TEAM_BASE_URL, TEAM_API_RELATIVE_PATH } from '../envvars'
+import { userLogoutSuccess } from '../../actions/userActions'
+import { TEAM_BASE_URL, TEAM_API_RELATIVE_PATH } from '../../envvars'
 import './MoreMenu.css'
 
 const logoutApiUrl = TEAM_BASE_URL + TEAM_API_RELATIVE_PATH + '/logout'

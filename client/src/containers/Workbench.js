@@ -4,9 +4,10 @@ import { withRouter } from 'react-router-dom'
 import MediaQuery from 'react-responsive'
 import { RSAA } from 'redux-api-middleware'
 import PropTypes from 'prop-types'
-import WideLayout from '../components/WideLayout'
-import ThinLayout from '../components/ThinLayout'
+import WideLayout from '../components/Wide/WideLayout'
+import ThinLayout from '../components/Thin/ThinLayout'
 import { TEAM_BASE_URL, TEAM_API_RELATIVE_PATH } from '../envvars'
+import './Workbench.css'
 
 var workbenchinitApiUrl = TEAM_BASE_URL + TEAM_API_RELATIVE_PATH + '/workbenchinit'
 

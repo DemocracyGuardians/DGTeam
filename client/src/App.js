@@ -7,12 +7,12 @@ import Login from './containers/Login'
 import Signup from './containers/Signup'
 import Workbench from './containers/Workbench'
 import ResendAccountVerification from './containers/ResendAccountVerification'
-import AccountVerificationSent from './components/AccountVerificationSent'
+import AccountVerificationSent from './components/Session/AccountVerificationSent'
 import ForgotPassword from './containers/ForgotPassword'
-import ResetPasswordSent from './components/ResetPasswordSent'
+import ResetPasswordSent from './components/Session/ResetPasswordSent'
 import ResetPassword from './containers/ResetPassword'
-import ResetPasswordSuccess from './components/ResetPasswordSuccess'
-import SystemError from './components/SystemError'
+import ResetPasswordSuccess from './components/Session/ResetPasswordSuccess'
+import SystemError from './components/Misc/SystemError'
 
 // Needed for onTouchTap
 // http://stackoverflow.com/a/34015469/988941
@@ -41,7 +41,8 @@ class App extends Component {
             <Route path='/resetpasswordsent' component={ResetPasswordSentComp} />
             <Route path='/resetpassword' component={ResetPasswordComp} />
             <Route path='/resetpasswordsuccess' component={ResetPasswordSuccessComp} />
-            <Route exact path='/(inbox|learn|evidence|judge|search|profile|trustworthiness|level|rewards)' component={WorkbenchComp} />
+            <Route exact path='/(Inbox|Learn|Evidence|Judge|Search|Profile|Trustworthiness|Level|Rewards)' component={WorkbenchComp} />
+            <Route exact path='/Inbox/:id' component={WorkbenchComp} />
             <Route path='/systemerror' component={SystemError} />
             <Redirect path='*' to="/login" />
           </Switch>
