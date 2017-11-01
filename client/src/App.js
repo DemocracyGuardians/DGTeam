@@ -41,8 +41,9 @@ class App extends Component {
             <Route path='/resetpasswordsent' component={ResetPasswordSentComp} />
             <Route path='/resetpassword' component={ResetPasswordComp} />
             <Route path='/resetpasswordsuccess' component={ResetPasswordSuccessComp} />
-            <Route exact path='/(Inbox|Learn|Evidence|Judge|Search|Profile|Trustworthiness|Level|Rewards)' component={WorkbenchComp} />
+            <Route exact path='/(Inbox|Learn|Investigate|Judge|Search|Profile|Trustworthiness|Level|Rewards)' component={WorkbenchComp} />
             <Route exact path='/Inbox/:id' component={WorkbenchComp} />
+            <Route exact path='/Lesson/:level/:name' component={WorkbenchComp} />
             <Route path='/systemerror' component={SystemError} />
             <Redirect path='*' to="/login" />
           </Switch>

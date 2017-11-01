@@ -54,7 +54,7 @@ class Workbench extends React.Component {
     this.workbenchinit()
     let { store } = this.props
     return (
-      <div className="workbench">
+      <div className="Workbench">
         <MediaQuery minWidth={1024}>
           <WideLayout store={store} showRightColumn={true}  />
         </MediaQuery>

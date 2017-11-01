@@ -5,7 +5,8 @@ import PropTypes from 'prop-types'
 import { Icon, Menu } from 'semantic-ui-react'
 import Inbox from '../Inbox/Inbox'
 import InboxMessage from '../Inbox/InboxMessage'
-import { getPageNameFromUrl, getResourceIdFromUrl, getIconFromPageName, getLabelFromPageName } from '../../util/workbenchPages'
+import LessonWizard from '../../containers/LessonWizard'
+import { getPathRootFromUrl, getIconFromPageName, getLabelFromPageName } from '../../util/workbenchPages'
 import MoreMenu from '../Workbench/MoreMenu'
 import './WideCenter.css'
 
@@ -16,21 +17,31 @@ class WideCenter extends React.Component {
   }
 
   render() {
-    let activePage = getPageNameFromUrl()
-    let resourceId = getResourceIdFromUrl()
-    let highlightedPage = activePage
+    let pathRoot = getPathRootFromUrl()
+    let activePage = pathRoot
+    let highlightedPage = pathRoot
     let { store } = this.props
     let center = <div>FIXME</div>
     switch (activePage) {
       case "Inbox":
-        if (resourceId) {
-          center = <InboxMessage store={store} />
+        let { id } = (this.props.match && this.props.match.params) || {}
+        if (id) {
+          center = <InboxMessage store={store} id={id} />
         } else {
           center = <Inbox store={store} />
         }
         break
+      case "Lesson":
+        let { level, name } = (this.props.match && this.props.match.params) || {}
+        if (!level || !name ) {
+          console.error('WideCenter Lesson missing level:'+level+' or name:'+name)
+          this.props.history.push('/systemerror')
+        }
+        center = <LessonWizard store={store} level={level} name={name} />
+        activePage = highlightedPage = 'Learn'
+        break
       case "Learn":
-      case "Evidence":
+      case "Investigate":
       case "Judge":
       case "Search":
       default:
@@ -47,9 +58,9 @@ class WideCenter extends React.Component {
               <Icon name={getIconFromPageName('Learn')} />
               {getLabelFromPageName('Learn')}
             </Menu.Item>
-            <Menu.Item name='Evidence' active={highlightedPage === 'Evidence'} onClick={this.handleItemClick}>
-              <Icon name={getIconFromPageName('Evidence')} />
-              {getLabelFromPageName('Evidence')}
+            <Menu.Item name='Investigate' active={highlightedPage === 'Investigate'} onClick={this.handleItemClick}>
+              <Icon name={getIconFromPageName('Investigate')} />
+              {getLabelFromPageName('Investigate')}
             </Menu.Item>
             <Menu.Item name='Judge' active={highlightedPage === 'Judge'} onClick={this.handleItemClick}>
               <Icon name={getIconFromPageName('Judge')} />
@@ -62,7 +73,9 @@ class WideCenter extends React.Component {
             <MoreMenu store={store} />
           </Menu>
         </div>
-        {center}
+        <div className="WideCenterContent">
+          {center}
+        </div>
       </div>
     );
   }

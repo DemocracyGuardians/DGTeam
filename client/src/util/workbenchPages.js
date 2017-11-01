@@ -1,8 +1,8 @@
 
 const pageNameXref = {
   Inbox: { icon: 'inbox', label: 'Inbox' },
-  Learn: { icon: 'student', label: 'Learn' },
-  Evidence: { icon: 'detective', label: 'Evidence' },
+  Learn: { icon: 'student', label: 'Lessons' },
+  Investigate: { icon: 'detective', label: 'Investigate' },
   Judge: { icon: 'legal', label: 'Judge' },
   Search: { icon: 'search', label: 'Search' },
   Profile: { icon: 'id card outline', label: 'My Profile' },
@@ -19,18 +19,12 @@ function getTokens() {
 }
 
 /**
- * Returns the name of the workbench page to show
+ * Returns the name of the first segment of the path. Often, the section of the Workbench.
  */
-export function getPageNameFromUrl() {
+export function getPathRootFromUrl() {
   return getTokens()[0]
 }
 
-/**
- * Returns the id of the resource to show for the given workbenchpage
- */
-export function getResourceIdFromUrl() {
-  return getTokens()[1]
-}
 /**
  * Returns the name of the menu icon corresponding to the workbench page
  */

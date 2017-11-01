@@ -11,16 +11,19 @@ let notifications = [
   {
     id: '1',
     when: '3 hours ago',
-    subject: 'Welcome! Now take your first course: <em>Setting Up Your Profile</em>',
+    subject: 'Welcome!',
     from: '(automatically generated)',
-    content: 'Blah'
-  },
-  {
-    id: '2',
-    when: '3 hours ago',
-    subject: 'Welcome! Now take your first course: <em>Setting Up Your Profile</em>',
-    from: '(automatically generated)',
-    content: 'Blah'
+    content: `
+<h3>Welcome to the Democracy Guardians team!</h3>
+<p>With the team application, you start out at level 1.
+  As you learn and develop skills, you advance to higher levels. </p>
+<p>To complete Level 1 and advance to level 2, you must complete the following three training modules:</p>
+<ul class="AppTaskList">
+  <li><a href="/Lesson/1/Trustworthiness" class="AppTaskPressmeHighlight">Introducing Trustworthiness - Press here to start</a></li>
+  <li>Confirming Your Vows</li>
+  <li>Filling Out Your Profile</li>
+</ul>
+    `
   }
 ]
 
@@ -39,7 +42,7 @@ class InboxMessage extends React.Component {
   }
 
   render() {
-    let id = getResourceIdFromUrl()
+    let {id} = this.props
     let item = getItem(notifications, id)
     return (
       <div className="InboxMessage">
@@ -72,7 +75,8 @@ class InboxMessage extends React.Component {
 }
 
 InboxMessage.propTypes = {
-  store: PropTypes.object.isRequired
+  store: PropTypes.object.isRequired,
+  id: PropTypes.string.isRequired
 }
 
 export default withRouter(InboxMessage);

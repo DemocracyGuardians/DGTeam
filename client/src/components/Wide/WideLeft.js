@@ -3,7 +3,7 @@ import React from 'react';
 import { withRouter } from 'react-router-dom'
 import PropTypes from 'prop-types'
 import { Icon, Menu, Label } from 'semantic-ui-react'
-import { getPageNameFromUrl, getIconFromPageName, getLabelFromPageName } from '../../util/workbenchPages'
+import { getPathRootFromUrl, getIconFromPageName, getLabelFromPageName } from '../../util/workbenchPages'
 import './WideLeft.css'
 
 class WideLeft extends React.Component {
@@ -13,7 +13,7 @@ class WideLeft extends React.Component {
   }
 
   render() {
-    let activePage = getPageNameFromUrl()
+    let activePage = getPathRootFromUrl()
     return (
       <div className="WideLeft">
         <Menu icon='labeled' vertical>

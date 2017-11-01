@@ -11,16 +11,11 @@ let notifications = [
   {
     id: '1',
     when: '3 hours ago',
-    subject: 'Welcome! Now take your first course: <em>Setting Up Your Profile</em>',
+    subject: '<span class="AppTaskPressmeHighlight">Welcome! Press here to start</span>',
     from: '(automatically generated)',
-    content: 'Blah'
-  },
-  {
-    id: '2',
-    when: '3 hours ago',
-    subject: 'Welcome! Now take your first course: <em>Setting Up Your Profile</em>',
-    from: '(automatically generated)',
-    content: 'Blah'
+    content: `
+Blah
+    `
   }
 ]
 

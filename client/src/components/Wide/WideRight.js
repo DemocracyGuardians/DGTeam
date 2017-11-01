@@ -7,11 +7,11 @@ import './WideRight.css'
 class WideRight extends React.Component {
   render() {
     let { showRightColumn } = this.props
-    let comp = showRightColumn ? <div>something</div> : <div>nothing</div>
+    let comp = showRightColumn ? <div></div> : <div>nothing</div>
     let style = showRightColumn ? {} : { display: 'none'  }
     return (
       <div className="WideRight" style={style}>
-        <div>WideRight</div>
+        <div></div>
         {comp}
       </div>
     );

@@ -1,0 +1,41 @@
+
+.LessonWizard {
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  right: 0px;
+  bottom: 0px;
+  display: flex;
+  flex-direction: column;
+}
+
+.LessonWizard > * {
+  flex-grow: 0;
+}
+
+/* This div is both the expandable child of the above vertical flex container */
+.LessonWizard .LessonScreen {
+  flex: 1;
+  overflow: auto;
+  text-align: left;
+  padding: 1em;
+}
+
+.LessonWizard h1 {
+  font-size: 1.4em;
+  text-align: center;
+}
+
+.LessonWizard h2 {
+  font-size: 1.25em;
+  margin-top: 1.75em;
+}
+
+.LessonWizard h3 {
+  font-size: 1.1em;
+  margin-top: 1.5em;
+}
+
+.LessonProse {
+  text-align: justify;
+}

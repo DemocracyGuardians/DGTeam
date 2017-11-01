@@ -12,16 +12,10 @@ class WideLayout extends React.Component {
     let { showRightColumn, store } = this.props
     return (
       <div className="WideLayout">
-        <div className="outer">
-          <div className="leftmargin"></div>
-          <div className="content">
-            <div className="columns">
-              <WideLeft store={store} />
-              <WideCenter store={store} />
-              <WideRight showRightColumn={showRightColumn} store={store} />
-            </div>
-          </div>
-          <div className="rightmargin"></div>
+        <div className="WideLayoutColumns">
+          <WideLeft store={store} />
+          <WideCenter store={store} />
+          <WideRight showRightColumn={showRightColumn} store={store} />
         </div>
       </div>
     );
