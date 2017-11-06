@@ -1,4 +1,8 @@
 
+/* This div provides a inner-nested vertical flex container
+    within a higher level vertical flex container. This is only possible
+    when the inner vertical flex container is absolutely positioned.
+    Note that this element's parent has position:relative. */
 .LessonWizard {
   position: absolute;
   top: 0px;
@@ -7,35 +11,70 @@
   bottom: 0px;
   display: flex;
   flex-direction: column;
+  text-align: left;
 }
 
 .LessonWizard > * {
   flex-grow: 0;
 }
 
-/* This div is both the expandable child of the above vertical flex container */
-.LessonWizard .LessonScreen {
+.LessonTitle, .LessonScreenTitle {
+  border-bottom: 1px solid rgba(34,36,38,.075);
+}
+
+.LessonScreenTitle {
+  padding: 0 1em;
+}
+
+/* This div is the expandable child of the above vertical flex container */
+.LessonWizard .LessonScreenContent {
   flex: 1;
   overflow: auto;
-  text-align: left;
   padding: 1em;
+}
+
+.LessonNavigation {
+  border-top: 1px solid rgba(34,36,38,.075);
+}
+
+.LessonNavigationButtons {
+  font-size: 1.1em;
+  font-weight: bold;
+  line-height: 2.5;
+  display: flex;
+}
+
+.LessonNavigationButton.first, .LessonNavigationButton.last {
+  flex-grow: 0;
+}
+.LessonNavigationButton.prev, .LessonNavigationButton.next {
+  flex-grow: 1;
+  text-align: center;
+}
+
+.LessonNavigationButtons > * {
+  display: inline-block;
+}
+
+.ScreenTitlePage {
+  float: right;
+  font-size: 0.8em;
 }
 
 .LessonWizard h1 {
   font-size: 1.4em;
   text-align: center;
+  line-height: 2.5;
 }
 
 .LessonWizard h2 {
   font-size: 1.25em;
-  margin-top: 1.75em;
+  margin-top: .25em;
+  font-style: italic;
+  line-height: 2;
 }
 
 .LessonWizard h3 {
   font-size: 1.1em;
-  margin-top: 1.5em;
-}
-
-.LessonProse {
-  text-align: justify;
+  margin-top: .25em;
 }

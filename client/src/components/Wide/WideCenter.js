@@ -38,9 +38,9 @@ class WideCenter extends React.Component {
           this.props.history.push('/systemerror')
         }
         center = <LessonWizard store={store} level={level} name={name} />
-        activePage = highlightedPage = 'Learn'
+        activePage = highlightedPage = 'Lessons'
         break
-      case "Learn":
+      case "Lessons":
       case "Investigate":
       case "Judge":
       case "Search":
@@ -54,9 +54,9 @@ class WideCenter extends React.Component {
               <Icon name={getIconFromPageName('Inbox')} />
               {getLabelFromPageName('Inbox')}
             </Menu.Item>
-            <Menu.Item name='Learn' active={highlightedPage === 'Learn'} onClick={this.handleItemClick}>
-              <Icon name={getIconFromPageName('Learn')} />
-              {getLabelFromPageName('Learn')}
+            <Menu.Item name='Lessons' active={highlightedPage === 'Lessons'} onClick={this.handleItemClick}>
+              <Icon name={getIconFromPageName('Lessons')} />
+              {getLabelFromPageName('Lessons')}
             </Menu.Item>
             <Menu.Item name='Investigate' active={highlightedPage === 'Investigate'} onClick={this.handleItemClick}>
               <Icon name={getIconFromPageName('Investigate')} />
