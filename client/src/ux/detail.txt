@@ -118,6 +118,7 @@ Book title candidates:
   Earning Trust **
 
 Site name candidates:
+  Cool To Be Good **** (.Org acquired, .Com owned by squatter)
   Trust Rewards **** (.Org acquired, .Com is an empty website)
   Trust Judgments *** (domain acquired: org and com)
   Rewarding Trust *** (domain acquired: org and com)
@@ -129,6 +130,7 @@ Site name candidates:
   Earning Trust ** (.Org acquired, .Com is an investment firm)
   Trust.who *** (domain owned by someone, not used)
   Trust Guardians ** (org and com taken by someone in Mexico)
+
 
 Headpin:
   Web journalism, attract viewership because of being trustworthy
@@ -151,7 +153,7 @@ Q Forms of revenue?
   A Donations, ads, entities paying for priority evaluations, certification icon, high-volume Apis,
     premium memberships for people and orgs that allow multiple representatives, with org training,
     notifies you of trustworthiness events on you or selected others.
-    Some organizations will want access to trustworthiness profiles, such as lenders or employers. Can this be monetized? 
+    Some organizations will want access to trustworthiness profiles, such as lenders or employers. Can this be monetized?
   A Certification requires manual review by high-level team member. Fee puts priority on request.
   A Api access allows free for limited amount. Higher volume requires $.
 Q Rewards: points? If so, how to cash in?

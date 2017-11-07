@@ -7,9 +7,6 @@ import LessonScreenBaseClass from './LessonScreenBaseClass'
 import './LessonProse.css'
 
 class LessonProse extends LessonScreenBaseClass {
-    constructor(props) {
-      super(props)
-    }
 
   render() {
     let { content } = this.props

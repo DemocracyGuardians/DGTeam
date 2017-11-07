@@ -4,7 +4,6 @@ import { withRouter } from 'react-router-dom'
 import PropTypes from 'prop-types'
 import DOMPurify from 'dompurify'
 import { Feed, Icon, Menu } from 'semantic-ui-react'
-import { getResourceIdFromUrl } from '../../util/workbenchPages'
 import './InboxMessage.css'
 
 let notifications = [

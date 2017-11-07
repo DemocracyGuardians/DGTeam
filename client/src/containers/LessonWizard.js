@@ -4,11 +4,11 @@ import { withRouter } from 'react-router-dom'
 import { RSAA } from 'redux-api-middleware'
 import { Button } from 'semantic-ui-react'
 import PropTypes from 'prop-types'
-import DOMPurify from 'dompurify'
 import { TEAM_BASE_URL, TEAM_API_RELATIVE_PATH } from '../envvars'
 import parseJsonPayload from '../util/parseJsonPayload'
 import LessonProse from '../components/Lesson/LessonProse'
 import LessonTrueFalse from '../components/Lesson/LessonTrueFalse'
+import LessonMultipleChoice from '../components/Lesson/LessonMultipleChoice'
 import './LessonWizard.css'
 
 class LessonWizard extends React.Component {
@@ -162,6 +162,13 @@ class LessonWizard extends React.Component {
         screenContent = (
           <div>
             <LessonTrueFalse content={lesson.screens[screenIndex].content} onScreenComplete={this.onScreenComplete} store={store} />
+            <div className="LessonNavigation">{navigation}</div>
+          </div>
+        )
+      } else if (type === 'LessonMultipleChoice') {
+        screenContent = (
+          <div>
+            <LessonMultipleChoice content={lesson.screens[screenIndex].content} onScreenComplete={this.onScreenComplete} store={store} />
             <div className="LessonNavigation">{navigation}</div>
           </div>
         )
