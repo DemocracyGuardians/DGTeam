@@ -53,7 +53,8 @@ class MoreMenu extends React.Component {
           {
             type: 'logout_failure',
             payload: (action, state, res) => {
-              console.log('logout_failure')
+              console.error('logout_failure')
+              this.props.history.push('/login')
             }
           }
         ],

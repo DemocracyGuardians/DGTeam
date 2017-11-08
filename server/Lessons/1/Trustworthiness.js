@@ -3,6 +3,11 @@ module.exports = {
   title: 'Introducing Trustworthiness',
   screens: [
     {
+      type: 'LessonConfirmVow',
+      title: 'Vow',
+      content: 'I vow to be honest and trustworthy in all my activities with this organization.'
+    },
+    {
       type: 'LessonMultipleChoice',
       title: 'Pop Quiz',
       content: {

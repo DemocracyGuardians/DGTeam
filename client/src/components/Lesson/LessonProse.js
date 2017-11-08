@@ -22,7 +22,8 @@ class LessonProse extends LessonScreenBaseClass {
 LessonProse.propTypes = {
   store: PropTypes.object.isRequired,
   content: PropTypes.string.isRequired,
-  onScreenComplete: PropTypes.func.isRequired
+  onScreenComplete: PropTypes.func.isRequired,
+  onScreenAdvance: PropTypes.func.isRequired
 }
 
 export default withRouter(LessonProse);

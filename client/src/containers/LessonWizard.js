@@ -9,6 +9,7 @@ import parseJsonPayload from '../util/parseJsonPayload'
 import LessonProse from '../components/Lesson/LessonProse'
 import LessonTrueFalse from '../components/Lesson/LessonTrueFalse'
 import LessonMultipleChoice from '../components/Lesson/LessonMultipleChoice'
+import LessonConfirmVow from '../components/Lesson/LessonConfirmVow'
 import './LessonWizard.css'
 
 class LessonWizard extends React.Component {
@@ -19,6 +20,7 @@ class LessonWizard extends React.Component {
     }
     this.getlesson = this.getlesson.bind(this);
     this.onScreenComplete = this.onScreenComplete.bind(this);
+    this.onScreenAdvance = this.onScreenAdvance.bind(this);
     this.getlesson()
   }
 
@@ -77,6 +79,17 @@ class LessonWizard extends React.Component {
     if (progressIndex < screenIndex) {
       this.setState({ progressIndex: screenIndex })
     }
+  }
+
+  onScreenAdvance = () => {
+    let { screenIndex, progressIndex, nScreens } = this.state
+    if (progressIndex < screenIndex) {
+      progressIndex = screenIndex
+    }
+    if (screenIndex < nScreens-1) {
+      screenIndex++
+    }
+    this.setState({ progressIndex, screenIndex })
   }
 
   handleNavigationClick = (name, e) => {
@@ -154,21 +167,32 @@ class LessonWizard extends React.Component {
       if (type === 'LessonProse') {
         screenContent = (
           <div>
-            <LessonProse content={lesson.screens[screenIndex].content} onScreenComplete={this.onScreenComplete} store={store} />
+            <LessonProse content={lesson.screens[screenIndex].content}
+              onScreenComplete={this.onScreenComplete} onScreenAdvance={this.onScreenAdvance} store={store} />
             <div className="LessonNavigation">{navigation}</div>
           </div>
         )
       } else if (type === 'LessonTrueFalse') {
         screenContent = (
           <div>
-            <LessonTrueFalse content={lesson.screens[screenIndex].content} onScreenComplete={this.onScreenComplete} store={store} />
+            <LessonTrueFalse content={lesson.screens[screenIndex].content}
+              onScreenComplete={this.onScreenComplete} onScreenAdvance={this.onScreenAdvance} store={store} />
             <div className="LessonNavigation">{navigation}</div>
           </div>
         )
       } else if (type === 'LessonMultipleChoice') {
         screenContent = (
           <div>
-            <LessonMultipleChoice content={lesson.screens[screenIndex].content} onScreenComplete={this.onScreenComplete} store={store} />
+            <LessonMultipleChoice content={lesson.screens[screenIndex].content}
+              onScreenComplete={this.onScreenComplete} onScreenAdvance={this.onScreenAdvance} store={store} />
+            <div className="LessonNavigation">{navigation}</div>
+          </div>
+        )
+      } else if (type === 'LessonConfirmVow') {
+        screenContent = (
+          <div>
+            <LessonConfirmVow content={lesson.screens[screenIndex].content}
+              onScreenComplete={this.onScreenComplete} onScreenAdvance={this.onScreenAdvance} store={store} />
             <div className="LessonNavigation">{navigation}</div>
           </div>
         )

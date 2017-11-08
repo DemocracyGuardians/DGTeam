@@ -101,7 +101,8 @@ class LessonTrueFalse extends LessonScreenBaseClass {
 LessonTrueFalse.propTypes = {
   store: PropTypes.object.isRequired,
   content: PropTypes.object.isRequired,
-  onScreenComplete: PropTypes.func.isRequired
+  onScreenComplete: PropTypes.func.isRequired,
+  onScreenAdvance: PropTypes.func.isRequired
 }
 
 export default withRouter(LessonTrueFalse);

@@ -107,7 +107,8 @@ class LessonMultipleChoice extends LessonScreenBaseClass {
 LessonMultipleChoice.propTypes = {
   store: PropTypes.object.isRequired,
   content: PropTypes.object.isRequired,
-  onScreenComplete: PropTypes.func.isRequired
+  onScreenComplete: PropTypes.func.isRequired,
+  onScreenAdvance: PropTypes.func.isRequired
 }
 
 export default withRouter(LessonMultipleChoice);
