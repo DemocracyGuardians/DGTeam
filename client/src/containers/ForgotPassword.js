@@ -5,7 +5,7 @@ import { LocalForm, Control } from 'react-redux-form'
 import { Link, withRouter } from 'react-router-dom'
 import PropTypes from 'prop-types'
 import { Button, Container, Input, Message } from 'semantic-ui-react'
-import { resetPasswordEmailSent } from '../actions/userActions'
+import { resetPasswordEmailSent } from '../actions/accountActions'
 import { RSAA } from 'redux-api-middleware';
 import parseJsonPayload from '../util/parseJsonPayload'
 import { TEAM_BASE_URL, TEAM_API_RELATIVE_PATH } from '../envvars'

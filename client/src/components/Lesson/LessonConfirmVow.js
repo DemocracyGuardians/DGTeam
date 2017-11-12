@@ -5,7 +5,7 @@ import PropTypes from 'prop-types'
 import { Button, Message } from 'semantic-ui-react'
 import { RSAA } from 'redux-api-middleware';
 import LessonScreenBaseClass from './LessonScreenBaseClass'
-import { userLogoutSuccess } from '../../actions/userActions'
+import { accountLogoutSuccess } from '../../actions/accountActions'
 import { TEAM_BASE_URL, TEAM_API_RELATIVE_PATH } from '../../envvars'
 import './LessonConfirmVow.css'
 
@@ -42,7 +42,7 @@ class LessonConfirmVow extends LessonScreenBaseClass {
             type: 'logout_success',
             payload: (action, state, res) => {
               console.log('logout_success')
-              dispatch(userLogoutSuccess())
+              dispatch(accountLogoutSuccess())
               this.props.history.push('/login')
             }
           },
@@ -70,7 +70,7 @@ class LessonConfirmVow extends LessonScreenBaseClass {
     },
       () => {
       console.log('logout_success')
-      dispatch(userLogoutSuccess())
+      dispatch(accountLogoutSuccess())
       this.props.history.push('/login')
     }, () => {
       console.error('logout_failure')

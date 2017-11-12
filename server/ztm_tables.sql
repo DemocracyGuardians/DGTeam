@@ -1,7 +1,7 @@
 
-DROP TABLE  IF EXISTS `ue_tmusers`;
 DROP TABLE  IF EXISTS `ue_ztm_users`;
-CREATE TABLE `ue_ztm_users` (
+DROP TABLE  IF EXISTS `ue_ztm_accounts`;
+CREATE TABLE `ue_ztm_accounts` (
  `id` int(11) NOT NULL AUTO_INCREMENT,
  `firstName` varchar(100) COLLATE utf8_unicode_ci NOT NULL,
  `lastName` varchar(100) COLLATE utf8_unicode_ci NOT NULL,

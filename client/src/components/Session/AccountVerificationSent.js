@@ -8,7 +8,7 @@ class AccountVerificationSent extends React.Component {
   render() {
     let { message } = this.props
     let storeState = this.props.store.getState()
-    let { lastVerificationEmail } = storeState.user || {}
+    let { lastVerificationEmail } = storeState.account || {}
     return (
       <Container text className='AccountVerificationSent verticalformcontainer'>
         <div className="AccountVerificationSent">

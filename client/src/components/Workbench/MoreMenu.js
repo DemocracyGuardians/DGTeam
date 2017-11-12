@@ -3,7 +3,7 @@ import React from 'react'
 import { Icon, Menu, Popup } from 'semantic-ui-react'
 import { RSAA } from 'redux-api-middleware';
 import { withRouter } from 'react-router-dom'
-import { userLogoutSuccess } from '../../actions/userActions'
+import { accountLogoutSuccess } from '../../actions/accountActions'
 import { TEAM_BASE_URL, TEAM_API_RELATIVE_PATH } from '../../envvars'
 import './MoreMenu.css'
 
@@ -46,7 +46,7 @@ class MoreMenu extends React.Component {
             type: 'logout_success',
             payload: (action, state, res) => {
               console.log('logout_success')
-              dispatch(userLogoutSuccess())
+              dispatch(accountLogoutSuccess())
               this.props.history.push('/login')
             }
           },

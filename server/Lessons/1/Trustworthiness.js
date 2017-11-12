@@ -3,65 +3,6 @@ module.exports = {
   title: 'Introducing Trustworthiness',
   screens: [
     {
-      type: 'LessonConfirmVow',
-      title: 'Vow',
-      content: 'I vow to be honest and trustworthy in all my activities with this organization.'
-    },
-    {
-      type: 'LessonMultipleChoice',
-      title: 'Pop Quiz',
-      content: {
-        questions: [
-          {
-            q: 'Which of the following are not necessarily true about trustworthy people?',
-            choices: [
-              'They are honest.',
-              'They are dependable.',
-              'They have similar political beliefs as me.',
-              'They search for all possible solutions and evaluate them objectively before making a decision or formulating an opinion.',
-              'They recognize their own limitations and avoid offering judgments on things on which they have limited understanding.'
-            ],
-            a: 'c'
-          },
-          {
-            q: 'Which of the following are not necessarily true about trustworthy people?',
-            choices: [
-              'They are honest.',
-              'They are dependable.',
-              'They have similar political beliefs as me.',
-              'They search for all possible solutions and evaluate them objectively before making a decision or formulating an opinion.',
-              'They recognize their own limitations and avoid offering judgments on things on which they have limited understanding.'
-            ],
-            a: 'c'
-          }
-        ]
-      }
-    },
-    {
-      type: 'LessonTrueFalse',
-      title: 'Pop Quiz',
-      content: {
-        questions: [
-          {
-            q: 'Most people trust that the sun will rise in the morning and set in the evening.',
-            a: true
-          },
-          {
-            q: 'A Gallup poll shows that we tend to trust doctors and nurses for our medical needs.',
-            a: true
-          },
-          {
-            q: 'Most people believe everything they hear from politicians and auto sales people.',
-            a: false
-          },
-          {
-            q: 'We generally trust our fire services, police, and EMTs to help us in emergencies.',
-            a: true
-          }
-        ]
-      }
-    },
-    {
       type: 'LessonProse',
       title: 'Trust makes our lives more efficient',
       content: `
@@ -106,6 +47,65 @@ module.exports = {
         documents</li>
         </ul>
 `
+    },
+    {
+      type: 'LessonTrueFalse',
+      title: 'Pop Quiz',
+      content: {
+        questions: [
+          {
+            q: 'Most people trust that the sun will rise in the morning and set in the evening.',
+            a: true
+          },
+          {
+            q: 'A Gallup poll shows that we tend to trust doctors and nurses for our medical needs.',
+            a: true
+          },
+          {
+            q: 'Most people believe everything they hear from politicians and auto sales people.',
+            a: false
+          },
+          {
+            q: 'We generally trust our fire services, police, and EMTs to help us in emergencies.',
+            a: true
+          }
+        ]
+      }
+    },
+    {
+      type: 'LessonMultipleChoice',
+      title: 'Pop Quiz',
+      content: {
+        questions: [
+          {
+            q: 'Which of the following are not necessarily true about trustworthy people?',
+            choices: [
+              'They are honest.',
+              'They are dependable.',
+              'They have similar political beliefs as me.',
+              'They search for all possible solutions and evaluate them objectively before making a decision or formulating an opinion.',
+              'They recognize their own limitations and avoid offering judgments on things on which they have limited understanding.'
+            ],
+            a: 'c'
+          },
+          {
+            q: 'Which of the following are not necessarily true about trustworthy people?',
+            choices: [
+              'They are honest.',
+              'They are dependable.',
+              'They have similar political beliefs as me.',
+              'They search for all possible solutions and evaluate them objectively before making a decision or formulating an opinion.',
+              'They recognize their own limitations and avoid offering judgments on things on which they have limited understanding.'
+            ],
+            a: 'c'
+          }
+        ]
+      }
+    },
+    {
+      type: 'LessonConfirmVow',
+      title: 'Vow',
+      content: 'I vow to be honest and trustworthy in all my activities with this organization.'
     },
     {
       type: 'LessonProse',

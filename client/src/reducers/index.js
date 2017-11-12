@@ -1,9 +1,9 @@
 
 import { combineReducers } from 'redux'
-import userReducer from './userReducer'
+import accountReducer from './accountReducer'
 
 const TeamAppReducer = combineReducers({
-  user: userReducer
+  account: accountReducer
 })
 
 export default TeamAppReducer

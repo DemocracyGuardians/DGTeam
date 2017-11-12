@@ -8,7 +8,7 @@ class ResetPasswordSent extends React.Component {
   render() {
     let { message } = this.props
     let storeState = this.props.store.getState()
-    let { lastResetPasswordEmail } = storeState.user || {}
+    let { lastResetPasswordEmail } = storeState.account || {}
     return (
       <Container text className='ResetPasswordSent verticalformcontainer'>
         <div className="ResetPasswordSent">

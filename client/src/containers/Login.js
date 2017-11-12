@@ -6,7 +6,7 @@ import { Link, withRouter } from 'react-router-dom'
 import { Button, Container, Input, Message } from 'semantic-ui-react'
 import PropTypes from 'prop-types'
 import { RSAA } from 'redux-api-middleware';
-import { userLoginSuccess } from '../actions/userActions'
+import { accountLoginSuccess } from '../actions/accountActions'
 import parseJsonPayload from '../util/parseJsonPayload'
 import { TEAM_ORG, TEAM_BASE_URL, TEAM_API_RELATIVE_PATH } from '../envvars'
 
@@ -46,7 +46,7 @@ class Login extends React.Component {
             type: 'LOGIN_SUCCESS',
             payload: (action, state, res) => {
               parseJsonPayload.bind(this)(res, action.type, json => {
-                dispatch(userLoginSuccess(json.user))
+                dispatch(accountLoginSuccess(json.account))
                 this.props.history.push('/Inbox')
               })
             }

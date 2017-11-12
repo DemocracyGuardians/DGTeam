@@ -9,7 +9,7 @@ import { RSAA } from 'redux-api-middleware'
 import Marked from 'marked'
 import vowsMd from '../components/Session/Trustworthiness_Vows_md'
 import agreementMd from '../components/Session/Members_Agreement_md'
-import { userSignupSuccess, userVerificationEmailSent } from '../actions/userActions'
+import { accountSignupSuccess, accountVerificationEmailSent } from '../actions/accountActions'
 import { TEAM_ORG, TEAM_BASE_URL, TEAM_API_RELATIVE_PATH } from '../envvars'
 import passwordRegexp from '../util/passwordRegexp'
 import parseJsonPayload from '../util/parseJsonPayload'
@@ -246,8 +246,8 @@ class Signup extends React.Component {
             type: 'SIGNUP_SUCCESS',
             payload: (action, state, res) => {
               parseJsonPayload.bind(this)(res, action.type, json => {
-                dispatch(userSignupSuccess(json.user))
-                dispatch(userVerificationEmailSent(json.user.email))
+                dispatch(accountSignupSuccess(json.account))
+                dispatch(accountVerificationEmailSent(json.account.email))
                 this.props.history.push('/verificationsent')
               })
             }

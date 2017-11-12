@@ -5,7 +5,7 @@ import { LocalForm, Control } from 'react-redux-form'
 import { Link, withRouter } from 'react-router-dom'
 import PropTypes from 'prop-types'
 import { Button, Container, Input, Message } from 'semantic-ui-react'
-import { userVerificationEmailSent } from '../actions/userActions'
+import { accountVerificationEmailSent } from '../actions/accountActions'
 import { RSAA } from 'redux-api-middleware';
 import parseJsonPayload from '../util/parseJsonPayload'
 import { TEAM_BASE_URL, TEAM_API_RELATIVE_PATH } from '../envvars'
@@ -40,7 +40,7 @@ class ResendAccountVerification extends React.Component {
           {
             type: 'RESEND_VERIFICATION_SUCCESS',
             payload: (action, state, res) => {
-              this.props.store.dispatch(userVerificationEmailSent(values.email))
+              this.props.store.dispatch(accountVerificationEmailSent(values.email))
               this.props.history.push('/verificationsent')
             }
           },
