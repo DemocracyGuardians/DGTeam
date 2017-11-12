@@ -50,14 +50,14 @@ exports.signup = function(req, res, next) {
    }
    var token = makeToken(account)
    account.emailValidateToken = token
-   connection.query('SELECT email FROM ue_ztm_accounts WHERE email = ?', [account.email], function (error, results, fields) {
+   connection.query('SELECT email FROM ue_ztm_account WHERE email = ?', [account.email], function (error, results, fields) {
      if (error) {
        logSendSE(res, error, "signup select account database failure for email '" + account.email + "'");
      } else {
        if (results.length >= 1) {
          logSendCE(res, 401, USER_ALREADY_EXISTS, "signup account already exists: '" + account.email + "'");
        } else {
-         connection.query('INSERT INTO ue_ztm_accounts SET ?', account, function (error, results, fields) {
+         connection.query('INSERT INTO ue_ztm_account SET ?', account, function (error, results, fields) {
            if (error) {
              logSendSE(res, 500, error, UNSPECIFIED_SYSTEM_ERROR, "Insert new account insert database failure for email '" + account.email + "'");
            } else {
@@ -65,7 +65,7 @@ exports.signup = function(req, res, next) {
                delete account.password
                if (error) {
                  console.error("Insert new account email send failure for email '" + account.email + "', error= ", error);
-                 connection.query('DELETE FROM ue_ztm_accounts WHERE email = ?', [account.email], function (error, results, fields) {
+                 connection.query('DELETE FROM ue_ztm_account WHERE email = ?', [account.email], function (error, results, fields) {
                    if (error) {
                      console.error('DELETE failed after sendMail failure. error='+error)
                    }
@@ -89,7 +89,7 @@ exports.login = function(req, res, next) {
   var email = req.body.email;
   var password = req.body.password;
   console.log('email='+email);
-  connection.query('SELECT * FROM ue_ztm_accounts WHERE email = ?', [email], function (error, results, fields) {
+  connection.query('SELECT * FROM ue_ztm_account WHERE email = ?', [email], function (error, results, fields) {
     if (error) {
       logSendSE(res, error, "Select account failure for email '" + email + "'");
     } else {
@@ -132,7 +132,7 @@ exports.loginexists = function(req, res, next) {
   console.dir(req.body);
   var email = req.body.email;
   console.log('email='+email);
-  connection.query('SELECT email FROM ue_ztm_accounts WHERE email = ?', [email], function (error, results, fields) {
+  connection.query('SELECT email FROM ue_ztm_account WHERE email = ?', [email], function (error, results, fields) {
     if (error) {
       logSendSE(res, error, "loginexists failure for email '" + email + "'");
     } else {
@@ -147,7 +147,7 @@ exports.resendVerificationEmail = function(req, res, next) {
   console.dir(req.body);
   var email = req.body.email;
   console.log('email='+email);
-  connection.query('SELECT * FROM ue_ztm_accounts WHERE email = ?', [email], function (error, results, fields) {
+  connection.query('SELECT * FROM ue_ztm_account WHERE email = ?', [email], function (error, results, fields) {
     if (error) {
       logSendSE(res, error, "resendVerificationEmail database failure for email '" + email + "'");
     } else {
@@ -161,7 +161,7 @@ exports.resendVerificationEmail = function(req, res, next) {
         } else {
           var token = makeToken(account)
           let now = new Date();
-          connection.query('UPDATE ue_ztm_accounts SET emailValidateToken = ?, emailValidateTokenDateTime = ?, modified = ? WHERE email = ?', [token, now, now, email], function (error, results, fields) {
+          connection.query('UPDATE ue_ztm_account SET emailValidateToken = ?, emailValidateTokenDateTime = ?, modified = ? WHERE email = ?', [token, now, now, email], function (error, results, fields) {
             if (error) {
               logSendSE(res, error, "resendVerificationEmail update database failure for email '" + account.email + "'");
             } else {
@@ -193,7 +193,7 @@ exports.sendResetPasswordEmail = function(req, res, next) {
   console.dir(req.body);
   var email = req.body.email;
   console.log('email='+email);
-  connection.query('SELECT * FROM ue_ztm_accounts WHERE email = ?', [email], function (error, results, fields) {
+  connection.query('SELECT * FROM ue_ztm_account WHERE email = ?', [email], function (error, results, fields) {
     if (error) {
       logSendSE(res, error, "sendResetPasswordEmail database failure for email '" + email + "'");
     } else {
@@ -204,7 +204,7 @@ exports.sendResetPasswordEmail = function(req, res, next) {
         var account = results[0]
         var token = makeToken(account)
         let now = new Date();
-        connection.query('UPDATE ue_ztm_accounts SET resetPasswordToken = ?, resetPasswordTokenDateTime = ?, modified = ? WHERE email = ?', [token, now, now, email], function (error, results, fields) {
+        connection.query('UPDATE ue_ztm_account SET resetPasswordToken = ?, resetPasswordTokenDateTime = ?, modified = ? WHERE email = ?', [token, now, now, email], function (error, results, fields) {
           if (error) {
             logSendSE(res, error, "sendResetPasswordEmail update database failure for email '" + account.email + "'");
           } else {
@@ -234,7 +234,7 @@ exports.verifyAccount = function(req, res, next) {
   console.dir(req.params);
   let token = req.params.token
   res.type('html')
-  connection.query('SELECT email, emailValidateTokenDateTime FROM ue_ztm_accounts WHERE emailValidateToken = ?', [token], function (error, results, fields) {
+  connection.query('SELECT email, emailValidateTokenDateTime FROM ue_ztm_account WHERE emailValidateToken = ?', [token], function (error, results, fields) {
     if (error || results.length !== 1) {
       let msg = "verifyAccount failure for token '" + token + "'";
       console.log(msg + ", error= ", error, 'results=', JSON.stringify(results));
@@ -264,7 +264,7 @@ exports.verifyAccount = function(req, res, next) {
         res.send(html)
       } else {
         console.log('now='+now+', email='+email)
-        connection.query('UPDATE ue_ztm_accounts SET emailValidated = ?, modified = ? WHERE email = ?', [now, now, email], function (error, results, fields) {
+        connection.query('UPDATE ue_ztm_account SET emailValidated = ?, modified = ? WHERE email = ?', [now, now, email], function (error, results, fields) {
           console.log('error='+error+", results= ", JSON.stringify(results));
           if (error) {
             let msg = "verifyAccount update emailValidated database failure for email '" + account.email + "'";
@@ -294,7 +294,7 @@ exports.gotoResetPasswordPage = function(req, res, next) {
   console.dir(req.params);
   let token = req.params.token
   res.type('html')
-  connection.query('SELECT email, resetPasswordTokenDateTime FROM ue_ztm_accounts WHERE resetPasswordToken = ?', [token], function (error, results, fields) {
+  connection.query('SELECT email, resetPasswordTokenDateTime FROM ue_ztm_account WHERE resetPasswordToken = ?', [token], function (error, results, fields) {
     if (error || results.length !== 1) {
       let msg = "gotoResetPasswordPage failure for token '" + token + "'";
       console.log(msg + ", error= ", error, 'results=', JSON.stringify(results));
@@ -336,7 +336,7 @@ exports.resetPassword = function(req, res, next) {
   var password = req.body.password;
   var token = req.body.token;
   console.log('req.session.id='+req.session.id);
-  connection.query('SELECT email, resetPasswordTokenDateTime FROM ue_ztm_accounts WHERE resetPasswordToken = ?', [token], function (error, results, fields) {
+  connection.query('SELECT email, resetPasswordTokenDateTime FROM ue_ztm_account WHERE resetPasswordToken = ?', [token], function (error, results, fields) {
     if (error || results.length !== 1) {
       logSendCE(res, 400, TOKEN_NOT_FOUND, "resetPassword select failure for token '" + token + "'");
     } else {
@@ -352,7 +352,7 @@ exports.resetPassword = function(req, res, next) {
         logSendCE(res, 400, TOKEN_EXPIRED, "resetPassword expired token for email '" + email + "'");
       } else {
         console.log('now='+now+', email='+email)
-        connection.query('UPDATE ue_ztm_accounts SET password = ?, resetPasswordToken = NULL, resetPasswordTokenDateTime = NULL, modified = ? WHERE email = ?', [password, now, email], function (error, results, fields) {
+        connection.query('UPDATE ue_ztm_account SET password = ?, resetPasswordToken = NULL, resetPasswordTokenDateTime = NULL, modified = ? WHERE email = ?', [password, now, email], function (error, results, fields) {
           console.log('error='+error+", results= ", JSON.stringify(results));
           if (error) {
             logSendSE(res, error, "resetPassword update resetPasswordToken database failure for email '" + account.email + "'");
