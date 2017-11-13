@@ -1,7 +1,11 @@
 
+//FIXME Got workbenchinit_failure after resetting password
+//Maybe because an old session was still active using a different login?
+
 const dbconnection = require('../util/dbconnection')
 const sendMail = require('../util/sendMail')
 const crypto = require('crypto')
+const getUserObject = require('../util/getUserObject')
 const logSend = require('../util/logSend')
 var logSendOK = logSend.logSendOK
 var logSendCE = logSend.logSendCE
@@ -72,7 +76,11 @@ exports.signup = function(req, res, next) {
                    res.send(500, { msg, error: UNSPECIFIED_SYSTEM_ERROR })
                  });
                } else {
-                 logSendOK(res, {account}, "Insert new account success for email '" + account.email + "'");
+                 getUserObject(account.email, {account}).then(userObject => {
+                   logSendOK(res, userObject, "Insert new account success for email '" + account.email + "'");
+                 }).catch(error => {
+                   logSendSE(res, 500, error, UNSPECIFIED_SYSTEM_ERROR, 'getUserObjectError');
+                 });
                }
              });
            }
@@ -109,7 +117,11 @@ exports.login = function(req, res, next) {
             console.log('req.session.id='+req.session.id);
             req.session.user = account;
             console.log('login after regenerate req.session.id='+req.session.id);
-            logSendOK(res, {account}, "Login success for email '" + email + "'");
+            getUserObject(account.email, {account}).then(userObject => {
+              logSendOK(res, userObject, "Login success for email '" + email + "'");
+            }).catch(error => {
+              logSendSE(res, 500, error, UNSPECIFIED_SYSTEM_ERROR, 'getUserObjectError');
+            });
           } else {
             logSendCE(res, 401, INCORRECT_PASSWORD, "Login failure for email '" + email + "'");
           }
@@ -173,7 +185,11 @@ exports.resendVerificationEmail = function(req, res, next) {
                 if (error) {
                   logSendSE(res, error, "resendVerificationEmail email send failure for email '" + account.email + "'");
                 } else {
-                  logSendOK(res, { account }, "resendVerificationEmail success for email '" + account.email + "'");
+                  getUserObject(account.email, {account}).then(userObject => {
+                    logSendOK(res, userObject, "resendVerificationEmail success for email '" + account.email + "'");
+                  }).catch(error => {
+                    logSendSE(res, 500, error, UNSPECIFIED_SYSTEM_ERROR, 'getUserObjectError');
+                  });
                 }
               });
             }
@@ -217,7 +233,11 @@ exports.sendResetPasswordEmail = function(req, res, next) {
                 logSendSE(res, error, "sendResetPasswordEmail email send failure for email '" + account.email + "'");
               } else {
                 console.log("results= ", results);
-                logSendOK(res, { account }, "sendResetPasswordEmail success for email '" + account.email + "'");
+                getUserObject(account.email, {account}).then(userObject => {
+                  logSendOK(res, userObject, "sendResetPasswordEmail success for email '" + account.email + "'");
+                }).catch(error => {
+                  logSendSE(res, 500, error, UNSPECIFIED_SYSTEM_ERROR, 'getUserObjectError');
+                });
               }
             });
           }
