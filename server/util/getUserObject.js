@@ -1,5 +1,8 @@
 
 const dbconnection = require('./dbconnection')
+const getBaseName = require('./getBaseName')
+const latest = require('../Tasks/latest')
+const readlesson = require('./readlesson');
 
 var connection = dbconnection.getConnection();
 
@@ -16,13 +19,15 @@ var connection = dbconnection.getConnection();
  * @return {Promise} payload is userObject
  */
 module.exports = function(email, alreadyHave) {
+  console.log('getUserObject entered. Email='+email+', alreadyHave='+JSON. stringify(alreadyHave));
   return new Promise((masterResolve, masterReject) => {
     let userObject = alreadyHave ? JSON.parse(JSON.stringify(alreadyHave)) : {};
-    if (userObject.account) {
-      delete userObject.account.password
-      masterResolve(userObject);
-    } else {
-      let accountPromise = new Promise(function (resolve, reject) {
+    console.log('getUserObject entered. userObject='+JSON. stringify(userObject));
+    let accountPromise = new Promise(function (resolve, reject) {
+      if (userObject.account) {
+        delete userObject.account.password
+        resolve(userObject.account);
+      } else {
         connection.query('SELECT * FROM ue_ztm_account WHERE email = ?', [email], function (error, results, fields) {
           if (error) {
             reject("getUserObject select account failure for email '" + email + "'. error="+error);
@@ -38,13 +43,89 @@ module.exports = function(email, alreadyHave) {
             }
           }
         });
+      }
+    });
+    accountPromise.then(account => {
+      userObject.account = account;
+      connection.query('SELECT * FROM ue_ztm_progress WHERE userId = ?', [account.id], function (error, results, fields) {
+        if (error) {
+          masterReject("getUserObject database failure for query progress for email '" + account.email + "'");
+        } else {
+          let progressPromise = new Promise((progressResolve, progressReject) => {
+            if (results.length === 1) {
+              let currentDbProgress = results[0];
+              console.log('progressPromise currentDbProgress='+JSON.stringify(currentDbProgress));
+              let updatedProgress = updateProgressToLatestVersion(results[0]);
+              console.log('progressPromise updatedProgress='+JSON.stringify(updatedProgress));
+              console.log('progressPromise latest='+JSON.stringify(latest));
+              let { level, task, subtask } = updatedProgress;
+              if (latest.version !== currentDbProgress.version || level !== currentDbProgress.level ||
+                  task !== currentDbProgress.task || subtask !== currentDbProgress.subtask) {
+                console.log('before updating progress table ');
+                // Need to update progress table
+                let now = new Date();
+                connection.query('UPDATE ue_ztm_progress SET version = ?, level = ?, task = ?, subtask = ?, modified = ? WHERE userId = ?',
+                        [latest.version, level, task, subtask, now, account.id], function (error, results, fields) {
+                  if (error) {
+                    progressReject(getBaseName(__filename)+" progress update database failure for email '" + account.email + "'");
+                  } else {
+                    updatedProgress.version = latest.version;
+                    updatedProgress.modified = now;
+                    progressResolve(updatedProgress);
+                  }
+                });
+              } else {
+                progressResolve(updatedProgress);
+              }
+            } else if (results.length === 0) {
+              // Must be user's first login. Insert a row in progress table
+              let now = new Date();
+              //FIXME get version from latest tasks file
+              let progress = { userId:account.id, version:1, level:1, task:0, subtask:0, modified:now };
+              connection.query('INSERT INTO ue_ztm_progress SET ?', progress, function (error, results, fields) {
+                if (error) {
+                  progressReject("getUserObject insert database failure for email '" + account.email + "'");
+                } else {
+                  progressResolve(progress);
+                }
+              });
+            } else {
+              progressReject('getUserObjectError query progress error. results.length');
+            }
+          });
+          progressPromise.then(progress => {
+            console.log('progressPromise.then progress='+JSON.stringify(progress));
+            userObject.progress = progress;
+            userObject.tasks = latest;
+            console.log('userObject='+JSON.stringify(userObject));
+            masterResolve(userObject);
+          }).catch(error => {
+            masterReject(error);
+          });
+        }
       });
-      accountPromise.then(account => {
-        userObject.account = account;
-        masterResolve(userObject);
-      }).catch(error => {
-        masterReject(error);
-      });
-    }
+    }).catch(error => {
+      masterReject(error);
+    });
   });
 };
+
+let updateProgressToLatestVersion = (currentDbProgress  => {
+  // call mappingFunc to repeatedly map values from version i to i+1
+  let { version, level, task, subtask } = currentDbProgress;
+  for (v=version+1; v<latest.version; v++) {
+    // If we are to go to very first task, we don't need any further mapping
+    if (level === 1 && task === 0 && subtask === 0) {
+      break
+    }
+    let { version } = currentDbProgress;
+    try {
+      let tasks = version < latest.version ? require('../Tasks/old/'+v) : latest;
+      currentDbProgress = tasks.mappingFunc(currentDbProgress);
+    } catch(e) {
+      console.error('taskRoutes require '+pathToOld+v+' failed or mappingFunc error. Error='+e);
+      return Object.assign({}, currentDbProgress, {version:latest.version, level:1, task:0, subtask:0} )
+    }
+  }
+  return currentDbProgress
+})

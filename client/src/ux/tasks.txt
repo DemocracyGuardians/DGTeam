@@ -14,7 +14,7 @@ db
     level
     task
     subtask
-    when
+    modified
 apis
   updateprogress:
     version error if doesn't match latest

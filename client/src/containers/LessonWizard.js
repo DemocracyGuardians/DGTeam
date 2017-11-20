@@ -5,7 +5,9 @@ import { RSAA } from 'redux-api-middleware'
 import { Button } from 'semantic-ui-react'
 import PropTypes from 'prop-types'
 import { TEAM_BASE_URL, TEAM_API_RELATIVE_PATH } from '../envvars'
+import { getLessonSuccess } from '../actions/lessonActions'
 import parseJsonPayload from '../util/parseJsonPayload'
+import { getLocalProgress, setLocalProgress } from '../util/localProgress'
 import LessonProse from '../components/Lesson/LessonProse'
 import LessonTrueFalse from '../components/Lesson/LessonTrueFalse'
 import LessonMultipleChoice from '../components/Lesson/LessonMultipleChoice'
@@ -19,12 +21,14 @@ class LessonWizard extends React.Component {
       lessonName: null
     }
     this.getlesson = this.getlesson.bind(this);
+    this.incrementprogress = this.incrementprogress.bind(this);
     this.onScreenComplete = this.onScreenComplete.bind(this);
     this.onScreenAdvance = this.onScreenAdvance.bind(this);
     this.getlesson()
   }
 
   getlesson() {
+    let componentThis = this
     let values = {}
     let { dispatch } = this.props.store
     let { level, name } = this.props
@@ -47,16 +51,43 @@ class LessonWizard extends React.Component {
           {
             type: 'getlesson_success',
             payload: (action, state, res) => {
-              parseJsonPayload.bind(this)(res, action.type, json => {
-                let lesson = json
+              parseJsonPayload(res, action.type, function(json) {
+                let lesson = json.lesson
+                dispatch(getLessonSuccess(json.account, json.progress, json.tasks))
                 if (!lesson.screens || !lesson.screens[0]) {
                   console.error('LessonWizard getlesson_success, but invalid lesson object')
                   this.props.history.push('/systemerror')
                 } else {
+                  let nScreens = lesson.screens.length
+                  let localProgress = getLocalProgress()
+                  let { level, name } = this.props
+                  let storeState = this.props.store.getState()
+                  let maxProgress = storeState.progress
+                  let tasks = storeState.tasks
+                  let screenIndex = 0
                   let progressIndex = lesson.screens[0].type === 'Prose' ? 0 : -1
-                  this.setState({ lessonName: newLessonName, lesson, screenIndex: 0, progressIndex, nScreens: lesson.screens.length })
+                  if (level === maxProgress.level && tasks.levels[level].tasks[maxProgress.task].name === name) {
+                    screenIndex = progressIndex = maxProgress.subtask
+                  }
+                  if (level === localProgress.level && tasks.levels[level].tasks[localProgress.task].name === name) {
+                    screenIndex = localProgress.subtask
+                  }
+                  let task = tasks.levels[level].tasks.findIndex(task => task.name === name)
+                  if (task < 0) {
+                    console.error('LessonWizard getlesson_success could not find task '+name+' for level '+level)
+                    this.props.history.push('/systemerror')
+                    return
+                  }
+                  if (maxProgress.level > level || (maxProgress.level === level && maxProgress.task > task)) {
+                    progressIndex = nScreens-1
+                  }
+                  localProgress.level = level
+                  localProgress.task = task
+                  localProgress.subtask = screenIndex
+                  setLocalProgress(localProgress)
+                  this.setState({ lessonName: newLessonName, lesson, progressIndex, nScreens })
                 }
-              })
+              }.bind(componentThis))
             }
           },
           {
@@ -74,26 +105,84 @@ class LessonWizard extends React.Component {
     dispatch(apiAction)
   }
 
+  incrementprogress() {
+    let values = {}
+    let { dispatch } = this.props.store
+    let { level, name } = this.props
+    if (!level || !name ) {
+      console.error('LessonWizard missing level:'+level+' or name:'+name)
+      this.props.history.push('/systemerror')
+    }
+    let newLessonName = level + '/'  + name
+    if (newLessonName === this.state.lessonName) {
+      return
+    }
+    let incrementprogressApiUrl = TEAM_BASE_URL + TEAM_API_RELATIVE_PATH + '/incrementprogress'
+    const apiAction = {
+      [RSAA]: {
+        endpoint: incrementprogressApiUrl,
+        method: 'POST',
+        credentials: 'include',
+        types: [
+          'x_request', // ignored
+          {
+            type: 'incrementprogress_success',
+            payload: (action, state, res) => {
+              parseJsonPayload.bind(this)(res, action.type, json => {
+                let lesson = json
+                if (!lesson.screens || !lesson.screens[0]) {
+                  console.error('LessonWizard incrementprogress_success, but invalid lesson object')
+                  this.props.history.push('/systemerror')
+                } else {
+                  let progressIndex = lesson.screens[0].type === 'Prose' ? 0 : -1
+                  this.setState({ lessonName: newLessonName, lesson, progressIndex, nScreens: lesson.screens.length })
+                }
+              })
+            }
+          },
+          {
+            type: 'incrementprogressx_failure',
+            payload: (action, state, res) => {
+              console.error('LessonWizard incrementprogressx_failure')
+              this.props.history.push('/systemerror')
+            }
+          }
+        ],
+        body: JSON.stringify(values),
+        headers: { 'Content-Type': 'application/json' }
+      }
+    }
+    dispatch(apiAction)
+  }
+
   onScreenComplete = () => {
-    let { screenIndex, progressIndex} = this.state
+    let { progressIndex} = this.state
+    let localProgress = getLocalProgress()
+    let screenIndex = localProgress.subtask
     if (progressIndex < screenIndex) {
       this.setState({ progressIndex: screenIndex })
     }
   }
 
   onScreenAdvance = () => {
-    let { screenIndex, progressIndex, nScreens } = this.state
+    let { progressIndex, nScreens } = this.state
+    let localProgress = getLocalProgress()
+    let screenIndex = localProgress.subtask
     if (progressIndex < screenIndex) {
       progressIndex = screenIndex
     }
     if (screenIndex < nScreens-1) {
       screenIndex++
     }
-    this.setState({ progressIndex, screenIndex })
+    localProgress.subtask = screenIndex
+    localStorage.setItem("localProgress", JSON.stringify(localProgress))
+    this.setState({ progressIndex })
   }
 
   handleNavigationClick = (name, e) => {
-    let { lesson, lessonName, screenIndex, progressIndex, nScreens} = this.state
+    let { lesson, lessonName, progressIndex, nScreens} = this.state
+    let localProgress = getLocalProgress()
+    let screenIndex = localProgress.subtask
     let readyToFinish = progressIndex >= nScreens-1 && screenIndex >= nScreens-1
     if (name === 'first' && screenIndex > 0) {
       screenIndex = 0
@@ -111,7 +200,9 @@ class LessonWizard extends React.Component {
     if (progressIndex < screenIndex && lesson.screens[screenIndex].type === 'Prose') {
       progressIndex = screenIndex
     }
-    this.setState({ screenIndex, progressIndex })
+    localProgress.subtask = screenIndex
+    setLocalProgress(localProgress)
+    this.setState({ progressIndex })
     setTimeout(() => {
       let LessonScreenContent = document.querySelector('.LessonScreenContent')
       if (LessonScreenContent) {
@@ -123,7 +214,9 @@ class LessonWizard extends React.Component {
 
   render() {
     let { store } = this.props
-    let { lessonName, lesson, screenIndex, progressIndex, nScreens } = this.state
+    let { lessonName, lesson, progressIndex, nScreens } = this.state
+    let localProgress = getLocalProgress()
+    let screenIndex = localProgress.subtask
     if (!lesson) {
       return (<div></div>)
     }

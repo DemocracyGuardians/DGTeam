@@ -7,8 +7,8 @@ var bodyParser = require('body-parser');
 var dbconnection = require('./util/dbconnection');
 var sessionMgmt = require('./util/sessionMgmt');
 var sessionRoutes = require('./routes/sessionRoutes');
-var workbenchRoutes = require('./routes/workbenchRoutes');
 var lessonRoutes = require('./routes/lessonRoutes');
+var taskRoutes = require('./routes/taskRoutes');
 
 var TEAM_API_RELATIVE_PATH = process.env.TEAM_API_RELATIVE_PATH;
 var TEAM_API_PORT = process.env.TEAM_API_PORT;
@@ -43,8 +43,8 @@ apiRouter.post('/sendresetpassword', sessionRoutes.sendResetPasswordEmail)
 apiRouter.get('/gotoresetpasswordpage/:token', sessionRoutes.gotoResetPasswordPage)
 apiRouter.post('/resetpassword', sessionRoutes.resetPassword)
 
-apiRouter.post('/workbenchinit', authMiddleware, workbenchRoutes.workbenchinit)
 apiRouter.post('/getlesson/:level/:name', authMiddleware, lessonRoutes.getlesson)
+apiRouter.post('/incrementprogress', authMiddleware, taskRoutes.incrementprogress)
 app.use(TEAM_API_RELATIVE_PATH, apiRouter);
 
 app.listen(TEAM_API_PORT);

@@ -1,7 +1,4 @@
 
-//FIXME Got workbenchinit_failure after resetting password
-//Maybe because an old session was still active using a different login?
-
 const dbconnection = require('../util/dbconnection')
 const sendMail = require('../util/sendMail')
 const crypto = require('crypto')
@@ -10,6 +7,8 @@ const logSend = require('../util/logSend')
 var logSendOK = logSend.logSendOK
 var logSendCE = logSend.logSendCE
 var logSendSE = logSend.logSendSE
+
+console.log('sessionRoutes typeof getUserObject='+typeof getUserObject)
 
 var TEAM_ORG = process.env.TEAM_ORG
 var TEAM_BASE_URL = process.env.TEAM_BASE_URL
@@ -34,6 +33,7 @@ var EMAIL_ALREADY_VERIFIED = 'EMAIL_ALREADY_VERIFIED'
 var INCORRECT_PASSWORD = 'INCORRECT_PASSWORD'
 var TOKEN_NOT_FOUND = 'TOKEN_NOT_FOUND'
 var TOKEN_EXPIRED = 'TOKEN_EXPIRED'
+var UNSPECIFIED_SYSTEM_ERROR = 'UNSPECIFIED_SYSTEM_ERROR'
 
 var connection = dbconnection.getConnection();
 
@@ -63,7 +63,7 @@ exports.signup = function(req, res, next) {
        } else {
          connection.query('INSERT INTO ue_ztm_account SET ?', account, function (error, results, fields) {
            if (error) {
-             logSendSE(res, 500, error, UNSPECIFIED_SYSTEM_ERROR, "Insert new account insert database failure for email '" + account.email + "'");
+             logSendSE(res, error, "Insert new account insert database failure for email '" + account.email + "'");
            } else {
              sendAccountVerificationEmailToUser(account, function(error, result) {
                delete account.password
@@ -79,7 +79,7 @@ exports.signup = function(req, res, next) {
                  getUserObject(account.email, {account}).then(userObject => {
                    logSendOK(res, userObject, "Insert new account success for email '" + account.email + "'");
                  }).catch(error => {
-                   logSendSE(res, 500, error, UNSPECIFIED_SYSTEM_ERROR, 'getUserObjectError');
+                   logSendSE(res, error, 'getUserObjectError');
                  });
                }
              });
@@ -117,10 +117,10 @@ exports.login = function(req, res, next) {
             console.log('req.session.id='+req.session.id);
             req.session.user = account;
             console.log('login after regenerate req.session.id='+req.session.id);
-            getUserObject(account.email, {account}).then(userObject => {
+            getUserObject(account.email, { account }).then(userObject => {
               logSendOK(res, userObject, "Login success for email '" + email + "'");
             }).catch(error => {
-              logSendSE(res, 500, error, UNSPECIFIED_SYSTEM_ERROR, 'getUserObjectError');
+              logSendSE(res, error, 'login getUserObject');
             });
           } else {
             logSendCE(res, 401, INCORRECT_PASSWORD, "Login failure for email '" + email + "'");
@@ -188,7 +188,7 @@ exports.resendVerificationEmail = function(req, res, next) {
                   getUserObject(account.email, {account}).then(userObject => {
                     logSendOK(res, userObject, "resendVerificationEmail success for email '" + account.email + "'");
                   }).catch(error => {
-                    logSendSE(res, 500, error, UNSPECIFIED_SYSTEM_ERROR, 'getUserObjectError');
+                    logSendSE(res, error, 'getUserObjectError');
                   });
                 }
               });
@@ -236,7 +236,7 @@ exports.sendResetPasswordEmail = function(req, res, next) {
                 getUserObject(account.email, {account}).then(userObject => {
                   logSendOK(res, userObject, "sendResetPasswordEmail success for email '" + account.email + "'");
                 }).catch(error => {
-                  logSendSE(res, 500, error, UNSPECIFIED_SYSTEM_ERROR, 'getUserObjectError');
+                  logSendSE(res, error, 'getUserObjectError');
                 });
               }
             });

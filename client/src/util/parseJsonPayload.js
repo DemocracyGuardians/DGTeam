@@ -1,7 +1,6 @@
 
 /**
  * Utility to parse and process a json payload returned by a server api call.
- * Must be bound to "this" r a Reactjs component that uses "withRouter"
  * @param {object} res  response object returned by fetch
  * @param {string} debugId  string to put at start of debug or log messages
  * @param {function} successCB  function to call if json parse succeeds

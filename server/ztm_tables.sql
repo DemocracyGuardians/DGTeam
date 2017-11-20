@@ -20,3 +20,14 @@ CREATE TABLE `ue_ztm_account` (
  PRIMARY KEY (`id`),
  INDEX(email(100),emailValidateToken)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+DROP TABLE  IF EXISTS `ue_ztm_progress`;
+CREATE TABLE `ue_ztm_progress` (
+  `userId` int(11) NOT NULL UNIQUE,
+  `version` int(11) NOT NULL,
+  `level` int(11) NOT NULL,
+  `task` int(11) NOT NULL,
+  `subtask` int(11) NOT NULL,
+  `modified` datetime NOT NULL,
+ PRIMARY KEY (`userId`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
