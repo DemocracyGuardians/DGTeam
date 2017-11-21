@@ -7,6 +7,9 @@ import {
   RESET_PASSWORD_EMAIL_SENT
 } from '../actions/accountActions'
 import {
+  GET_INBOX_SUCCESS
+} from '../actions/inboxActions'
+import {
   GET_LESSON_SUCCESS
 } from '../actions/lessonActions'
 
@@ -22,7 +25,8 @@ export default function accountReducer(state = null, action) {
       return Object.assign({}, state, { lastVerificationEmail: action.email } )
     case RESET_PASSWORD_EMAIL_SENT:
       return Object.assign({}, state, { lastResetPasswordEmail: action.email } )
-    case GET_LESSON_SUCCESS:
+      case GET_INBOX_SUCCESS:
+      case GET_LESSON_SUCCESS:
       return Object.assign({}, state, action.account )
     default:
       return state || null

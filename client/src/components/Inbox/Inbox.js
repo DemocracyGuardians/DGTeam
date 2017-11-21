@@ -1,6 +1,10 @@
 
 import React from 'react';
 import { withRouter } from 'react-router-dom'
+import { RSAA } from 'redux-api-middleware'
+import { TEAM_BASE_URL, TEAM_API_RELATIVE_PATH } from '../../envvars'
+import { getInboxSuccess } from '../../actions/inboxActions'
+import parseJsonPayload from '../../util/parseJsonPayload'
 import PropTypes from 'prop-types'
 import DOMPurify from 'dompurify'
 import { Checkbox, Feed, Icon, Input, Menu } from 'semantic-ui-react'
@@ -20,6 +24,50 @@ Blah
 ]
 
 class Inbox extends React.Component {
+  constructor(props){
+    super(props);
+    this.state = {
+      getinboxComplete: false
+    }
+    this.getinbox = this.getinbox.bind(this);
+    this.getinbox()
+  }
+
+  getinbox() {
+    let componentThis = this
+    let values = {}
+    let { dispatch } = this.props.store
+    let getinboxApiUrl = TEAM_BASE_URL + TEAM_API_RELATIVE_PATH + '/getinbox'
+    const apiAction = {
+      [RSAA]: {
+        endpoint: getinboxApiUrl,
+        method: 'POST',
+        credentials: 'include',
+        types: [
+          'getinbox_request', // ignored
+          {
+            type: 'getinbox_success',
+            payload: (action, state, res) => {
+              parseJsonPayload(res, action.type, function(json) {
+                dispatch(getInboxSuccess(json.account, json.progress, json.tasks))
+                this.setState({ getinboxComplete: true })
+              }.bind(componentThis))
+            }
+          },
+          {
+            type: 'getinbox_failure',
+            payload: (action, state, res) => {
+              console.error('Inbox getinbox_failure')
+              this.props.history.push('/systemerror')
+            }
+          }
+        ],
+        body: JSON.stringify(values),
+        headers: { 'Content-Type': 'application/json' }
+      }
+    }
+    dispatch(apiAction)
+  }
 
   handleItemClick = (item, e) => {
     this.props.history.push('/Inbox/'+item.id)
@@ -42,6 +90,9 @@ class Inbox extends React.Component {
   }
 
   render() {
+    if (!this.state.getinboxComplete) {
+      return (<div></div>)
+    }
     let { store } = this.props
     return (
       <div className="Inbox">
