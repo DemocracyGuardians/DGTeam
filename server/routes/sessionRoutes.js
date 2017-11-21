@@ -8,8 +8,6 @@ var logSendOK = logSend.logSendOK
 var logSendCE = logSend.logSendCE
 var logSendSE = logSend.logSendSE
 
-console.log('sessionRoutes typeof getUserObject='+typeof getUserObject)
-
 var TEAM_ORG = process.env.TEAM_ORG
 var TEAM_BASE_URL = process.env.TEAM_BASE_URL
 var TEAM_API_RELATIVE_PATH = process.env.TEAM_API_RELATIVE_PATH
