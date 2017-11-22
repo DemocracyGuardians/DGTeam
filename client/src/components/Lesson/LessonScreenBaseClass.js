@@ -11,7 +11,8 @@ class LessonScreenBaseClass extends React.Component {
 LessonScreenBaseClass.propTypes = {
   store: PropTypes.object.isRequired,
   content: PropTypes.string.isRequired,
-  onScreenComplete: PropTypes.func.isRequired
+  onScreenComplete: PropTypes.func.isRequired,
+  onRevertProgress: PropTypes.func.isRequired
 }
 
 

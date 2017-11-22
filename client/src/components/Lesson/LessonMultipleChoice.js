@@ -108,7 +108,8 @@ LessonMultipleChoice.propTypes = {
   store: PropTypes.object.isRequired,
   content: PropTypes.object.isRequired,
   onScreenComplete: PropTypes.func.isRequired,
-  onScreenAdvance: PropTypes.func.isRequired
+  onScreenAdvance: PropTypes.func.isRequired,
+  onRevertProgress: PropTypes.func.isRequired
 }
 
 export default withRouter(LessonMultipleChoice);

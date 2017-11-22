@@ -5,7 +5,7 @@ import { RSAA } from 'redux-api-middleware'
 import { Button } from 'semantic-ui-react'
 import PropTypes from 'prop-types'
 import { TEAM_BASE_URL, TEAM_API_RELATIVE_PATH } from '../envvars'
-import { getLessonSuccess } from '../actions/lessonActions'
+import { getLessonSuccess, lessonUpdateProgressSuccess, lessonRevertProgressSuccess } from '../actions/lessonActions'
 import parseJsonPayload from '../util/parseJsonPayload'
 import { getLocalProgress, setLocalProgress } from '../util/localProgress'
 import LessonProse from '../components/Lesson/LessonProse'
@@ -18,12 +18,14 @@ class LessonWizard extends React.Component {
   constructor(props){
     super(props);
     this.state = {
-      lessonName: null
+      lessonName: null,
+      forceRerender: 0
     }
     this.getlesson = this.getlesson.bind(this);
-    this.incrementprogress = this.incrementprogress.bind(this);
+    this.updateprogress = this.updateprogress.bind(this);
     this.onScreenComplete = this.onScreenComplete.bind(this);
     this.onScreenAdvance = this.onScreenAdvance.bind(this);
+    this.onRevertProgress = this.onRevertProgress.bind(this);
     this.getlesson()
   }
 
@@ -61,11 +63,12 @@ class LessonWizard extends React.Component {
                   let nScreens = lesson.screens.length
                   let localProgress = getLocalProgress()
                   let { level, name } = this.props
+                  level = level-0 // convert to number
                   let storeState = this.props.store.getState()
                   let maxProgress = storeState.progress
                   let tasks = storeState.tasks
                   let screenIndex = 0
-                  let progressIndex = lesson.screens[0].type === 'Prose' ? 0 : -1
+                  let progressIndex = 0
                   if (level === maxProgress.level && tasks.levels[level].tasks[maxProgress.task].name === name) {
                     screenIndex = progressIndex = maxProgress.subtask
                   }
@@ -79,13 +82,13 @@ class LessonWizard extends React.Component {
                     return
                   }
                   if (maxProgress.level > level || (maxProgress.level === level && maxProgress.task > task)) {
-                    progressIndex = nScreens-1
+                    progressIndex = nScreens
                   }
                   localProgress.level = level
                   localProgress.task = task
                   localProgress.subtask = screenIndex
                   setLocalProgress(localProgress)
-                  this.setState({ lessonName: newLessonName, lesson, progressIndex, nScreens })
+                  this.setState({ lessonName: newLessonName, lesson, level, task, progressIndex, nScreens })
                 }
               }.bind(componentThis))
             }
@@ -105,45 +108,43 @@ class LessonWizard extends React.Component {
     dispatch(apiAction)
   }
 
-  incrementprogress() {
-    let values = {}
-    let { dispatch } = this.props.store
-    let { level, name } = this.props
-    if (!level || !name ) {
-      console.error('LessonWizard missing level:'+level+' or name:'+name)
-      this.props.history.push('/systemerror')
-    }
-    let newLessonName = level + '/'  + name
-    if (newLessonName === this.state.lessonName) {
-      return
-    }
-    let incrementprogressApiUrl = TEAM_BASE_URL + TEAM_API_RELATIVE_PATH + '/incrementprogress'
+  updateprogress(progressIndex) {
+    let componentThis = this
+    let { level, task } = this.state
+    let { dispatch, getState } = this.props.store
+    let storeState = getState()
+    let values = JSON.parse(JSON.stringify(storeState.progress))
+    values.level = level
+    values.task = task
+    values.subtask = progressIndex
+    let updateprogressApiUrl = TEAM_BASE_URL + TEAM_API_RELATIVE_PATH + '/updateprogress'
     const apiAction = {
       [RSAA]: {
-        endpoint: incrementprogressApiUrl,
+        endpoint: updateprogressApiUrl,
         method: 'POST',
         credentials: 'include',
         types: [
-          'x_request', // ignored
+          'updateprogress_request', // ignored
           {
-            type: 'incrementprogress_success',
+            type: 'updateprogress_success',
             payload: (action, state, res) => {
-              parseJsonPayload.bind(this)(res, action.type, json => {
-                let lesson = json
-                if (!lesson.screens || !lesson.screens[0]) {
-                  console.error('LessonWizard incrementprogress_success, but invalid lesson object')
-                  this.props.history.push('/systemerror')
-                } else {
-                  let progressIndex = lesson.screens[0].type === 'Prose' ? 0 : -1
-                  this.setState({ lessonName: newLessonName, lesson, progressIndex, nScreens: lesson.screens.length })
+              parseJsonPayload(res, action.type, function(json) {
+                dispatch(lessonUpdateProgressSuccess(json.account, json.progress, json.tasks))
+                let progress = json.progress
+                let { level, task, nScreens } = this.state
+                // In case another browser session advanced in the background
+                if (progress.level > level || (progress.level === level && progress.task > task)) {
+                  this.setState({ progressIndex: nScreens })
+                } else if (progress.level === level && progress.task === task && progress.subtask > progressIndex) {
+                  this.setState({ progressIndex: progress.subtask })
                 }
-              })
+              }.bind(componentThis))
             }
           },
           {
-            type: 'incrementprogressx_failure',
+            type: 'updateprogress_failure',
             payload: (action, state, res) => {
-              console.error('LessonWizard incrementprogressx_failure')
+              console.error('LessonWizard updateprogress_failure')
               this.props.history.push('/systemerror')
             }
           }
@@ -156,34 +157,80 @@ class LessonWizard extends React.Component {
   }
 
   onScreenComplete = () => {
-    let { progressIndex} = this.state
+    let { progressIndex } = this.state
     let localProgress = getLocalProgress()
     let screenIndex = localProgress.subtask
-    if (progressIndex < screenIndex) {
-      this.setState({ progressIndex: screenIndex })
+    if (progressIndex < screenIndex+1) {
+      progressIndex = screenIndex+1
+      this.setState({ progressIndex })
     }
+    this.updateprogress(progressIndex) // Note that screen updates while server gets its update
   }
 
   onScreenAdvance = () => {
-    let { progressIndex, nScreens } = this.state
+    let { forceRerender, progressIndex, nScreens } = this.state
     let localProgress = getLocalProgress()
     let screenIndex = localProgress.subtask
-    if (progressIndex < screenIndex) {
-      progressIndex = screenIndex
+    if (progressIndex < screenIndex+1) {
+      progressIndex = screenIndex+1
     }
     if (screenIndex < nScreens-1) {
       screenIndex++
     }
     localProgress.subtask = screenIndex
-    localStorage.setItem("localProgress", JSON.stringify(localProgress))
-    this.setState({ progressIndex })
+    setLocalProgress(localProgress)
+    forceRerender++
+    this.setState({ progressIndex, forceRerender })
+    this.updateprogress(progressIndex) // Note that screen updates while server gets its update
   }
 
+  onRevertProgress() {
+    let componentThis = this
+    let { dispatch, getState } = this.props.store
+    let storeState = getState()
+    let values = JSON.parse(JSON.stringify(storeState.progress))
+    let localProgress = getLocalProgress()
+    values.level = localProgress.level
+    values.task = localProgress.task
+    values.subtask = localProgress.subtask
+    let revertprogressApiUrl = TEAM_BASE_URL + TEAM_API_RELATIVE_PATH + '/revertprogress'
+    const apiAction = {
+      [RSAA]: {
+        endpoint: revertprogressApiUrl,
+        method: 'POST',
+        credentials: 'include',
+        types: [
+          'revertprogress_request', // ignored
+          {
+            type: 'revertprogress_success',
+            payload: (action, state, res) => {
+              parseJsonPayload(res, action.type, function(json) {
+                dispatch(lessonRevertProgressSuccess(json.account, json.progress, json.tasks))
+                this.setState({ progressIndex: json.progress.subtask })
+              }.bind(componentThis))
+            }
+          },
+          {
+            type: 'revertprogress_failure',
+            payload: (action, state, res) => {
+              console.error('LessonWizard revertprogress_failure')
+              this.props.history.push('/systemerror')
+            }
+          }
+        ],
+        body: JSON.stringify(values),
+        headers: { 'Content-Type': 'application/json' }
+      }
+    }
+    dispatch(apiAction)
+  }
+
+
   handleNavigationClick = (name, e) => {
-    let { lesson, lessonName, progressIndex, nScreens} = this.state
+    let { lessonName, progressIndex, nScreens} = this.state
     let localProgress = getLocalProgress()
     let screenIndex = localProgress.subtask
-    let readyToFinish = progressIndex >= nScreens-1 && screenIndex >= nScreens-1
+    let readyToFinish = progressIndex >= nScreens && screenIndex >= nScreens-1
     if (name === 'first' && screenIndex > 0) {
       screenIndex = 0
     } else if (name === 'prev' && screenIndex > 0) {
@@ -196,9 +243,6 @@ class LessonWizard extends React.Component {
     } else {
       console.error('LessonWizard handleNavigationClick unexpected case. lessonName:'+lessonName+', progressIndex='+progressIndex+', screenIndex:'+screenIndex);
       return // should not get here ever
-    }
-    if (progressIndex < screenIndex && lesson.screens[screenIndex].type === 'Prose') {
-      progressIndex = screenIndex
     }
     localProgress.subtask = screenIndex
     setLocalProgress(localProgress)
@@ -222,7 +266,7 @@ class LessonWizard extends React.Component {
     }
     let type = lesson.screens[screenIndex].type
     let lessonTitle, screenTitle, screenContent, navigation
-    let readyToFinish = progressIndex >= nScreens-1 && screenIndex >= nScreens-1
+    let readyToFinish = progressIndex >= nScreens && screenIndex >= nScreens-1
     if (!lessonName) {
       lessonTitle = 'loading ... '
     } else if (!lesson || !lesson.success) {
@@ -238,8 +282,8 @@ class LessonWizard extends React.Component {
       let prevStyle = { visibility: screenIndex > 0 ? 'visible' : 'hidden'}
       let nextStyle = { visibility: screenIndex < (nScreens-1) ? 'visible' : 'hidden'}
       let lastStyle = { visibility: screenIndex < (nScreens-1) || readyToFinish ? 'visible' : 'hidden'}
-      let nextDisabled = (progressIndex < screenIndex)
-      let lastDisabled = (progressIndex < nScreens-1) && !readyToFinish
+      let nextDisabled = (progressIndex <= screenIndex)
+      let lastDisabled = (progressIndex < nScreens) && !readyToFinish
       let lastText = readyToFinish ? 'Finish' : 'End'
       navigation = (
         <div className="LessonNavigationButtons">
@@ -260,32 +304,32 @@ class LessonWizard extends React.Component {
       if (type === 'LessonProse') {
         screenContent = (
           <div>
-            <LessonProse content={lesson.screens[screenIndex].content}
-              onScreenComplete={this.onScreenComplete} onScreenAdvance={this.onScreenAdvance} store={store} />
+            <LessonProse content={lesson.screens[screenIndex].content} store={store}
+              onScreenComplete={this.onScreenComplete} onScreenAdvance={this.onScreenAdvance} onRevertProgress={this.onRevertProgress} />
             <div className="LessonNavigation">{navigation}</div>
           </div>
         )
       } else if (type === 'LessonTrueFalse') {
         screenContent = (
           <div>
-            <LessonTrueFalse content={lesson.screens[screenIndex].content}
-              onScreenComplete={this.onScreenComplete} onScreenAdvance={this.onScreenAdvance} store={store} />
+            <LessonTrueFalse content={lesson.screens[screenIndex].content} store={store}
+              onScreenComplete={this.onScreenComplete} onScreenAdvance={this.onScreenAdvance} onRevertProgress={this.onRevertProgress} />
             <div className="LessonNavigation">{navigation}</div>
           </div>
         )
       } else if (type === 'LessonMultipleChoice') {
         screenContent = (
           <div>
-            <LessonMultipleChoice content={lesson.screens[screenIndex].content}
-              onScreenComplete={this.onScreenComplete} onScreenAdvance={this.onScreenAdvance} store={store} />
+            <LessonMultipleChoice content={lesson.screens[screenIndex].content} store={store}
+              onScreenComplete={this.onScreenComplete} onScreenAdvance={this.onScreenAdvance} onRevertProgress={this.onRevertProgress} />
             <div className="LessonNavigation">{navigation}</div>
           </div>
         )
       } else if (type === 'LessonConfirmVow') {
         screenContent = (
           <div>
-            <LessonConfirmVow content={lesson.screens[screenIndex].content}
-              onScreenComplete={this.onScreenComplete} onScreenAdvance={this.onScreenAdvance} store={store} />
+            <LessonConfirmVow content={lesson.screens[screenIndex].content} store={store}
+              onScreenComplete={this.onScreenComplete} onScreenAdvance={this.onScreenAdvance} onRevertProgress={this.onRevertProgress} />
             <div className="LessonNavigation">{navigation}</div>
           </div>
         )

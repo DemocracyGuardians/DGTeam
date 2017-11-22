@@ -47,6 +47,7 @@ apiRouter.post('/resetpassword', sessionRoutes.resetPassword)
 apiRouter.post('/getinbox', authMiddleware, inboxRoutes.getinbox)
 apiRouter.post('/getlesson/:level/:name', authMiddleware, lessonRoutes.getlesson)
 apiRouter.post('/updateprogress', authMiddleware, taskRoutes.updateprogress)
+apiRouter.post('/revertprogress', authMiddleware, taskRoutes.revertprogress)
 app.use(TEAM_API_RELATIVE_PATH, apiRouter);
 
 app.listen(TEAM_API_PORT);

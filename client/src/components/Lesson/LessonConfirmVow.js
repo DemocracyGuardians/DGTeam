@@ -26,6 +26,7 @@ class LessonConfirmVow extends LessonScreenBaseClass {
 
   no = (e) => {
     this.setState({ confirmed: 'no' })
+    this.props.onRevertProgress()
   }
 
   doLogout() {
@@ -60,24 +61,6 @@ class LessonConfirmVow extends LessonScreenBaseClass {
     }
     dispatch(apiAction)
   }
-
-/*
-  doLogout = (e) => {
-    let dispatch = this.props.store
-    debugger
-    logout(apiAction => {
-      dispatch(apiAction)
-    },
-      () => {
-      console.log('logout_success')
-      dispatch(accountLogoutSuccess())
-      this.props.history.push('/login')
-    }, () => {
-      console.error('logout_failure')
-      this.props.history.push('/systemerror')
-    })
-  }
-  */
 
   render() {
     let { confirmed } = this.state
@@ -120,7 +103,8 @@ LessonConfirmVow.propTypes = {
   store: PropTypes.object.isRequired,
   content: PropTypes.string.isRequired,
   onScreenComplete: PropTypes.func.isRequired,
-  onScreenAdvance: PropTypes.func.isRequired
+  onScreenAdvance: PropTypes.func.isRequired,
+  onRevertProgress: PropTypes.func.isRequired
 }
 
 export default withRouter(LessonConfirmVow);
