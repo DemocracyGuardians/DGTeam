@@ -7,6 +7,7 @@ import { Button, Container, Input, Message } from 'semantic-ui-react'
 import PropTypes from 'prop-types'
 import { RSAA } from 'redux-api-middleware';
 import { accountLoginSuccess } from '../actions/accountActions'
+import { getLocalProgress, setLocalProgress } from '../util/localProgress'
 import parseJsonPayload from '../util/parseJsonPayload'
 import { TEAM_ORG, TEAM_BASE_URL, TEAM_API_RELATIVE_PATH } from '../envvars'
 
@@ -47,6 +48,9 @@ class Login extends React.Component {
             payload: (action, state, res) => {
               parseJsonPayload.bind(this)(res, action.type, json => {
                 localStorage.setItem("teamAppEmail", json.account.email)
+                if (!getLocalProgress()) {
+                  setLocalProgress({ level:1, task:0, step:0 })
+                }
                 dispatch(accountLoginSuccess(json.account))
                 this.props.history.push('/Inbox')
               })

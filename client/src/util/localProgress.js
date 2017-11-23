@@ -4,9 +4,12 @@
  */
 export function getLocalProgress() {
   let email = localStorage.getItem("teamAppEmail")
+  if (!email) {
+    return null
+  }
   let localProgress = JSON.parse(localStorage.getItem("teamAppLocalProgress_"+email))
   if (!localProgress) {
-    localProgress = { level:1, task:0, step:0 }
+    return null
   }
   return localProgress
 }

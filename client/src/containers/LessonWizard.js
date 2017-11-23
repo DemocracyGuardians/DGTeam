@@ -28,6 +28,7 @@ class LessonWizard extends React.Component {
     this.onScreenComplete = this.onScreenComplete.bind(this);
     this.onScreenAdvance = this.onScreenAdvance.bind(this);
     this.onRevertProgress = this.onRevertProgress.bind(this);
+    this.getLocalProgressWrapper = this.getLocalProgressWrapper.bind(this);
     this.getlesson()
   }
 
@@ -62,7 +63,7 @@ class LessonWizard extends React.Component {
                   this.props.history.push('/systemerror')
                 } else {
                   let nScreens = lesson.screens.length
-                  let localProgress = getLocalProgress()
+                  let localProgress = this.getLocalProgressWrapper()
                   let storeState = this.props.store.getState()
                   let maxProgress = storeState.progress
                   let tasks = storeState.tasks
@@ -157,7 +158,7 @@ class LessonWizard extends React.Component {
 
   onScreenComplete = () => {
     let { progressIndex } = this.state
-    let localProgress = getLocalProgress()
+    let localProgress = this.getLocalProgressWrapper()
     let screenIndex = localProgress.step
     if (progressIndex < screenIndex+1) {
       progressIndex = screenIndex+1
@@ -168,7 +169,7 @@ class LessonWizard extends React.Component {
 
   onScreenAdvance = () => {
     let { forceRerender, progressIndex, nScreens } = this.state
-    let localProgress = getLocalProgress()
+    let localProgress = this.getLocalProgressWrapper()
     let screenIndex = localProgress.step
     if (progressIndex < screenIndex+1) {
       progressIndex = screenIndex+1
@@ -188,7 +189,7 @@ class LessonWizard extends React.Component {
     let { dispatch, getState } = this.props.store
     let storeState = getState()
     let values = JSON.parse(JSON.stringify(storeState.progress))
-    let localProgress = getLocalProgress()
+    let localProgress = this.getLocalProgressWrapper()
     values.level = localProgress.level
     values.task = localProgress.task
     values.step = localProgress.step
@@ -227,7 +228,7 @@ class LessonWizard extends React.Component {
 
   handleNavigationClick = (name, e) => {
     let { lessonName, progressIndex, nScreens} = this.state
-    let localProgress = getLocalProgress()
+    let localProgress = this.getLocalProgressWrapper()
     let screenIndex = localProgress.step
     let readyToFinish = progressIndex >= nScreens && screenIndex >= nScreens-1
     if (name === 'first' && screenIndex > 0) {
@@ -255,10 +256,20 @@ class LessonWizard extends React.Component {
     }, 50)
   }
 
+  getLocalProgressWrapper() {
+    let localProgress = getLocalProgress()
+    if (!localProgress) {
+      console.error('LessonWizard missing localProgress value')
+      this.props.history.push('/systemerror')
+    } else {
+      return localProgress
+    }
+  }
+
   render() {
     let { store } = this.props
     let { lessonName, lesson, progressIndex, nScreens } = this.state
-    let localProgress = getLocalProgress()
+    let localProgress = this.getLocalProgressWrapper()
     let screenIndex = localProgress.step
     if (!lesson) {
       return (<div></div>)

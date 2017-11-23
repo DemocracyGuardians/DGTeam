@@ -29,6 +29,7 @@ class App extends Component {
     const ResetPasswordComp = (() => (<ResetPassword store={this.props.store} />))
     const ResetPasswordSuccessComp = (() => (<ResetPasswordSuccess store={this.props.store} />))
     const WorkbenchComp = (() => (<Workbench store={this.props.store} />))
+    let defaultRoute = localStorage.getItem("teamAppEmail") ? '/login' : '/signup'
     return (
       <div className="App">
         <BrowserRouter>
@@ -45,7 +46,7 @@ class App extends Component {
             <Route exact path='/Inbox/:id' component={WorkbenchComp} />
             <Route exact path='/Lesson/:level/:name' component={WorkbenchComp} />
             <Route path='/systemerror' component={SystemError} />
-            <Redirect path='*' to="/login" />
+            <Redirect path='*' to={defaultRoute} />
           </Switch>
         </BrowserRouter>
       </div>
