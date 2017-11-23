@@ -43,7 +43,6 @@ exports.signup = function(req, res, next) {
      lastName: req.body.lastName,
      email: req.body.email,
      password: req.body.password,
-     vows: req.body.vows ? 1 : 0,
      agreement: req.body.agreement ? 1 : 0,
      emailValidateToken: null,
      emailValidateTokenDateTime: now,

@@ -7,8 +7,8 @@ import { Button, Container, Input, Message } from 'semantic-ui-react'
 import PropTypes from 'prop-types'
 import { RSAA } from 'redux-api-middleware'
 import Marked from 'marked'
-import vowsMd from '../components/Session/Trustworthiness_Vows_md'
 import agreementMd from '../components/Session/Members_Agreement_md'
+import { setLocalProgress } from '../util/localProgress'
 import { accountSignupSuccess, accountVerificationEmailSent } from '../actions/accountActions'
 import { TEAM_ORG, TEAM_BASE_URL, TEAM_API_RELATIVE_PATH } from '../envvars'
 import passwordRegexp from '../util/passwordRegexp'
@@ -40,22 +40,16 @@ class Signup extends React.Component {
       showPassword: false,
       needToValidatePane1: false,
       needToValidatePane2: false,
-      needToValidatePane3: false,
       pane: 1
     }
     this.validatePane1 = this.validatePane1.bind(this)
     this.validatePane2 = this.validatePane2.bind(this)
-    this.validatePane3 = this.validatePane3.bind(this)
     this.validatePane1Error = this.validatePane1Error.bind(this)
     this.validatePane2Error = this.validatePane2Error.bind(this)
-    this.validatePane3Error = this.validatePane3Error.bind(this)
     this.clearErrors = this.clearErrors.bind(this)
     this.onClickNext1 = this.onClickNext1.bind(this)
     this.onClickPrev2 = this.onClickPrev2.bind(this)
-    this.onClickNext2 = this.onClickNext2.bind(this)
-    this.onClickPrev3 = this.onClickPrev3.bind(this)
     this.toggleShowPassword = this.toggleShowPassword.bind(this)
-    this.resendVerificationEmail = this.resendVerificationEmail.bind(this)
   }
 
   validatePane1() {
@@ -80,19 +74,6 @@ class Signup extends React.Component {
 
   validatePane2() {
     let f = document.querySelector('.Signup form')
-    if (!f['local.vows'].checked) {
-      return false
-    } else {
-      return true
-    }
-  }
-
-  validatePane2Error() {
-    this.setState({ error: true, message: 'You must commit to the vows in order to sign up.', pane: 2 })
-  }
-
-  validatePane3() {
-    let f = document.querySelector('.Signup form')
     if (!f['local.agreement'].checked) {
       return false
     } else {
@@ -100,8 +81,8 @@ class Signup extends React.Component {
     }
   }
 
-  validatePane3Error() {
-    this.setState({ error: true, message: 'You must agree to the terms of the Members Agreement in order to sign up.', pane: 3 })
+  validatePane2Error() {
+    this.setState({ error: true, message: 'You must agree to the terms of the Members Agreement in order to sign up.', pane: 2 })
   }
 
   clearErrors() {
@@ -170,37 +151,6 @@ class Signup extends React.Component {
     this.setState({ pane: 1 })
   }
 
-  onClickNext2(event) {
-    event.preventDefault()
-    this.setState({ needToValidatePane2: true })
-    if (!this.validatePane2()) {
-      this.validatePane2Error()
-      return
-    }
-    var invalidFields = this.validatePane1()
-    if (invalidFields.length > 0) {
-      this.validatePane1Error(invalidFields)
-      return
-    }
-    this.clearErrors()
-    this.setState({ pane: 3 })
-  }
-
-  onClickPrev3(event) {
-    event.preventDefault()
-    if (!this.validatePane2()) {
-      this.validatePane2Error()
-      return
-    }
-    var invalidFields = this.validatePane1()
-    if (invalidFields.length > 0) {
-      this.validatePane1Error(invalidFields)
-      return
-    }
-    this.clearErrors()
-    this.setState({ pane: 2 })
-  }
-
   handleChange(values) {
     var invalidFields = this.validatePane1()
     if (this.state.pane === 1 && this.state.needToValidatePane1 && invalidFields.length > 0) {
@@ -211,19 +161,11 @@ class Signup extends React.Component {
       this.validatePane2Error()
       return
     }
-    if (this.state.pane === 3 && this.state.needToValidatePane3 && !this.validatePane3()) {
-      this.validatePane3Error()
-      return
-    }
     this.clearErrors()
   }
 
   handleSubmit(values) {
-    this.setState({ needToValidatePane3: true })
-    if (!this.validatePane3()) {
-      this.validatePane3Error()
-      return
-    }
+    this.setState({ needToValidatePane2: true })
     if (!this.validatePane2()) {
       this.validatePane2Error()
       return
@@ -247,6 +189,7 @@ class Signup extends React.Component {
             payload: (action, state, res) => {
               parseJsonPayload.bind(this)(res, action.type, json => {
                 localStorage.setItem("teamAppEmail", values.email)
+                setLocalProgress({ level:1, task:0, step:0 })
                 dispatch(accountSignupSuccess(json.account))
                 dispatch(accountVerificationEmailSent(json.account.email))
                 this.props.history.push('/verificationsent')
@@ -279,25 +222,17 @@ class Signup extends React.Component {
     this.setState({ showPassword: !this.state.showPassword })
   }
 
-  resendVerificationEmail(event) {
-    event.stopPropagation()
-    alert('not yet implemented')
-  }
-
   render() {
-    let { pane, error, needToValidatePane1, needToValidatePane2, needToValidatePane3, emailAlreadyRegistered, showPassword } = this.state
-    let message = this.state.message || (this.state.pane <= 3 ? `Step ${pane} of 3` : '')
+    let { pane, error, needToValidatePane1, needToValidatePane2, emailAlreadyRegistered, showPassword } = this.state
+    let message = this.state.message || (this.state.pane <= 2 ? `Step ${pane} of 2` : '')
     let pane1style = { display: (pane === 1 ? 'block' : 'none') }
     let pane2style = { display: (pane === 2 ? 'block' : 'none') }
-    let pane3style = { display: (pane === 3 ? 'block' : 'none') }
     let pane1required = needToValidatePane1
     let passwordPattern = needToValidatePane1 ? passwordRegexp : '.*'
     let passwordType = showPassword ? 'input' : 'password'
     let showHidePasswordText = showPassword ? 'Hide password' : 'Show password'
     let emailClass = 'verticalformcontrol ' + (emailAlreadyRegistered ? 'emailError' : '' )
-    let vowsClass = 'verticalformcontrol checkboxlabelrow ' + (needToValidatePane2 && !this.validatePane2() ? 'checkboxDivError' : '' )
-    let agreementClass = 'verticalformcontrol checkboxlabelrow ' + (needToValidatePane3 && !this.validatePane3() ? 'checkboxDivError' : '' )
-    let vowsHtml = Marked(vowsMd);
+    let agreementClass = 'verticalformcontrol checkboxlabelrow ' + (needToValidatePane2 && !this.validatePane2() ? 'checkboxDivError' : '' )
     let agreementHtml = Marked(agreementMd);
     let hdr = TEAM_ORG+' Team Signup'
     return (
@@ -326,21 +261,6 @@ class Signup extends React.Component {
           </div>
           <div style={pane2style}>
             <Message header={hdr} className='verticalformtopmessage' error={error} content={message} />
-            <div dangerouslySetInnerHTML={{__html: vowsHtml}} />
-            <div className={vowsClass}>
-              <Control.checkbox model=".vows" />
-              <label>
-                I agree with these vows and will commit to them in my public and professional life.
-              </label>
-            </div>
-            <div className='verticalformbuttonrow'>
-              <Button className="verticalformcontrol verticalformbottombutton" onClick={this.onClickPrev2}  floated='left'>Prev</Button>
-              <Button className="verticalformcontrol verticalformbottombutton" onClick={this.onClickNext2}  floated='right'>Next</Button>
-              <div style={{clear:'both' }} ></div>
-            </div>
-          </div>
-          <div style={pane3style}>
-            <Message header={hdr} className='verticalformtopmessage' error={error} content={message} />
             <div dangerouslySetInnerHTML={{__html: agreementHtml}} />
             <div className={agreementClass}>
               <Control.checkbox model=".agreement" />
@@ -349,7 +269,7 @@ class Signup extends React.Component {
               </label>
             </div>
             <div className='verticalformbuttonrow'>
-              <Button className="verticalformcontrol verticalformbottombutton" onClick={this.onClickPrev3}  floated='left'>Prev</Button>
+              <Button className="verticalformcontrol verticalformbottombutton" onClick={this.onClickPrev2}  floated='left'>Prev</Button>
               <Button type="submit" className="verticalformcontrol verticalformbottombutton" floated='right'>Finish</Button>
               <div style={{clear:'both' }} ></div>
             </div>

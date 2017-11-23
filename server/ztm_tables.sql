@@ -8,7 +8,6 @@ CREATE TABLE `ue_ztm_account` (
  `lastName` varchar(100) COLLATE utf8_unicode_ci NOT NULL,
  `email` varchar(100) COLLATE utf8_unicode_ci UNIQUE NOT NULL,
  `password` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
- `vows` TINYINT unsigned NOT NULL,
  `agreement` TINYINT unsigned NOT NULL,
  `created` datetime NOT NULL,
  `emailValidateToken` varchar(20) NOT NULL,
