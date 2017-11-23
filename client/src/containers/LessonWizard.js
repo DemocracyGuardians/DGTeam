@@ -58,11 +58,11 @@ class LessonWizard extends React.Component {
               parseJsonPayload(res, action.type, function(json) {
                 let lesson = json.lesson
                 dispatch(getLessonSuccess(json.account, json.progress, json.tasks))
-                if (!lesson.screens || !lesson.screens[0]) {
+                if (!lesson.steps || !lesson.steps[0]) {
                   console.error('LessonWizard getlesson_success, but invalid lesson object')
                   this.props.history.push('/systemerror')
                 } else {
-                  let nScreens = lesson.screens.length
+                  let nSteps = lesson.steps.length
                   let localProgress = this.getLocalProgressWrapper()
                   let storeState = this.props.store.getState()
                   let maxProgress = storeState.progress
@@ -82,13 +82,13 @@ class LessonWizard extends React.Component {
                     return
                   }
                   if (maxProgress.level > this.state.level || (maxProgress.level === this.state.level && maxProgress.task > task)) {
-                    progressIndex = nScreens
+                    progressIndex = nSteps
                   }
                   localProgress.level = this.state.level
                   localProgress.task = task
                   localProgress.step = screenIndex
                   setLocalProgress(localProgress)
-                  this.setState({ lessonName: newLessonName, lesson, task, progressIndex, nScreens })
+                  this.setState({ lessonName: newLessonName, lesson, task, progressIndex, nSteps })
                 }
               }.bind(componentThis))
             }
@@ -131,10 +131,10 @@ class LessonWizard extends React.Component {
               parseJsonPayload(res, action.type, function(json) {
                 dispatch(lessonUpdateProgressSuccess(json.account, json.progress, json.tasks))
                 let progress = json.progress
-                let { level, task, nScreens } = this.state
+                let { level, task, nSteps } = this.state
                 // In case another browser session advanced in the background
                 if (progress.level > level || (progress.level === level && progress.task > task)) {
-                  this.setState({ progressIndex: nScreens })
+                  this.setState({ progressIndex: nSteps })
                 } else if (progress.level === level && progress.task === task && progress.step > progressIndex) {
                   this.setState({ progressIndex: progress.step })
                 }
@@ -168,13 +168,13 @@ class LessonWizard extends React.Component {
   }
 
   onScreenAdvance = () => {
-    let { forceRerender, progressIndex, nScreens } = this.state
+    let { forceRerender, progressIndex, nSteps } = this.state
     let localProgress = this.getLocalProgressWrapper()
     let screenIndex = localProgress.step
     if (progressIndex < screenIndex+1) {
       progressIndex = screenIndex+1
     }
-    if (screenIndex < nScreens-1) {
+    if (screenIndex < nSteps-1) {
       screenIndex++
     }
     localProgress.step = screenIndex
@@ -227,19 +227,19 @@ class LessonWizard extends React.Component {
 
 
   handleNavigationClick = (name, e) => {
-    let { lessonName, progressIndex, nScreens} = this.state
+    let { lessonName, progressIndex, nSteps} = this.state
     let localProgress = this.getLocalProgressWrapper()
     let screenIndex = localProgress.step
-    let readyToFinish = progressIndex >= nScreens && screenIndex >= nScreens-1
+    let readyToFinish = progressIndex >= nSteps && screenIndex >= nSteps-1
     if (name === 'first' && screenIndex > 0) {
       screenIndex = 0
     } else if (name === 'prev' && screenIndex > 0) {
       screenIndex--
-    } else if (name === 'next' && screenIndex < nScreens-1 && progressIndex >= screenIndex-1) {
+    } else if (name === 'next' && screenIndex < nSteps-1 && progressIndex >= screenIndex-1) {
       screenIndex++
-    } else if (name === 'last' && screenIndex < nScreens-1 && progressIndex >= nScreens-1) {
+    } else if (name === 'last' && screenIndex < nSteps-1 && progressIndex >= nSteps-1) {
       //FIXME readyToFinish logic
-      screenIndex = nScreens - 1
+      screenIndex = nSteps - 1
     } else {
       console.error('LessonWizard handleNavigationClick unexpected case. lessonName:'+lessonName+', progressIndex='+progressIndex+', screenIndex:'+screenIndex);
       return // should not get here ever
@@ -268,15 +268,15 @@ class LessonWizard extends React.Component {
 
   render() {
     let { store } = this.props
-    let { lessonName, lesson, progressIndex, nScreens } = this.state
+    let { lessonName, lesson, progressIndex, nSteps } = this.state
     let localProgress = this.getLocalProgressWrapper()
     let screenIndex = localProgress.step
     if (!lesson) {
       return (<div></div>)
     }
-    let type = lesson.screens[screenIndex].type
+    let type = lesson.steps[screenIndex].type
     let lessonTitle, screenTitle, screenContent, navigation
-    let readyToFinish = progressIndex >= nScreens && screenIndex >= nScreens-1
+    let readyToFinish = progressIndex >= nSteps && screenIndex >= nSteps-1
     if (!lessonName) {
       lessonTitle = 'loading ... '
     } else if (!lesson || !lesson.success) {
@@ -286,14 +286,14 @@ class LessonWizard extends React.Component {
         <h1>Lesson 1.1: {lesson.lessonTitle}</h1>
       )
       screenTitle = (
-        <h2><div className="ScreenTitlePage">({screenIndex+1} of {nScreens})</div>{lesson.screens[screenIndex].title}</h2>
+        <h2><div className="ScreenTitlePage">({screenIndex+1} of {nSteps})</div>{lesson.steps[screenIndex].title}</h2>
       )
       let firstStyle = { visibility: screenIndex > 0 ? 'visible' : 'hidden'}
       let prevStyle = { visibility: screenIndex > 0 ? 'visible' : 'hidden'}
-      let nextStyle = { visibility: screenIndex < (nScreens-1) ? 'visible' : 'hidden'}
-      let lastStyle = { visibility: screenIndex < (nScreens-1) || readyToFinish ? 'visible' : 'hidden'}
+      let nextStyle = { visibility: screenIndex < (nSteps-1) ? 'visible' : 'hidden'}
+      let lastStyle = { visibility: screenIndex < (nSteps-1) || readyToFinish ? 'visible' : 'hidden'}
       let nextDisabled = (progressIndex <= screenIndex)
-      let lastDisabled = (progressIndex < nScreens) && !readyToFinish
+      let lastDisabled = (progressIndex < nSteps) && !readyToFinish
       let lastText = readyToFinish ? 'Finish' : 'End'
       navigation = (
         <div className="LessonNavigationButtons">
@@ -314,7 +314,7 @@ class LessonWizard extends React.Component {
       if (type === 'LessonProse') {
         screenContent = (
           <div>
-            <LessonProse content={lesson.screens[screenIndex].content} store={store}
+            <LessonProse content={lesson.steps[screenIndex].content} store={store}
               onScreenComplete={this.onScreenComplete} onScreenAdvance={this.onScreenAdvance} onRevertProgress={this.onRevertProgress} />
             <div className="LessonNavigation">{navigation}</div>
           </div>
@@ -322,7 +322,7 @@ class LessonWizard extends React.Component {
       } else if (type === 'LessonTrueFalse') {
         screenContent = (
           <div>
-            <LessonTrueFalse content={lesson.screens[screenIndex].content} store={store}
+            <LessonTrueFalse content={lesson.steps[screenIndex].content} store={store}
               onScreenComplete={this.onScreenComplete} onScreenAdvance={this.onScreenAdvance} onRevertProgress={this.onRevertProgress} />
             <div className="LessonNavigation">{navigation}</div>
           </div>
@@ -330,7 +330,7 @@ class LessonWizard extends React.Component {
       } else if (type === 'LessonMultipleChoice') {
         screenContent = (
           <div>
-            <LessonMultipleChoice content={lesson.screens[screenIndex].content} store={store}
+            <LessonMultipleChoice content={lesson.steps[screenIndex].content} store={store}
               onScreenComplete={this.onScreenComplete} onScreenAdvance={this.onScreenAdvance} onRevertProgress={this.onRevertProgress} />
             <div className="LessonNavigation">{navigation}</div>
           </div>
@@ -338,7 +338,7 @@ class LessonWizard extends React.Component {
       } else if (type === 'LessonConfirmVow') {
         screenContent = (
           <div>
-            <LessonConfirmVow content={lesson.screens[screenIndex].content} store={store}
+            <LessonConfirmVow content={lesson.steps[screenIndex].content} store={store}
               onScreenComplete={this.onScreenComplete} onScreenAdvance={this.onScreenAdvance} onRevertProgress={this.onRevertProgress} />
             <div className="LessonNavigation">{navigation}</div>
           </div>

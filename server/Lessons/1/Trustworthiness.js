@@ -1,7 +1,7 @@
 
 module.exports = {
   title: 'Introducing Trustworthiness',
-  screens: [
+  steps: [
     {
       type: 'LessonProse',
       title: 'Trust makes our lives more efficient',
