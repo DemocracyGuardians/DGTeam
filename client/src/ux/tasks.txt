@@ -13,26 +13,26 @@ db
     version
     level
     task
-    subtask
+    step
     modified
 apis
   updateprogress:
     version error if doesn't match latest
-    increment subtask
-    if subtask>=nsubtasks
+    increment step
+    if step>=nsteps
       task++
-      subtask=0
+      step=0
       if task>=ntasks
         level++
         task=0
-        subtask=0
-    update table progress level, task, subtask
+        step=0
+    update table progress level, task, step
     returns user={account:{},progress:{}}
 Upon first login:
   if no entry in progress, insert 1,0,0
   returns user={account:{},progress:{}}
 On completing a screen:
-  updateprogress {level, task, subtask} just completed, returns user={account:{},progress:{}} for next step,
+  updateprogress {level, task, step} just completed, returns user={account:{},progress:{}} for next step,
   verify server and client info match
   If finished task, go to Inbox
   Maintain Inbox state, screenIndex, level, task in local storage so we can return to taskmessage

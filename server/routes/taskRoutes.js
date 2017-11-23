@@ -40,12 +40,12 @@ exports.updateprogress = function(req, res, next) {
               if (updatedProgress.level > oldProgress.level ||
                   (updatedProgress.level === oldProgress.level && updatedProgress.task > oldProgress.task) ||
                   (updatedProgress.level === oldProgress.level && updatedProgress.task === oldProgress.task &&
-                  updatedProgress.subtask > oldProgress.subtask)) {
+                  updatedProgress.step > oldProgress.step)) {
                 console.log('updating progress table');
                 // Need to update database
                 let now = new Date();
-                connection.query('UPDATE ue_ztm_progress SET version = ?, level = ?, task = ?, subtask = ?, modified = ? WHERE userId = ?',
-                        [latest.version, updatedProgress.level, updatedProgress.task, updatedProgress.subtask, now, account.id],
+                connection.query('UPDATE ue_ztm_progress SET version = ?, level = ?, task = ?, step = ?, modified = ? WHERE userId = ?',
+                        [latest.version, updatedProgress.level, updatedProgress.task, updatedProgress.step, now, account.id],
                         function (error, results, fields) {
                   if (error) {
                     progressReject(getBaseName(__filename)+" progress update database failure for email '" + account.email + "'");
@@ -97,8 +97,8 @@ exports.revertprogress = function(req, res, next) {
     } else {
       let progressPromise = new Promise((progressResolve, progressReject) => {
         let now = new Date();
-        connection.query('UPDATE ue_ztm_progress SET version = ?, level = ?, task = ?, subtask = ?, modified = ? WHERE userId = ?',
-                [latest.version, updatedProgress.level, updatedProgress.task, updatedProgress.subtask, now, account.id],
+        connection.query('UPDATE ue_ztm_progress SET version = ?, level = ?, task = ?, step = ?, modified = ? WHERE userId = ?',
+                [latest.version, updatedProgress.level, updatedProgress.task, updatedProgress.step, now, account.id],
                 function (error, results, fields) {
           if (error) {
             progressReject(getBaseName(__filename)+" progress update database failure for email '" + account.email + "'");

@@ -246,6 +246,7 @@ class Signup extends React.Component {
             type: 'SIGNUP_SUCCESS',
             payload: (action, state, res) => {
               parseJsonPayload.bind(this)(res, action.type, json => {
+                localStorage.setItem("teamAppEmail", values.email)
                 dispatch(accountSignupSuccess(json.account))
                 dispatch(accountVerificationEmailSent(json.account.email))
                 this.props.history.push('/verificationsent')

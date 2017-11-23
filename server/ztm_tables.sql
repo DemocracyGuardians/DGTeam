@@ -27,7 +27,7 @@ CREATE TABLE `ue_ztm_progress` (
   `version` int(11) NOT NULL,
   `level` int(11) NOT NULL,
   `task` int(11) NOT NULL,
-  `subtask` int(11) NOT NULL,
+  `step` int(11) NOT NULL,
   `modified` datetime NOT NULL,
  PRIMARY KEY (`userId`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;

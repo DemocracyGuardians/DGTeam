@@ -63,8 +63,8 @@ exports.signup = function(req, res, next) {
            if (error) {
              logSendSE(res, error, "Insert new account insert database failure for email '" + account.email + "'");
            } else {
+             account.id = results.insertId;
              sendAccountVerificationEmailToUser(account, function(error, result) {
-               delete account.password
                if (error) {
                  console.error("Insert new account email send failure for email '" + account.email + "', error= ", error);
                  connection.query('DELETE FROM ue_ztm_account WHERE email = ?', [account.email], function (error, results, fields) {
@@ -109,7 +109,6 @@ exports.login = function(req, res, next) {
           logSendCE(res, 401, EMAIL_NOT_VERIFIED, "Account for '" + email + "' has not been verified yet via email");
         } else {
           if (account.password === password) {
-            delete account.password
             console.log('Before calling session login.  User='+account);
             console.dir(account);
             console.log('req.session.id='+req.session.id);

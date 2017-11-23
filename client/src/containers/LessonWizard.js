@@ -18,6 +18,8 @@ class LessonWizard extends React.Component {
   constructor(props){
     super(props);
     this.state = {
+      level: parseInt(this.props.level),
+      name: this.props.name,
       lessonName: null,
       forceRerender: 0
     }
@@ -33,12 +35,11 @@ class LessonWizard extends React.Component {
     let componentThis = this
     let values = {}
     let { dispatch } = this.props.store
-    let { level, name } = this.props
-    if (!level || !name ) {
-      console.error('LessonWizard missing level:'+level+' or name:'+name)
+    if (!this.state.level || !this.state.name ) {
+      console.error('LessonWizard missing level:'+this.state.level+' or name:'+this.state.name)
       this.props.history.push('/systemerror')
     }
-    let newLessonName = level + '/'  + name
+    let newLessonName = this.props.level + '/'  + this.state.name
     if (newLessonName === this.state.lessonName) {
       return
     }
@@ -62,33 +63,31 @@ class LessonWizard extends React.Component {
                 } else {
                   let nScreens = lesson.screens.length
                   let localProgress = getLocalProgress()
-                  let { level, name } = this.props
-                  level = level-0 // convert to number
                   let storeState = this.props.store.getState()
                   let maxProgress = storeState.progress
                   let tasks = storeState.tasks
                   let screenIndex = 0
                   let progressIndex = 0
-                  if (level === maxProgress.level && tasks.levels[level].tasks[maxProgress.task].name === name) {
-                    screenIndex = progressIndex = maxProgress.subtask
+                  if (this.state.level === maxProgress.level && tasks.levels[this.state.level].tasks[maxProgress.task].name === this.state.name) {
+                    screenIndex = progressIndex = maxProgress.step
                   }
-                  if (level === localProgress.level && tasks.levels[level].tasks[localProgress.task].name === name) {
-                    screenIndex = localProgress.subtask
+                  if (this.state.level === localProgress.level && tasks.levels[this.state.level].tasks[localProgress.task].name === this.state.name) {
+                    screenIndex = localProgress.step
                   }
-                  let task = tasks.levels[level].tasks.findIndex(task => task.name === name)
+                  let task = tasks.levels[this.state.level].tasks.findIndex(task => task.name === this.state.name)
                   if (task < 0) {
-                    console.error('LessonWizard getlesson_success could not find task '+name+' for level '+level)
+                    console.error('LessonWizard getlesson_success could not find task '+this.state.name+' for level '+this.state.level)
                     this.props.history.push('/systemerror')
                     return
                   }
-                  if (maxProgress.level > level || (maxProgress.level === level && maxProgress.task > task)) {
+                  if (maxProgress.level > this.state.level || (maxProgress.level === this.state.level && maxProgress.task > task)) {
                     progressIndex = nScreens
                   }
-                  localProgress.level = level
+                  localProgress.level = this.state.level
                   localProgress.task = task
-                  localProgress.subtask = screenIndex
+                  localProgress.step = screenIndex
                   setLocalProgress(localProgress)
-                  this.setState({ lessonName: newLessonName, lesson, level, task, progressIndex, nScreens })
+                  this.setState({ lessonName: newLessonName, lesson, task, progressIndex, nScreens })
                 }
               }.bind(componentThis))
             }
@@ -116,7 +115,7 @@ class LessonWizard extends React.Component {
     let values = JSON.parse(JSON.stringify(storeState.progress))
     values.level = level
     values.task = task
-    values.subtask = progressIndex
+    values.step = progressIndex
     let updateprogressApiUrl = TEAM_BASE_URL + TEAM_API_RELATIVE_PATH + '/updateprogress'
     const apiAction = {
       [RSAA]: {
@@ -135,8 +134,8 @@ class LessonWizard extends React.Component {
                 // In case another browser session advanced in the background
                 if (progress.level > level || (progress.level === level && progress.task > task)) {
                   this.setState({ progressIndex: nScreens })
-                } else if (progress.level === level && progress.task === task && progress.subtask > progressIndex) {
-                  this.setState({ progressIndex: progress.subtask })
+                } else if (progress.level === level && progress.task === task && progress.step > progressIndex) {
+                  this.setState({ progressIndex: progress.step })
                 }
               }.bind(componentThis))
             }
@@ -159,7 +158,7 @@ class LessonWizard extends React.Component {
   onScreenComplete = () => {
     let { progressIndex } = this.state
     let localProgress = getLocalProgress()
-    let screenIndex = localProgress.subtask
+    let screenIndex = localProgress.step
     if (progressIndex < screenIndex+1) {
       progressIndex = screenIndex+1
       this.setState({ progressIndex })
@@ -170,14 +169,14 @@ class LessonWizard extends React.Component {
   onScreenAdvance = () => {
     let { forceRerender, progressIndex, nScreens } = this.state
     let localProgress = getLocalProgress()
-    let screenIndex = localProgress.subtask
+    let screenIndex = localProgress.step
     if (progressIndex < screenIndex+1) {
       progressIndex = screenIndex+1
     }
     if (screenIndex < nScreens-1) {
       screenIndex++
     }
-    localProgress.subtask = screenIndex
+    localProgress.step = screenIndex
     setLocalProgress(localProgress)
     forceRerender++
     this.setState({ progressIndex, forceRerender })
@@ -192,7 +191,7 @@ class LessonWizard extends React.Component {
     let localProgress = getLocalProgress()
     values.level = localProgress.level
     values.task = localProgress.task
-    values.subtask = localProgress.subtask
+    values.step = localProgress.step
     let revertprogressApiUrl = TEAM_BASE_URL + TEAM_API_RELATIVE_PATH + '/revertprogress'
     const apiAction = {
       [RSAA]: {
@@ -206,7 +205,7 @@ class LessonWizard extends React.Component {
             payload: (action, state, res) => {
               parseJsonPayload(res, action.type, function(json) {
                 dispatch(lessonRevertProgressSuccess(json.account, json.progress, json.tasks))
-                this.setState({ progressIndex: json.progress.subtask })
+                this.setState({ progressIndex: json.progress.step })
               }.bind(componentThis))
             }
           },
@@ -229,7 +228,7 @@ class LessonWizard extends React.Component {
   handleNavigationClick = (name, e) => {
     let { lessonName, progressIndex, nScreens} = this.state
     let localProgress = getLocalProgress()
-    let screenIndex = localProgress.subtask
+    let screenIndex = localProgress.step
     let readyToFinish = progressIndex >= nScreens && screenIndex >= nScreens-1
     if (name === 'first' && screenIndex > 0) {
       screenIndex = 0
@@ -244,7 +243,7 @@ class LessonWizard extends React.Component {
       console.error('LessonWizard handleNavigationClick unexpected case. lessonName:'+lessonName+', progressIndex='+progressIndex+', screenIndex:'+screenIndex);
       return // should not get here ever
     }
-    localProgress.subtask = screenIndex
+    localProgress.step = screenIndex
     setLocalProgress(localProgress)
     this.setState({ progressIndex })
     setTimeout(() => {
@@ -260,7 +259,7 @@ class LessonWizard extends React.Component {
     let { store } = this.props
     let { lessonName, lesson, progressIndex, nScreens } = this.state
     let localProgress = getLocalProgress()
-    let screenIndex = localProgress.subtask
+    let screenIndex = localProgress.step
     if (!lesson) {
       return (<div></div>)
     }

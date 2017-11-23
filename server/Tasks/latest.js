@@ -6,10 +6,10 @@ let VERSION = 1
 module.exports = {
   version: VERSION,
 
-  // Maps version (VERSION-1) values for params={level,task,subtask} to
-  // (VERSION-1) values for params={level,task,subtask}
+  // Maps version (VERSION-1) values for params={level,task,step} to
+  // (VERSION-1) values for params={level,task,step}
   mappingFunc: (params => {
-    return { version: VERSION, level: 1, task: 0, subtask:0 }
+    return { version: VERSION, level: 1, task: 0, step:0 }
   }),
 
   levels: [

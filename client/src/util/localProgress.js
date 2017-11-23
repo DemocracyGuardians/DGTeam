@@ -1,18 +1,22 @@
 
 /**
- * Returns the current value of localProgress (level, task, subtask) pullef from localStorage
+ * Returns the current value of localProgress (level, task, step) pullef from localStorage
  */
 export function getLocalProgress() {
-  let localProgress = JSON.parse(localStorage.getItem("teamAppLocalProgress"))
+  let email = localStorage.getItem("teamAppEmail")
+  let localProgress = JSON.parse(localStorage.getItem("teamAppLocalProgress_"+email))
   if (!localProgress) {
-    localProgress = { level:1, task:0, subtask:0 }
+    localProgress = { level:1, task:0, step:0 }
   }
   return localProgress
 }
 
 /**
- * Returns the name of the menu icon corresponding to the workbench page
+ * Sets the current value of localProgress (level, task, step) pullef from localStorage
  */
 export function setLocalProgress(localProgress) {
-  localStorage.setItem("teamAppLocalProgress", JSON.stringify(localProgress))
+  //FIXME temporary
+  localStorage.removeItem("teamAppLocalProgress")
+  let email = localStorage.getItem("teamAppEmail")
+  localStorage.setItem("teamAppLocalProgress_"+email, JSON.stringify(localProgress))
 }

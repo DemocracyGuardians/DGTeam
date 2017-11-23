@@ -46,6 +46,7 @@ class Login extends React.Component {
             type: 'LOGIN_SUCCESS',
             payload: (action, state, res) => {
               parseJsonPayload.bind(this)(res, action.type, json => {
+                localStorage.setItem("teamAppEmail", json.account.email)
                 dispatch(accountLoginSuccess(json.account))
                 this.props.history.push('/Inbox')
               })

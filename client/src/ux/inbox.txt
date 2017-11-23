@@ -2,10 +2,10 @@
 nomenclature
 tasks => assignments, mission, program, schedule, modules, labors, deeds
 task => assignment, pursuit, quest, module, unit, element, item, segment, deed, feat, achievement, exploit, adventure, act, step
-subtask => step
+step => step
 
 task => step, as in a ladder metaphor, you have to complete these three steps to reach the next level
-subtask => page
+step => page
 
 First login: go to Inbox with progress at 1, 0, -1. Since step<nSteps-1, and level==1,
   Show Inbox with one message closed, then animate grow to open state
