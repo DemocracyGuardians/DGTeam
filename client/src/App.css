@@ -91,6 +91,7 @@ html, body, #root, .App {
 }
 .checkboxlabelrow input[type='checkbox'] {
   -webkit-appearance:none;
+  appearance: none;
   width:24px;
   height:24px;
   background:white;
@@ -100,8 +101,15 @@ html, body, #root, .App {
   flex: 0 0 24px;
 }
 .checkboxlabelrow input[type='checkbox']:checked {
-    background: #abd;
+    background: #ffffff;
+    font-size: 110%;
+    font-weight: bold;
+    text-align: center;
 }
+
+.checkboxlabelrow input[type='checkbox']:checked:after {
+    content: "\2714";
+  }
 
 ul.AppTaskList li {
   font-weight: bold;
