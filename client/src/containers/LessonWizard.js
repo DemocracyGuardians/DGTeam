@@ -18,7 +18,7 @@ class LessonWizard extends React.Component {
   constructor(props){
     super(props);
     this.state = {
-      level: parseInt(this.props.level),
+      level: parseInt(this.props.level, 10),
       name: this.props.name,
       lessonName: null,
       forceRerender: 0

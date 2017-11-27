@@ -15,10 +15,18 @@ let notifications = [
   {
     id: '1',
     when: '3 hours ago',
-    subject: '<span class="AppTaskPressmeHighlight">Welcome! Press here to start</span>',
+    subject: 'Welcome!',
     from: '(automatically generated)',
     content: `
-Blah
+<h3>Welcome to the Democracy Guardians team!</h3>
+<p>With the team application, you start out at level 1.
+  As you learn and develop skills, you advance to higher levels. </p>
+<p>To complete Level 1 and advance to level 2, you must complete the following three training modules:</p>
+<ul class="AppTaskList">
+  <li><a href="/Lesson/1/Trustworthiness" class="AppTaskPressmeHighlight">Introducing Trustworthiness - Press here to start</a></li>
+  <li>Confirming Your Vows</li>
+  <li>Filling Out Your Profile</li>
+</ul>
     `
   }
 ]
@@ -94,7 +102,7 @@ class Inbox extends React.Component {
       return (<div></div>)
     }
     let { store } = this.props
-    return (
+    let r = (
       <div className="Inbox">
         <div className="InboxMenu SecondaryMenu">
           <Menu secondary size='mini' >
@@ -122,12 +130,16 @@ class Inbox extends React.Component {
               <Feed.Content>
                 <Feed.Date dangerouslySetInnerHTML={{__html: DOMPurify.sanitize(item.when)}} />
                 <Feed.Summary> <span dangerouslySetInnerHTML={{__html: DOMPurify.sanitize(item.subject)}} /> </Feed.Summary>
+                <Feed.Extra text>
+                  <span dangerouslySetInnerHTML={{__html: DOMPurify.sanitize(item.content)}} />
+                </Feed.Extra>
               </Feed.Content>
             </Feed.Event>
           ))}
         </Feed>
       </div>
     );
+    return r
   }
 }
 

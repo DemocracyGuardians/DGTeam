@@ -1,14 +1,9 @@
 
 const pageNameXref = {
-  Inbox: { icon: 'inbox', label: 'Inbox' },
-  Lessons: { icon: 'student', label: 'Lessons' },
-  Investigate: { icon: 'detective', label: 'Investigate' },
-  Judge: { icon: 'legal', label: 'Judge' },
+  Tasks: { icon: 'checkmark box', label: 'Tasks' },
+  Messages: { icon: 'inbox', label: 'Messages' },
   Search: { icon: 'search', label: 'Search' },
-  Profile: { icon: 'id card outline', label: 'My Profile' },
-  Trustworthiness: { icon: 'thumbs outline up', label: 'My Trustworthiness' },
-  Level: { icon: 'flask', label: 'My Level' },
-  Rewards: { icon: 'dollar', label: 'My Rewards' }
+  Me: { icon: 'child', label: 'Me' }
 }
 
 function getTokens() {

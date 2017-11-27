@@ -52,7 +52,7 @@ class Login extends React.Component {
                   setLocalProgress({ level:1, task:0, step:0 })
                 }
                 dispatch(accountLoginSuccess(json.account))
-                this.props.history.push('/Inbox')
+                this.props.history.push('/Tasks')
               })
             }
           },

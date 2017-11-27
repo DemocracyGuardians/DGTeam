@@ -3,6 +3,7 @@ import React from 'react';
 import { withRouter } from 'react-router-dom'
 import PropTypes from 'prop-types'
 import { Icon, Menu } from 'semantic-ui-react'
+import Tasks from '../Workbench/Tasks'
 import Inbox from '../Inbox/Inbox'
 import InboxMessage from '../Inbox/InboxMessage'
 import LessonWizard from '../../containers/LessonWizard'
@@ -23,7 +24,10 @@ class WideCenter extends React.Component {
     let { store } = this.props
     let center = <div>FIXME</div>
     switch (activePage) {
-      case "Inbox":
+      case "Tasks":
+        center = <Tasks store={store} />
+        break
+      case "Messages":
         let { id } = (this.props.match && this.props.match.params) || {}
         if (id) {
           center = <InboxMessage store={store} id={id} />
@@ -38,11 +42,9 @@ class WideCenter extends React.Component {
           this.props.history.push('/systemerror')
         }
         center = <LessonWizard store={store} level={level} name={name} />
-        activePage = highlightedPage = 'Lessons'
+        activePage = highlightedPage = 'Tasks'
         break
-      case "Lessons":
-      case "Investigate":
-      case "Judge":
+      case "Me":
       case "Search":
       default:
     }
@@ -50,25 +52,21 @@ class WideCenter extends React.Component {
       <div className="WideCenter">
         <div className="WideCenterPrimaryMenu">
           <Menu icon='labeled' >
-            <Menu.Item name='Inbox' active={highlightedPage === 'Inbox'} onClick={this.handleItemClick}>
-              <Icon name={getIconFromPageName('Inbox')} />
-              {getLabelFromPageName('Inbox')}
+            <Menu.Item name='Tasks' active={highlightedPage === 'Tasks'} onClick={this.handleItemClick}>
+              <Icon name={getIconFromPageName('Tasks')} />
+              {getLabelFromPageName('Tasks')}
             </Menu.Item>
-            <Menu.Item name='Lessons' active={highlightedPage === 'Lessons'} onClick={this.handleItemClick}>
-              <Icon name={getIconFromPageName('Lessons')} />
-              {getLabelFromPageName('Lessons')}
-            </Menu.Item>
-            <Menu.Item name='Investigate' active={highlightedPage === 'Investigate'} onClick={this.handleItemClick}>
-              <Icon name={getIconFromPageName('Investigate')} />
-              {getLabelFromPageName('Investigate')}
-            </Menu.Item>
-            <Menu.Item name='Judge' active={highlightedPage === 'Judge'} onClick={this.handleItemClick}>
-              <Icon name={getIconFromPageName('Judge')} />
-              {getLabelFromPageName('Judge')}
+            <Menu.Item name='Messages' active={highlightedPage === 'Messages'} onClick={this.handleItemClick}>
+              <Icon name={getIconFromPageName('Messages')} />
+              {getLabelFromPageName('Messages')}
             </Menu.Item>
             <Menu.Item name='Search' active={highlightedPage === 'Search'} onClick={this.handleItemClick}>
               <Icon name={getIconFromPageName('Search')} />
               {getLabelFromPageName('Search')}
+            </Menu.Item>
+            <Menu.Item name='Me' active={highlightedPage === 'Me'} onClick={this.handleItemClick}>
+              <Icon name={getIconFromPageName('Me')} />
+              {getLabelFromPageName('Me')}
             </Menu.Item>
             <MoreMenu store={store} />
           </Menu>

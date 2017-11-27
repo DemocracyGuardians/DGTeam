@@ -7,6 +7,9 @@ import {
   RESET_PASSWORD_EMAIL_SENT
 } from '../actions/accountActions'
 import {
+  GET_TASKS_SUCCESS
+} from '../actions/tasksActions'
+import {
   GET_INBOX_SUCCESS
 } from '../actions/inboxActions'
 import {
@@ -27,6 +30,7 @@ export default function accountReducer(state = null, action) {
       return Object.assign({}, state, { lastVerificationEmail: action.email } )
     case RESET_PASSWORD_EMAIL_SENT:
       return Object.assign({}, state, { lastResetPasswordEmail: action.email } )
+    case GET_TASKS_SUCCESS:
     case GET_INBOX_SUCCESS:
     case GET_LESSON_SUCCESS:
     case LESSON_UPDATE_PROGRESS_SUCCESS:

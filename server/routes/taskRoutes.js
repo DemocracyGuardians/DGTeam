@@ -13,6 +13,15 @@ var UNSPECIFIED_SYSTEM_ERROR = 'UNSPECIFIED_SYSTEM_ERROR'
 
 var connection = dbconnection.getConnection();
 
+exports.gettasks = function(req, res, next) {
+  let account = JSON.parse(JSON.stringify(req.session.user));
+  getUserObject(account.email, { account }).then(userObject => {
+    logSendOK(res, userObject, "gettasks success.");
+  }).catch(error => {
+    logSendSE(res, error, 'gettasks getUserObjectError');
+  });
+}
+
 exports.updateprogress = function(req, res, next) {
   console.log('enter updateprogress');
   let userId = req.session.user && req.session.user.id;
