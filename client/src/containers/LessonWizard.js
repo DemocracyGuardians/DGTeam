@@ -268,7 +268,7 @@ class LessonWizard extends React.Component {
 
   render() {
     let { store } = this.props
-    let { lessonName, lesson, progressIndex, nSteps } = this.state
+    let { lessonName, lesson, level, progressIndex, nSteps, task } = this.state
     let localProgress = this.getLocalProgressWrapper()
     let screenIndex = localProgress.step
     if (!lesson) {
@@ -283,7 +283,7 @@ class LessonWizard extends React.Component {
       lessonTitle = 'lesson not found'
     } else {
       lessonTitle = (
-        <h1>Lesson 1.1: {lesson.lessonTitle}</h1>
+        <h1>Lesson {level}.{task+1}: {lesson.title}</h1>
       )
       screenTitle = (
         <h2><div className="ScreenTitlePage">({screenIndex+1} of {nSteps})</div>{lesson.steps[screenIndex].title}</h2>
