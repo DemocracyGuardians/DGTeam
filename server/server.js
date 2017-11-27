@@ -8,7 +8,6 @@ var dbconnection = require('./util/dbconnection');
 var sessionMgmt = require('./util/sessionMgmt');
 var sessionRoutes = require('./routes/sessionRoutes');
 var inboxRoutes = require('./routes/inboxRoutes');
-var lessonRoutes = require('./routes/lessonRoutes');
 var taskRoutes = require('./routes/taskRoutes');
 
 var TEAM_API_RELATIVE_PATH = process.env.TEAM_API_RELATIVE_PATH;
@@ -45,7 +44,7 @@ apiRouter.get('/gotoresetpasswordpage/:token', sessionRoutes.gotoResetPasswordPa
 apiRouter.post('/resetpassword', sessionRoutes.resetPassword)
 
 apiRouter.post('/getinbox', authMiddleware, inboxRoutes.getinbox)
-apiRouter.post('/getlesson/:level/:name', authMiddleware, lessonRoutes.getlesson)
+apiRouter.post('/gettask/:level/:name', authMiddleware, taskRoutes.gettask)
 apiRouter.post('/gettasks', authMiddleware, taskRoutes.gettasks)
 apiRouter.post('/updateprogress', authMiddleware, taskRoutes.updateprogress)
 apiRouter.post('/revertprogress', authMiddleware, taskRoutes.revertprogress)

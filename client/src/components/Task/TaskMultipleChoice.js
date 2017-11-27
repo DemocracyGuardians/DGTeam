@@ -3,10 +3,10 @@ import React from 'react';
 import { withRouter } from 'react-router-dom'
 import PropTypes from 'prop-types'
 import { Button, Checkbox, Icon, Message } from 'semantic-ui-react'
-import LessonScreenBaseClass from './LessonScreenBaseClass'
-import './LessonMultipleChoice.css'
+import TaskScreenBaseClass from './TaskScreenBaseClass'
+import './TaskMultipleChoice.css'
 
-class LessonMultipleChoice extends LessonScreenBaseClass {
+class TaskMultipleChoice extends TaskScreenBaseClass {
   constructor(props) {
     super(props)
     this.state = {
@@ -27,7 +27,7 @@ class LessonMultipleChoice extends LessonScreenBaseClass {
     let { questions } = this.state
     let anyWrong = questions.some(question => question.value !== question.a)
     if (!anyWrong) {
-      this.props.onScreenComplete() // Tell LessonWizard ok to activate Next button
+      this.props.onScreenComplete() // Tell TaskWizard ok to activate Next button
     }
     this.setState({ score: anyWrong ? 'fail' : 'pass' })
   }
@@ -40,9 +40,9 @@ class LessonMultipleChoice extends LessonScreenBaseClass {
 
   scrollButtonIntoView = () => {
     setTimeout(() =>{
-      let LessonMultipleChoiceButtonRow = document.querySelector('.LessonMultipleChoiceButtonRow')
-      if (LessonMultipleChoiceButtonRow) {
-        LessonMultipleChoiceButtonRow.scrollIntoView()
+      let TaskMultipleChoiceButtonRow = document.querySelector('.TaskMultipleChoiceButtonRow')
+      if (TaskMultipleChoiceButtonRow) {
+        TaskMultipleChoiceButtonRow.scrollIntoView()
       }
     }, 20)
   }
@@ -57,22 +57,22 @@ class LessonMultipleChoice extends LessonScreenBaseClass {
     questions.map((question, qindex) => {
       let correct = question.value === question.a
       let icon = correct ? 'check circle' : 'remove circle'
-      qarray.push( <div key={(count++).toString()} className="LessonMultipleChoiceQuestionText">
-        <div className="LessonMultipleChoiceNumber">{qindex+1}</div>
-        <div className="LessonMultipleChoiceQuestion">{question.q}</div>
-        <div className="LessonMultipleChoiceScore"> <Icon style={scoreStyle} name={icon} size='large' /> </div>
+      qarray.push( <div key={(count++).toString()} className="TaskMultipleChoiceQuestionText">
+        <div className="TaskMultipleChoiceNumber">{qindex+1}</div>
+        <div className="TaskMultipleChoiceQuestion">{question.q}</div>
+        <div className="TaskMultipleChoiceScore"> <Icon style={scoreStyle} name={icon} size='large' /> </div>
       </div> )
       let crows = []
       question.choices.map((choice, cindex) => {
         let letter = String.fromCharCode(97+cindex)
-        crows.push( <label key={(count++).toString()} className="LessonMultipleChoiceChoice">
+        crows.push( <label key={(count++).toString()} className="TaskMultipleChoiceChoice">
           <Checkbox radio name={qindex.toString()} value={letter} checked={question.value === letter} disabled={disableRadios} fitted={false} onChange={this.handleChange} />
-          <div className="LessonMultipleChoiceChoiceLabel">{letter+'.'}</div>
-          <div className="LessonMultipleChoiceQuestion">{choice}</div>
+          <div className="TaskMultipleChoiceChoiceLabel">{letter+'.'}</div>
+          <div className="TaskMultipleChoiceQuestion">{choice}</div>
         </label> )
         return null
       })
-      qarray.push( <div key={(count++).toString()} className="LessonMultipleChoiceQuestionChoices">
+      qarray.push( <div key={(count++).toString()} className="TaskMultipleChoiceQuestionChoices">
         {crows}
       </div> )
       return null
@@ -92,11 +92,11 @@ class LessonMultipleChoice extends LessonScreenBaseClass {
       this.scrollButtonIntoView()
     }
     return (
-      <div className="LessonMultipleChoice" >
-        <div className="LessonMultipleChoiceQuestions" >
+      <div className="TaskMultipleChoice" >
+        <div className="TaskMultipleChoiceQuestions" >
           {qarray}
         </div>
-        <div className="LessonMultipleChoiceButtonRow">
+        <div className="TaskMultipleChoiceButtonRow">
           {buttonRow}
         </div>
       </div>
@@ -104,7 +104,7 @@ class LessonMultipleChoice extends LessonScreenBaseClass {
   }
 }
 
-LessonMultipleChoice.propTypes = {
+TaskMultipleChoice.propTypes = {
   store: PropTypes.object.isRequired,
   content: PropTypes.object.isRequired,
   onScreenComplete: PropTypes.func.isRequired,
@@ -112,4 +112,4 @@ LessonMultipleChoice.propTypes = {
   onRevertProgress: PropTypes.func.isRequired
 }
 
-export default withRouter(LessonMultipleChoice);
+export default withRouter(TaskMultipleChoice);

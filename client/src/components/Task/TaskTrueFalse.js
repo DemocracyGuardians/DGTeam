@@ -3,10 +3,10 @@ import React from 'react';
 import { withRouter } from 'react-router-dom'
 import PropTypes from 'prop-types'
 import { Button, Checkbox, Icon, Message } from 'semantic-ui-react'
-import LessonScreenBaseClass from './LessonScreenBaseClass'
-import './LessonTrueFalse.css'
+import TaskScreenBaseClass from './TaskScreenBaseClass'
+import './TaskTrueFalse.css'
 
-class LessonTrueFalse extends LessonScreenBaseClass {
+class TaskTrueFalse extends TaskScreenBaseClass {
   constructor(props) {
     super(props)
     this.state = {
@@ -27,7 +27,7 @@ class LessonTrueFalse extends LessonScreenBaseClass {
     let { questions } = this.state
     let anyWrong = questions.some(question => question.value !== question.a.toString())
     if (!anyWrong) {
-      this.props.onScreenComplete() // Tell LessonWizard ok to activate Next button
+      this.props.onScreenComplete() // Tell TaskWizard ok to activate Next button
     }
     this.setState({ score: anyWrong ? 'fail' : 'pass' })
   }
@@ -40,9 +40,9 @@ class LessonTrueFalse extends LessonScreenBaseClass {
 
   scrollButtonIntoView = () => {
     setTimeout(() =>{
-      let LessonTrueFalseButtonRow = document.querySelector('.LessonTrueFalseButtonRow')
-      if (LessonTrueFalseButtonRow) {
-        LessonTrueFalseButtonRow.scrollIntoView()
+      let TaskTrueFalseButtonRow = document.querySelector('.TaskTrueFalseButtonRow')
+      if (TaskTrueFalseButtonRow) {
+        TaskTrueFalseButtonRow.scrollIntoView()
       }
     }, 20)
   }
@@ -55,20 +55,20 @@ class LessonTrueFalse extends LessonScreenBaseClass {
     let rows = []
     let count = 1
     questions.map((item, index) => {
-      rows.push( <div key={(count++).toString()} className="LessonTrueFalseNumber">{index+1}</div> )
-      rows.push( <div key={(count++).toString()} className="LessonTrueFalseQuestion">{item.q}</div> )
-      rows.push( <label key={(count++).toString()} className="LessonTrueFalseTrue">
-        <div className="LessonTrueFalseTrueLabel">True</div>
+      rows.push( <div key={(count++).toString()} className="TaskTrueFalseNumber">{index+1}</div> )
+      rows.push( <div key={(count++).toString()} className="TaskTrueFalseQuestion">{item.q}</div> )
+      rows.push( <label key={(count++).toString()} className="TaskTrueFalseTrue">
+        <div className="TaskTrueFalseTrueLabel">True</div>
         <Checkbox radio name={index.toString()} value='true' checked={item.value === 'true'} disabled={disableRadios} fitted={false} onChange={this.handleChange} />
       </label> )
-      rows.push( <label key={(count++).toString()} className="LessonTrueFalseFalse">
-        <div className="LessonTrueFalseFalseLabel">False</div>
+      rows.push( <label key={(count++).toString()} className="TaskTrueFalseFalse">
+        <div className="TaskTrueFalseFalseLabel">False</div>
         <Checkbox radio name={index.toString()} value='false' checked={item.value === 'false'} disabled={disableRadios} fitted={false} onChange={this.handleChange} />
       </label> )
       let boolValue = item.value === 'true' ? true : (item.value === 'false' ? false : null)
       let correct = boolValue === item.a
       let icon = correct ? 'check circle' : 'remove circle'
-      rows.push( <div key={(count++).toString()} className="LessonTrueFalseScore"> <Icon style={scoreStyle} key={(count++).toString()} name={icon} size='large' /> </div> )
+      rows.push( <div key={(count++).toString()} className="TaskTrueFalseScore"> <Icon style={scoreStyle} key={(count++).toString()} name={icon} size='large' /> </div> )
       return null
     })
     let buttonRow
@@ -86,11 +86,11 @@ class LessonTrueFalse extends LessonScreenBaseClass {
       this.scrollButtonIntoView()
     }
     return (
-      <div className="LessonTrueFalse" >
-        <div className="LessonTrueFalseQuestions" >
+      <div className="TaskTrueFalse" >
+        <div className="TaskTrueFalseQuestions" >
           {rows}
         </div>
-        <div className="LessonTrueFalseButtonRow">
+        <div className="TaskTrueFalseButtonRow">
           {buttonRow}
         </div>
       </div>
@@ -98,7 +98,7 @@ class LessonTrueFalse extends LessonScreenBaseClass {
   }
 }
 
-LessonTrueFalse.propTypes = {
+TaskTrueFalse.propTypes = {
   store: PropTypes.object.isRequired,
   content: PropTypes.object.isRequired,
   onScreenComplete: PropTypes.func.isRequired,
@@ -106,4 +106,4 @@ LessonTrueFalse.propTypes = {
   onRevertProgress: PropTypes.func.isRequired
 }
 
-export default withRouter(LessonTrueFalse);
+export default withRouter(TaskTrueFalse);

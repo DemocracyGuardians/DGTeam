@@ -3,7 +3,7 @@ module.exports = {
   title: 'Introducing Trustworthiness',
   steps: [
     {
-      type: 'LessonProse',
+      type: 'TaskProse',
       title: 'Trust makes our lives more efficient',
       content: `
         <p>Our trust in someone or something is our belief in the likelihood that a desired outcome will actually happen. For example, we trust that the Earth will continue to rotate around the sun, and we trust our cell phones to accurately give us the date and time. On the human side, even if we drive defensively, we trust that drivers stopped at a red light will wait for their light to turn green before entering the intersection. In commerce, we trust Starbucks to deliver a particular beverage quality and ambience no matter where in the world we find a store. In the West, we trust the government in various ways even if we are naturally cynical, such as trusting the fire department to come in case of fire.</p>
@@ -12,7 +12,7 @@ module.exports = {
 `
     },
     {
-      type: 'LessonProse',
+      type: 'TaskProse',
       title: 'Examples of people we tend to trust',
       content: `
         <p>On the previous page, we said trust in someone or something is <em>our belief in the likelihood that a desired outcome will actually happen</em>. There are countless
@@ -49,7 +49,7 @@ module.exports = {
 `
     },
     {
-      type: 'LessonTrueFalse',
+      type: 'TaskTrueFalse',
       title: 'Pop Quiz',
       content: {
         questions: [
@@ -73,7 +73,7 @@ module.exports = {
       }
     },
     {
-      type: 'LessonMultipleChoice',
+      type: 'TaskMultipleChoice',
       title: 'Pop Quiz',
       content: {
         questions: [
@@ -103,12 +103,12 @@ module.exports = {
       }
     },
     {
-      type: 'LessonConfirmVow',
+      type: 'TaskConfirmVow',
       title: 'Vow',
       content: 'I vow to be honest and trustworthy in all my activities with this organization.'
     },
     {
-      type: 'LessonProse',
+      type: 'TaskProse',
       title: 'We also put a degree of trust in crowd-sourced social media',
       content: `
         <p>In the age of the Internet and social media, we trust people we don’t know all of the time. When we are deciding on which restaurant to go for dinner, we often rely on restaurant reviews written by unknown people. When we bid on something at an auction site, we look at seller ratings from people we don’t know to decide whether the promise of a bargain is worth the chance the seller is dishonest. When we need to learn about an unfamiliar topic, we usually feel we can trust the information we find in the crowd-sourced online encyclopedia Wikipedia, particularly for topics without ideological controversy.</p>

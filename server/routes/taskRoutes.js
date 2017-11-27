@@ -1,7 +1,7 @@
 
 const dbconnection = require('../util/dbconnection')
 const latest = require('../Tasks/latest')
-const readlesson = require('../util/readlesson');
+const readtask = require('../util/readtask');
 const getUserObject = require('../util/getUserObject')
 const getBaseName = require('../util/getBaseName')
 const logSend = require('../util/logSend')
@@ -22,6 +22,22 @@ exports.gettasks = function(req, res, next) {
   });
 }
 
+exports.gettask = function(req, res, next) {
+  let account = JSON.parse(JSON.stringify(req.session.user));
+  let taskPath = req.path.substr('/gettask/'.length);
+  let tokens = taskPath.split('/');
+  readtask(tokens[0], tokens[1]).then(task => {
+    getUserObject(account.email, { account }).then(userObject => {
+      userObject.task = task;
+      logSendOK(res, userObject, "gettask success.");
+    }).catch(error => {
+      logSendSE(res, error, 'gettask getUserObjectError');
+    });
+  }).catch(error => {
+    logSendCE(res, 401, UNSPECIFIED_SYSTEM_ERROR, error);
+  });
+}
+
 exports.updateprogress = function(req, res, next) {
   console.log('enter updateprogress');
   let userId = req.session.user && req.session.user.id;
@@ -36,8 +52,8 @@ exports.updateprogress = function(req, res, next) {
       logSendCE(res, 400, UNSPECIFIED_SYSTEM_ERROR, 'Tasks version number '+updatedProgress.version+' is out of date', {});
     } else if (!latest.levels[updatedProgress.level]) {
       logSendCE(res, 400, UNSPECIFIED_SYSTEM_ERROR, 'invalid level:'+updatedProgress.level, {});
-    } else if (!latest.levels[updatedProgress.level].tasks[updatedProgress.task]) {
-      logSendCE(res, 400, UNSPECIFIED_SYSTEM_ERROR, 'invalid task:'+updatedProgress.task, {});
+    } else if (!latest.levels[updatedProgress.level].tasks[updatedProgress.tasknum]) {
+      logSendCE(res, 400, UNSPECIFIED_SYSTEM_ERROR, 'invalid tasknum:'+updatedProgress.tasknum, {});
     } else {
       let progressPromise = new Promise((progressResolve, progressReject) => {
         connection.query('SELECT * FROM ue_ztm_progress WHERE userId = ?', [account.id], function (error, results, fields) {
@@ -47,14 +63,14 @@ exports.updateprogress = function(req, res, next) {
             if (results.length === 1) {
               let oldProgress = results[0];
               if (updatedProgress.level > oldProgress.level ||
-                  (updatedProgress.level === oldProgress.level && updatedProgress.task > oldProgress.task) ||
-                  (updatedProgress.level === oldProgress.level && updatedProgress.task === oldProgress.task &&
+                  (updatedProgress.level === oldProgress.level && updatedProgress.tasknum > oldProgress.tasknum) ||
+                  (updatedProgress.level === oldProgress.level && updatedProgress.tasknum === oldProgress.tasknum &&
                   updatedProgress.step > oldProgress.step)) {
                 console.log('updating progress table');
                 // Need to update database
                 let now = new Date();
-                connection.query('UPDATE ue_ztm_progress SET version = ?, level = ?, task = ?, step = ?, modified = ? WHERE userId = ?',
-                        [latest.version, updatedProgress.level, updatedProgress.task, updatedProgress.step, now, account.id],
+                connection.query('UPDATE ue_ztm_progress SET version = ?, level = ?, tasknum = ?, step = ?, modified = ? WHERE userId = ?',
+                        [latest.version, updatedProgress.level, updatedProgress.tasknum, updatedProgress.step, now, account.id],
                         function (error, results, fields) {
                   if (error) {
                     progressReject(getBaseName(__filename)+" progress update database failure for email '" + account.email + "'");
@@ -101,13 +117,13 @@ exports.revertprogress = function(req, res, next) {
       logSendCE(res, 400, UNSPECIFIED_SYSTEM_ERROR, 'Tasks version number '+updatedProgress.version+' is out of date', {});
     } else if (!latest.levels[updatedProgress.level]) {
       logSendCE(res, 400, UNSPECIFIED_SYSTEM_ERROR, 'invalid level:'+updatedProgress.level, {});
-    } else if (!latest.levels[updatedProgress.level].tasks[updatedProgress.task]) {
-      logSendCE(res, 400, UNSPECIFIED_SYSTEM_ERROR, 'invalid task:'+updatedProgress.task, {});
+    } else if (!latest.levels[updatedProgress.level].tasks[updatedProgress.tasknum]) {
+      logSendCE(res, 400, UNSPECIFIED_SYSTEM_ERROR, 'invalid tasknum:'+updatedProgress.tasknum, {});
     } else {
       let progressPromise = new Promise((progressResolve, progressReject) => {
         let now = new Date();
-        connection.query('UPDATE ue_ztm_progress SET version = ?, level = ?, task = ?, step = ?, modified = ? WHERE userId = ?',
-                [latest.version, updatedProgress.level, updatedProgress.task, updatedProgress.step, now, account.id],
+        connection.query('UPDATE ue_ztm_progress SET version = ?, level = ?, tasknum = ?, step = ?, modified = ? WHERE userId = ?',
+                [latest.version, updatedProgress.level, updatedProgress.tasknum, updatedProgress.step, now, account.id],
                 function (error, results, fields) {
           if (error) {
             progressReject(getBaseName(__filename)+" progress update database failure for email '" + account.email + "'");

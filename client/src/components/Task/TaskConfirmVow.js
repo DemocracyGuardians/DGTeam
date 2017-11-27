@@ -4,14 +4,14 @@ import { withRouter } from 'react-router-dom'
 import PropTypes from 'prop-types'
 import { Button, Message } from 'semantic-ui-react'
 import { RSAA } from 'redux-api-middleware';
-import LessonScreenBaseClass from './LessonScreenBaseClass'
+import TaskScreenBaseClass from './TaskScreenBaseClass'
 import { accountLogoutSuccess } from '../../actions/accountActions'
 import { TEAM_BASE_URL, TEAM_API_RELATIVE_PATH } from '../../envvars'
-import './LessonConfirmVow.css'
+import './TaskConfirmVow.css'
 
 const logoutApiUrl = TEAM_BASE_URL + TEAM_API_RELATIVE_PATH + '/logout'
 
-class LessonConfirmVow extends LessonScreenBaseClass {
+class TaskConfirmVow extends TaskScreenBaseClass {
   constructor(props) {
     super(props)
     this.state = {
@@ -21,7 +21,7 @@ class LessonConfirmVow extends LessonScreenBaseClass {
   }
 
   yes = (e) => {
-    this.props.onScreenAdvance() // Tell LessonWizard to advance to next screen
+    this.props.onScreenAdvance() // Tell TaskWizard to advance to next screen
   }
 
   no = (e) => {
@@ -66,7 +66,7 @@ class LessonConfirmVow extends LessonScreenBaseClass {
     let { confirmed } = this.state
     let msg, noButtonText, noButtonFunc, yesButtonText
     if (confirmed === 'no') {
-      msg = ( <Message className="LessonConfirmVowAreYouSure">
+      msg = ( <Message className="TaskConfirmVowAreYouSure">
           <Message.Header>Another chance to agree</Message.Header>
           <p>Every team member must agree with all of the vows.
             If you cannot agree with this vow, you cannot advance further with organizational activities.</p>
@@ -82,16 +82,16 @@ class LessonConfirmVow extends LessonScreenBaseClass {
       noButtonFunc = this.no
     }
     return (
-      <div className="LessonConfirmVow" >
-        <div className="LessonConfirmVowText" >
+      <div className="TaskConfirmVow" >
+        <div className="TaskConfirmVowText" >
           {this.props.content}
         </div>
         {msg}
-        <div className="LessonConfirmVowButtonRow">
+        <div className="TaskConfirmVowButtonRow">
           <span className="spacer"></span>
-          <Button className="LessonConfirmVowButtonYes" onClick={this.yes} >{yesButtonText}</Button>
+          <Button className="TaskConfirmVowButtonYes" onClick={this.yes} >{yesButtonText}</Button>
           <span className="spacer"></span>
-          <Button className="LessonConfirmVowButtonNo" onClick={noButtonFunc} >{noButtonText}</Button>
+          <Button className="TaskConfirmVowButtonNo" onClick={noButtonFunc} >{noButtonText}</Button>
           <span className="spacer"></span>
         </div>
       </div>
@@ -99,7 +99,7 @@ class LessonConfirmVow extends LessonScreenBaseClass {
   }
 }
 
-LessonConfirmVow.propTypes = {
+TaskConfirmVow.propTypes = {
   store: PropTypes.object.isRequired,
   content: PropTypes.string.isRequired,
   onScreenComplete: PropTypes.func.isRequired,
@@ -107,4 +107,4 @@ LessonConfirmVow.propTypes = {
   onRevertProgress: PropTypes.func.isRequired
 }
 
-export default withRouter(LessonConfirmVow);
+export default withRouter(TaskConfirmVow);

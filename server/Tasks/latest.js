@@ -6,10 +6,10 @@ let VERSION = 1
 module.exports = {
   version: VERSION,
 
-  // Maps version (VERSION-1) values for params={level,task,step} to
-  // (VERSION-1) values for params={level,task,step}
+  // Maps version (VERSION-1) values for params={level,tasknum,step} to
+  // (VERSION-1) values for params={level,tasknum,step}
   mappingFunc: (params => {
-    return { version: VERSION, level: 1, task: 0, step:0 }
+    return { version: VERSION, level: 1, tasknum: 0, step:0 }
   }),
 
   levels: [
@@ -18,9 +18,9 @@ module.exports = {
     },
     {
       tasks: [
-        { type: 'Lesson', name: 'Trustworthiness' },
-        { type: 'Lesson', name: 'Vows' },
-        { type: 'Lesson', name: 'Profile' }
+        { type: 'Task', name: 'Trustworthiness' },
+        { type: 'Task', name: 'Vows' },
+        { type: 'Task', name: 'Profile' }
       ]
     }
   ]

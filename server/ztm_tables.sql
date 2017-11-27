@@ -25,7 +25,7 @@ CREATE TABLE `ue_ztm_progress` (
   `userId` int(11) NOT NULL UNIQUE,
   `version` int(11) NOT NULL,
   `level` int(11) NOT NULL,
-  `task` int(11) NOT NULL,
+  `tasknum` int(11) NOT NULL,
   `step` int(11) NOT NULL,
   `modified` datetime NOT NULL,
  PRIMARY KEY (`userId`)

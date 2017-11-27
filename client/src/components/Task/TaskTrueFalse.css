@@ -1,9 +1,9 @@
 
-.LessonTrueFalse {
+.TaskTrueFalse {
   margin-bottom: 2.5em;
 }
 
-.LessonTrueFalseQuestions {
+.TaskTrueFalseQuestions {
   display: grid;
   grid-template-columns: auto 1fr auto auto auto;
   margin-bottom: 1.5em;
@@ -11,44 +11,44 @@
   border-top: 1px solid rgba(34,36,38,.075);
 }
 
-.LessonTrueFalseQuestions > * {
+.TaskTrueFalseQuestions > * {
   padding: .6em 0;
   border-bottom: 1px solid rgba(34,36,38,.075);
 }
 
-.LessonTrueFalseQuestion {
+.TaskTrueFalseQuestion {
   padding-left: 0.6em;
   padding-right: 1em;
 }
 
-.LessonTrueFalseTrue, .LessonTrueFalseFalse {
+.TaskTrueFalseTrue, .TaskTrueFalseFalse {
   text-align: center;
   padding: 0 .3em;
 }
 
-.LessonTrueFalseTrueLabel, .LessonTrueFalseFalseLabel {
+.TaskTrueFalseTrueLabel, .TaskTrueFalseFalseLabel {
   margin-top: -0.2em;
   font-size: 75%;
   color: darkgray;
 }
 
-.LessonTrueFalseScore {
+.TaskTrueFalseScore {
   padding-left: 0.5em;
   padding-right: 0.5em;
 }
 
-.LessonTrueFalseScore .circle.check {
+.TaskTrueFalseScore .circle.check {
   color: green;
 }
 
-.LessonTrueFalseScore .circle.remove {
+.TaskTrueFalseScore .circle.remove {
   color: red;
 }
 
-.LessonTrueFalseButtonRow {
+.TaskTrueFalseButtonRow {
   text-align: center;
 }
 
-.LessonTrueFalseButtonRow .Congrats .header {
+.TaskTrueFalseButtonRow .Congrats .header {
   color: green;
 }

@@ -8,15 +8,15 @@ import {
 } from '../actions/accountActions'
 import {
   GET_TASKS_SUCCESS
-} from '../actions/tasksActions'
+} from '../actions/taskActions'
 import {
   GET_INBOX_SUCCESS
 } from '../actions/inboxActions'
 import {
-  GET_LESSON_SUCCESS,
-  LESSON_UPDATE_PROGRESS_SUCCESS,
-  LESSON_REVERT_PROGRESS_SUCCESS
-} from '../actions/lessonActions'
+  GET_TASK_SUCCESS,
+  TASK_UPDATE_PROGRESS_SUCCESS,
+  TASK_REVERT_PROGRESS_SUCCESS
+} from '../actions/taskActions'
 
 export default function accountReducer(state = null, action) {
   switch (action.type) {
@@ -32,9 +32,9 @@ export default function accountReducer(state = null, action) {
       return Object.assign({}, state, { lastResetPasswordEmail: action.email } )
     case GET_TASKS_SUCCESS:
     case GET_INBOX_SUCCESS:
-    case GET_LESSON_SUCCESS:
-    case LESSON_UPDATE_PROGRESS_SUCCESS:
-    case LESSON_REVERT_PROGRESS_SUCCESS:
+    case GET_TASK_SUCCESS:
+    case TASK_UPDATE_PROGRESS_SUCCESS:
+    case TASK_REVERT_PROGRESS_SUCCESS:
       return Object.assign({}, state, action.account )
     default:
       return state || null

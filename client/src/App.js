@@ -44,7 +44,7 @@ class App extends Component {
             <Route path='/resetpasswordsuccess' component={ResetPasswordSuccessComp} />
             <Route exact path='/(Tasks|Messages|Search|Me)' component={WorkbenchComp} />
             <Route exact path='/Inbox/:id' component={WorkbenchComp} />
-            <Route exact path='/Lesson/:level/:name' component={WorkbenchComp} />
+            <Route exact path='/Task/:level/:name' component={WorkbenchComp} />
             <Route path='/systemerror' component={SystemError} />
             <Redirect path='*' to={defaultRoute} />
           </Switch>

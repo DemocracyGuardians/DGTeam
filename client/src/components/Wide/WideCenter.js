@@ -6,7 +6,7 @@ import { Icon, Menu } from 'semantic-ui-react'
 import Tasks from '../Workbench/Tasks'
 import Inbox from '../Inbox/Inbox'
 import InboxMessage from '../Inbox/InboxMessage'
-import LessonWizard from '../../containers/LessonWizard'
+import TaskWizard from '../../containers/TaskWizard'
 import { getPathRootFromUrl, getIconFromPageName, getLabelFromPageName } from '../../util/workbenchPages'
 import MoreMenu from '../Workbench/MoreMenu'
 import './WideCenter.css'
@@ -35,13 +35,13 @@ class WideCenter extends React.Component {
           center = <Inbox store={store} />
         }
         break
-      case "Lesson":
+      case "Task":
         let { level, name } = (this.props.match && this.props.match.params) || {}
         if (!level || !name ) {
-          console.error('WideCenter Lesson missing level:'+level+' or name:'+name)
+          console.error('WideCenter Task missing level:'+level+' or name:'+name)
           this.props.history.push('/systemerror')
         }
-        center = <LessonWizard store={store} level={level} name={name} />
+        center = <TaskWizard store={store} level={level} name={name} />
         activePage = highlightedPage = 'Tasks'
         break
       case "Me":

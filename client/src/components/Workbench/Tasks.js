@@ -3,7 +3,7 @@ import React from 'react';
 import { withRouter } from 'react-router-dom'
 import { RSAA } from 'redux-api-middleware'
 import { TEAM_BASE_URL, TEAM_API_RELATIVE_PATH } from '../../envvars'
-import { getTasksSuccess } from '../../actions/tasksActions'
+import { getTasksSuccess } from '../../actions/taskActions'
 import parseJsonPayload from '../../util/parseJsonPayload'
 import PropTypes from 'prop-types'
 import DOMPurify from 'dompurify'
@@ -22,7 +22,7 @@ let notifications = [
   As you learn and develop skills, you advance to higher levels. </p>
 <p>To complete Level 1 and advance to level 2, you must complete the following three training modules:</p>
 <ul class="AppTaskList">
-  <li><a href="/Lesson/1/Trustworthiness" class="AppTaskPressmeHighlight">Introducing Trustworthiness - Press here to start</a></li>
+  <li><a href="/Task/1/Trustworthiness" class="AppTaskPressmeHighlight">Introducing Trustworthiness - Press here to start</a></li>
   <li>Confirming Your Vows</li>
   <li>Filling Out Your Profile</li>
 </ul>
@@ -81,7 +81,7 @@ class Tasks extends React.Component {
       return (<div></div>)
     }
     let { tasks, progress } = this.state
-    let { level, task, step } = progress
+    let { level, tasknum, step } = progress
     let count = 0
     let r = []
     let levelTasks = tasks.levels[level].tasks
@@ -90,7 +90,7 @@ class Tasks extends React.Component {
       let num = <span className="TaskItemNum">{level}.{index+1}</span>
       let name = <span className="TaskItemName">{item.name}</span>
       let href = "/" + item.type + "/" + level + "/" + item.name
-      if (task === index) {
+      if (tasknum === index) {
         let thisIs = <span className="TasksThisIsCurrent">Your current task</span>
         r.push( <li key={(count++).toString()} className="TasksItemCurrent">
           <a href={href}>{type} {num}: {name} {thisIs}</a>

@@ -1,6 +1,6 @@
 
 /**
- * Returns the current value of localProgress (level, task, step) pullef from localStorage
+ * Returns the current value of localProgress (level, tasknum, step) pullef from localStorage
  */
 export function getLocalProgress() {
   let email = localStorage.getItem("teamAppEmail")
@@ -15,7 +15,7 @@ export function getLocalProgress() {
 }
 
 /**
- * Sets the current value of localProgress (level, task, step) pullef from localStorage
+ * Sets the current value of localProgress (level, tasknum, step) pullef from localStorage
  */
 export function setLocalProgress(localProgress) {
   //FIXME temporary

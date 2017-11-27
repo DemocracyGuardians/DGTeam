@@ -2,7 +2,7 @@
 const dbconnection = require('./dbconnection')
 const getBaseName = require('./getBaseName')
 const latest = require('../Tasks/latest')
-const readlesson = require('./readlesson');
+const readtask = require('./readtask');
 
 var connection = dbconnection.getConnection();
 
@@ -58,14 +58,14 @@ module.exports = function(email, alreadyHave) {
               let updatedProgress = updateProgressToLatestVersion(results[0]);
               console.log('progressPromise updatedProgress='+JSON.stringify(updatedProgress));
               console.log('progressPromise latest='+JSON.stringify(latest));
-              let { level, task, step } = updatedProgress;
+              let { level, tasknum, step } = updatedProgress;
               if (latest.version !== currentDbProgress.version || level !== currentDbProgress.level ||
-                  task !== currentDbProgress.task || step !== currentDbProgress.step) {
+                  tasknum !== currentDbProgress.tasknum || step !== currentDbProgress.step) {
                 console.log('before updating progress table ');
                 // Need to update progress table
                 let now = new Date();
-                connection.query('UPDATE ue_ztm_progress SET version = ?, level = ?, task = ?, step = ?, modified = ? WHERE userId = ?',
-                        [latest.version, level, task, step, now, account.id], function (error, results, fields) {
+                connection.query('UPDATE ue_ztm_progress SET version = ?, level = ?, tasknum = ?, step = ?, modified = ? WHERE userId = ?',
+                        [latest.version, level, tasknum, step, now, account.id], function (error, results, fields) {
                   if (error) {
                     progressReject(getBaseName(__filename)+" progress update database failure for email '" + account.email + "'");
                   } else {
@@ -81,7 +81,7 @@ module.exports = function(email, alreadyHave) {
               // Must be user's first login. Insert a row in progress table
               let now = new Date();
               //FIXME get version from latest tasks file
-              let progress = { userId:account.id, version:1, level:1, task:0, step:0, modified:now };
+              let progress = { userId:account.id, version:1, level:1, tasknum:0, step:0, modified:now };
               connection.query('INSERT INTO ue_ztm_progress SET ?', progress, function (error, results, fields) {
                 if (error) {
                   progressReject("getUserObject insert database failure for email '" + account.email + "'");
@@ -112,10 +112,10 @@ module.exports = function(email, alreadyHave) {
 
 let updateProgressToLatestVersion = (currentDbProgress  => {
   // call mappingFunc to repeatedly map values from version i to i+1
-  let { version, level, task, step } = currentDbProgress;
+  let { version, level, tasknum, step } = currentDbProgress;
   for (v=version+1; v<latest.version; v++) {
-    // If we are to go to very first task, we don't need any further mapping
-    if (level === 1 && task === 0 && step === 0) {
+    // If we are to go to very first task and step, we don't need any further mapping
+    if (level === 1 && tasknum === 0 && step === 0) {
       break
     }
     let { version } = currentDbProgress;
@@ -124,7 +124,7 @@ let updateProgressToLatestVersion = (currentDbProgress  => {
       currentDbProgress = tasks.mappingFunc(currentDbProgress);
     } catch(e) {
       console.error('taskRoutes require '+pathToOld+v+' failed or mappingFunc error. Error='+e);
-      return Object.assign({}, currentDbProgress, {version:latest.version, level:1, task:0, step:0} )
+      return Object.assign({}, currentDbProgress, {version:latest.version, level:1, tasknum:0, step:0} )
     }
   }
   return currentDbProgress

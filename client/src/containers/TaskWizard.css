@@ -3,7 +3,7 @@
     within a higher level vertical flex container. This is only possible
     when the inner vertical flex container is absolutely positioned.
     Note that this element's parent has position:relative. */
-.LessonWizard {
+.TaskWizard {
   position: absolute;
   top: 0px;
   left: 0px;
@@ -14,45 +14,45 @@
   text-align: left;
 }
 
-.LessonWizard > * {
+.TaskWizard > * {
   flex-grow: 0;
 }
 
-.LessonTitle, .LessonScreenTitle {
+.TaskTitle, .TaskScreenTitle {
   border-bottom: 1px solid rgba(34,36,38,.075);
 }
 
-.LessonScreenTitle {
+.TaskScreenTitle {
   padding: 0 1em;
 }
 
 /* This div is the expandable child of the above vertical flex container */
-.LessonWizard .LessonScreenContent {
+.TaskWizard .TaskScreenContent {
   flex: 1;
   overflow: auto;
   padding: 1em;
 }
 
-.LessonNavigation {
+.TaskNavigation {
   border-top: 1px solid rgba(34,36,38,.075);
 }
 
-.LessonNavigationButtons {
+.TaskNavigationButtons {
   font-size: 1.1em;
   font-weight: bold;
   line-height: 2.5;
   display: flex;
 }
 
-.LessonNavigationButton.first, .LessonNavigationButton.last {
+.TaskNavigationButton.first, .TaskNavigationButton.last {
   flex-grow: 0;
 }
-.LessonNavigationButton.prev, .LessonNavigationButton.next {
+.TaskNavigationButton.prev, .TaskNavigationButton.next {
   flex-grow: 1;
   text-align: center;
 }
 
-.LessonNavigationButtons > * {
+.TaskNavigationButtons > * {
   display: inline-block;
 }
 
@@ -61,20 +61,20 @@
   font-size: 0.8em;
 }
 
-.LessonWizard h1 {
+.TaskWizard h1 {
   font-size: 1.4em;
   text-align: center;
   line-height: 2.5;
 }
 
-.LessonWizard h2 {
+.TaskWizard h2 {
   font-size: 1.25em;
   margin-top: .25em;
   font-style: italic;
   line-height: 2;
 }
 
-.LessonWizard h3 {
+.TaskWizard h3 {
   font-size: 1.1em;
   margin-top: .25em;
 }

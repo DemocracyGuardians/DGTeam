@@ -5,98 +5,98 @@ import { RSAA } from 'redux-api-middleware'
 import { Button } from 'semantic-ui-react'
 import PropTypes from 'prop-types'
 import { TEAM_BASE_URL, TEAM_API_RELATIVE_PATH } from '../envvars'
-import { getLessonSuccess, lessonUpdateProgressSuccess, lessonRevertProgressSuccess } from '../actions/lessonActions'
+import { getTaskSuccess, taskUpdateProgressSuccess, taskRevertProgressSuccess } from '../actions/taskActions'
 import parseJsonPayload from '../util/parseJsonPayload'
 import { getLocalProgress, setLocalProgress } from '../util/localProgress'
-import LessonProse from '../components/Lesson/LessonProse'
-import LessonTrueFalse from '../components/Lesson/LessonTrueFalse'
-import LessonMultipleChoice from '../components/Lesson/LessonMultipleChoice'
-import LessonConfirmVow from '../components/Lesson/LessonConfirmVow'
-import './LessonWizard.css'
+import TaskProse from '../components/Task/TaskProse'
+import TaskTrueFalse from '../components/Task/TaskTrueFalse'
+import TaskMultipleChoice from '../components/Task/TaskMultipleChoice'
+import TaskConfirmVow from '../components/Task/TaskConfirmVow'
+import './TaskWizard.css'
 
-class LessonWizard extends React.Component {
+class TaskWizard extends React.Component {
   constructor(props){
     super(props);
     this.state = {
       level: parseInt(this.props.level, 10),
       name: this.props.name,
-      lessonName: null,
+      taskName: null,
       forceRerender: 0
     }
-    this.getlesson = this.getlesson.bind(this);
+    this.gettask = this.gettask.bind(this);
     this.updateprogress = this.updateprogress.bind(this);
     this.onScreenComplete = this.onScreenComplete.bind(this);
     this.onScreenAdvance = this.onScreenAdvance.bind(this);
     this.onRevertProgress = this.onRevertProgress.bind(this);
     this.getLocalProgressWrapper = this.getLocalProgressWrapper.bind(this);
-    this.getlesson()
+    this.gettask()
   }
 
-  getlesson() {
+  gettask() {
     let componentThis = this
     let values = {}
     let { dispatch } = this.props.store
     if (!this.state.level || !this.state.name ) {
-      console.error('LessonWizard missing level:'+this.state.level+' or name:'+this.state.name)
+      console.error('TaskWizard missing level:'+this.state.level+' or name:'+this.state.name)
       this.props.history.push('/systemerror')
     }
-    let newLessonName = this.props.level + '/'  + this.state.name
-    if (newLessonName === this.state.lessonName) {
+    let newTaskName = this.props.level + '/'  + this.state.name
+    if (newTaskName === this.state.taskName) {
       return
     }
-    let getlessonApiUrl = TEAM_BASE_URL + TEAM_API_RELATIVE_PATH + '/getlesson/' + newLessonName
+    let gettaskApiUrl = TEAM_BASE_URL + TEAM_API_RELATIVE_PATH + '/gettask/' + newTaskName
     const apiAction = {
       [RSAA]: {
-        endpoint: getlessonApiUrl,
+        endpoint: gettaskApiUrl,
         method: 'POST',
         credentials: 'include',
         types: [
-          'getlesson_request', // ignored
+          'gettask_request', // ignored
           {
-            type: 'getlesson_success',
+            type: 'gettask_success',
             payload: (action, state, res) => {
               parseJsonPayload(res, action.type, function(json) {
-                let lesson = json.lesson
-                dispatch(getLessonSuccess(json.account, json.progress, json.tasks))
-                if (!lesson.steps || !lesson.steps[0]) {
-                  console.error('LessonWizard getlesson_success, but invalid lesson object')
+                let task = json.task
+                dispatch(getTaskSuccess(json.account, json.progress, json.tasks))
+                if (!task.steps || !task.steps[0]) {
+                  console.error('TaskWizard gettask_success, but invalid task object')
                   this.props.history.push('/systemerror')
                 } else {
-                  let nSteps = lesson.steps.length
+                  let nSteps = task.steps.length
                   let localProgress = this.getLocalProgressWrapper()
                   let storeState = this.props.store.getState()
                   let maxProgress = storeState.progress
                   let tasks = storeState.tasks
                   let screenIndex = 0
                   let progressIndex = 0
-                  if (this.state.level === maxProgress.level && tasks.levels[this.state.level].tasks[maxProgress.task].name === this.state.name) {
+                  if (this.state.level === maxProgress.level && tasks.levels[this.state.level].tasks[maxProgress.tasknum].name === this.state.name) {
                     screenIndex = progressIndex = maxProgress.step
                   }
-                  if (this.state.level === localProgress.level && tasks.levels[this.state.level].tasks[localProgress.task].name === this.state.name) {
+                  if (this.state.level === localProgress.level && tasks.levels[this.state.level].tasks[localProgress.tasknum].name === this.state.name) {
                     screenIndex = localProgress.step
                   }
-                  let task = tasks.levels[this.state.level].tasks.findIndex(task => task.name === this.state.name)
-                  if (task < 0) {
-                    console.error('LessonWizard getlesson_success could not find task '+this.state.name+' for level '+this.state.level)
+                  let tasknum = tasks.levels[this.state.level].tasks.findIndex(tasknum => tasknum.name === this.state.name)
+                  if (tasknum < 0) {
+                    console.error('TaskWizard gettask_success could not find tasknum '+this.state.name+' for level '+this.state.level)
                     this.props.history.push('/systemerror')
                     return
                   }
-                  if (maxProgress.level > this.state.level || (maxProgress.level === this.state.level && maxProgress.task > task)) {
+                  if (maxProgress.level > this.state.level || (maxProgress.level === this.state.level && maxProgress.tasknum > tasknum)) {
                     progressIndex = nSteps
                   }
                   localProgress.level = this.state.level
-                  localProgress.task = task
+                  localProgress.tasknum = tasknum
                   localProgress.step = screenIndex
                   setLocalProgress(localProgress)
-                  this.setState({ lessonName: newLessonName, lesson, task, progressIndex, nSteps })
+                  this.setState({ taskName: newTaskName, task, tasknum, progressIndex, nSteps })
                 }
               }.bind(componentThis))
             }
           },
           {
-            type: 'getlesson_failure',
+            type: 'gettask_failure',
             payload: (action, state, res) => {
-              console.error('LessonWizard getlesson_failure')
+              console.error('TaskWizard gettask_failure')
               this.props.history.push('/systemerror')
             }
           }
@@ -110,12 +110,12 @@ class LessonWizard extends React.Component {
 
   updateprogress(progressIndex) {
     let componentThis = this
-    let { level, task } = this.state
+    let { level, tasknum } = this.state
     let { dispatch, getState } = this.props.store
     let storeState = getState()
     let values = JSON.parse(JSON.stringify(storeState.progress))
     values.level = level
-    values.task = task
+    values.tasknum = tasknum
     values.step = progressIndex
     let updateprogressApiUrl = TEAM_BASE_URL + TEAM_API_RELATIVE_PATH + '/updateprogress'
     const apiAction = {
@@ -129,13 +129,13 @@ class LessonWizard extends React.Component {
             type: 'updateprogress_success',
             payload: (action, state, res) => {
               parseJsonPayload(res, action.type, function(json) {
-                dispatch(lessonUpdateProgressSuccess(json.account, json.progress, json.tasks))
+                dispatch(taskUpdateProgressSuccess(json.account, json.progress, json.tasks))
                 let progress = json.progress
-                let { level, task, nSteps } = this.state
+                let { level, tasknum, nSteps } = this.state
                 // In case another browser session advanced in the background
-                if (progress.level > level || (progress.level === level && progress.task > task)) {
+                if (progress.level > level || (progress.level === level && progress.tasknum > tasknum)) {
                   this.setState({ progressIndex: nSteps })
-                } else if (progress.level === level && progress.task === task && progress.step > progressIndex) {
+                } else if (progress.level === level && progress.tasknum === tasknum && progress.step > progressIndex) {
                   this.setState({ progressIndex: progress.step })
                 }
               }.bind(componentThis))
@@ -144,7 +144,7 @@ class LessonWizard extends React.Component {
           {
             type: 'updateprogress_failure',
             payload: (action, state, res) => {
-              console.error('LessonWizard updateprogress_failure')
+              console.error('TaskWizard updateprogress_failure')
               this.props.history.push('/systemerror')
             }
           }
@@ -191,7 +191,7 @@ class LessonWizard extends React.Component {
     let values = JSON.parse(JSON.stringify(storeState.progress))
     let localProgress = this.getLocalProgressWrapper()
     values.level = localProgress.level
-    values.task = localProgress.task
+    values.tasknum = localProgress.tasknum
     values.step = localProgress.step
     let revertprogressApiUrl = TEAM_BASE_URL + TEAM_API_RELATIVE_PATH + '/revertprogress'
     const apiAction = {
@@ -205,7 +205,7 @@ class LessonWizard extends React.Component {
             type: 'revertprogress_success',
             payload: (action, state, res) => {
               parseJsonPayload(res, action.type, function(json) {
-                dispatch(lessonRevertProgressSuccess(json.account, json.progress, json.tasks))
+                dispatch(taskRevertProgressSuccess(json.account, json.progress, json.tasks))
                 this.setState({ progressIndex: json.progress.step })
               }.bind(componentThis))
             }
@@ -213,7 +213,7 @@ class LessonWizard extends React.Component {
           {
             type: 'revertprogress_failure',
             payload: (action, state, res) => {
-              console.error('LessonWizard revertprogress_failure')
+              console.error('TaskWizard revertprogress_failure')
               this.props.history.push('/systemerror')
             }
           }
@@ -227,7 +227,7 @@ class LessonWizard extends React.Component {
 
 
   handleNavigationClick = (name, e) => {
-    let { lessonName, progressIndex, nSteps} = this.state
+    let { taskName, progressIndex, nSteps} = this.state
     let localProgress = this.getLocalProgressWrapper()
     let screenIndex = localProgress.step
     let readyToFinish = progressIndex >= nSteps && screenIndex >= nSteps-1
@@ -241,17 +241,17 @@ class LessonWizard extends React.Component {
       //FIXME readyToFinish logic
       screenIndex = nSteps - 1
     } else {
-      console.error('LessonWizard handleNavigationClick unexpected case. lessonName:'+lessonName+', progressIndex='+progressIndex+', screenIndex:'+screenIndex);
+      console.error('TaskWizard handleNavigationClick unexpected case. taskName:'+taskName+', progressIndex='+progressIndex+', screenIndex:'+screenIndex);
       return // should not get here ever
     }
     localProgress.step = screenIndex
     setLocalProgress(localProgress)
     this.setState({ progressIndex })
     setTimeout(() => {
-      let LessonScreenContent = document.querySelector('.LessonScreenContent')
-      if (LessonScreenContent) {
-        LessonScreenContent.scrollTop = 0
-        LessonScreenContent.scrollLeft = 0
+      let TaskScreenContent = document.querySelector('.TaskScreenContent')
+      if (TaskScreenContent) {
+        TaskScreenContent.scrollTop = 0
+        TaskScreenContent.scrollLeft = 0
       }
     }, 50)
   }
@@ -259,7 +259,7 @@ class LessonWizard extends React.Component {
   getLocalProgressWrapper() {
     let localProgress = getLocalProgress()
     if (!localProgress) {
-      console.error('LessonWizard missing localProgress value')
+      console.error('TaskWizard missing localProgress value')
       this.props.history.push('/systemerror')
     } else {
       return localProgress
@@ -268,25 +268,25 @@ class LessonWizard extends React.Component {
 
   render() {
     let { store } = this.props
-    let { lessonName, lesson, level, progressIndex, nSteps, task } = this.state
+    let { taskName, task, level, progressIndex, nSteps, tasknum } = this.state
     let localProgress = this.getLocalProgressWrapper()
     let screenIndex = localProgress.step
-    if (!lesson) {
+    if (!task) {
       return (<div></div>)
     }
-    let type = lesson.steps[screenIndex].type
-    let lessonTitle, screenTitle, screenContent, navigation
+    let type = task.steps[screenIndex].type
+    let taskTitle, screenTitle, screenContent, navigation
     let readyToFinish = progressIndex >= nSteps && screenIndex >= nSteps-1
-    if (!lessonName) {
-      lessonTitle = 'loading ... '
-    } else if (!lesson || !lesson.success) {
-      lessonTitle = 'lesson not found'
+    if (!taskName) {
+      taskTitle = 'loading ... '
+    } else if (!task || !task.success) {
+      taskTitle = 'task not found'
     } else {
-      lessonTitle = (
-        <h1>Lesson {level}.{task+1}: {lesson.title}</h1>
+      taskTitle = (
+        <h1>Task {level}.{tasknum+1}: {task.title}</h1>
       )
       screenTitle = (
-        <h2><div className="ScreenTitlePage">({screenIndex+1} of {nSteps})</div>{lesson.steps[screenIndex].title}</h2>
+        <h2><div className="ScreenTitlePage">({screenIndex+1} of {nSteps})</div>{task.steps[screenIndex].title}</h2>
       )
       let firstStyle = { visibility: screenIndex > 0 ? 'visible' : 'hidden'}
       let prevStyle = { visibility: screenIndex > 0 ? 'visible' : 'hidden'}
@@ -296,69 +296,69 @@ class LessonWizard extends React.Component {
       let lastDisabled = (progressIndex < nSteps) && !readyToFinish
       let lastText = readyToFinish ? 'Finish' : 'End'
       navigation = (
-        <div className="LessonNavigationButtons">
-          <span className="LessonNavigationButton first" style={firstStyle} >
+        <div className="TaskNavigationButtons">
+          <span className="TaskNavigationButton first" style={firstStyle} >
             <Button onClick={this.handleNavigationClick.bind(this, 'first')} >Start</Button>
           </span>
-          <span className="LessonNavigationButton prev" style={prevStyle} >
+          <span className="TaskNavigationButton prev" style={prevStyle} >
             <Button onClick={this.handleNavigationClick.bind(this, 'prev')} >Prev</Button>
           </span>
-          <span className="LessonNavigationButton next" style={nextStyle} >
+          <span className="TaskNavigationButton next" style={nextStyle} >
             <Button onClick={this.handleNavigationClick.bind(this, 'next')} disabled={nextDisabled} >Next</Button>
           </span>
-          <span className="LessonNavigationButton last" style={lastStyle} >
+          <span className="TaskNavigationButton last" style={lastStyle} >
             <Button onClick={this.handleNavigationClick.bind(this, 'last')} disabled={lastDisabled} >{lastText}</Button>
           </span>
         </div>
       )
-      if (type === 'LessonProse') {
+      if (type === 'TaskProse') {
         screenContent = (
           <div>
-            <LessonProse content={lesson.steps[screenIndex].content} store={store}
+            <TaskProse content={task.steps[screenIndex].content} store={store}
               onScreenComplete={this.onScreenComplete} onScreenAdvance={this.onScreenAdvance} onRevertProgress={this.onRevertProgress} />
-            <div className="LessonNavigation">{navigation}</div>
+            <div className="TaskNavigation">{navigation}</div>
           </div>
         )
-      } else if (type === 'LessonTrueFalse') {
+      } else if (type === 'TaskTrueFalse') {
         screenContent = (
           <div>
-            <LessonTrueFalse content={lesson.steps[screenIndex].content} store={store}
+            <TaskTrueFalse content={task.steps[screenIndex].content} store={store}
               onScreenComplete={this.onScreenComplete} onScreenAdvance={this.onScreenAdvance} onRevertProgress={this.onRevertProgress} />
-            <div className="LessonNavigation">{navigation}</div>
+            <div className="TaskNavigation">{navigation}</div>
           </div>
         )
-      } else if (type === 'LessonMultipleChoice') {
+      } else if (type === 'TaskMultipleChoice') {
         screenContent = (
           <div>
-            <LessonMultipleChoice content={lesson.steps[screenIndex].content} store={store}
+            <TaskMultipleChoice content={task.steps[screenIndex].content} store={store}
               onScreenComplete={this.onScreenComplete} onScreenAdvance={this.onScreenAdvance} onRevertProgress={this.onRevertProgress} />
-            <div className="LessonNavigation">{navigation}</div>
+            <div className="TaskNavigation">{navigation}</div>
           </div>
         )
-      } else if (type === 'LessonConfirmVow') {
+      } else if (type === 'TaskConfirmVow') {
         screenContent = (
           <div>
-            <LessonConfirmVow content={lesson.steps[screenIndex].content} store={store}
+            <TaskConfirmVow content={task.steps[screenIndex].content} store={store}
               onScreenComplete={this.onScreenComplete} onScreenAdvance={this.onScreenAdvance} onRevertProgress={this.onRevertProgress} />
-            <div className="LessonNavigation">{navigation}</div>
+            <div className="TaskNavigation">{navigation}</div>
           </div>
         )
       }
     }
     return (
-      <div className="LessonWizard">
-        <div className="LessonTitle">{lessonTitle}</div>
-        <div className="LessonScreenTitle">{screenTitle}</div>
-        <div className="LessonScreenContent">{screenContent}</div>
+      <div className="TaskWizard">
+        <div className="TaskTitle">{taskTitle}</div>
+        <div className="TaskScreenTitle">{screenTitle}</div>
+        <div className="TaskScreenContent">{screenContent}</div>
       </div>
     );
   }
 }
 
-LessonWizard.propTypes = {
+TaskWizard.propTypes = {
   store: PropTypes.object.isRequired,
   level: PropTypes.string.isRequired,
   name: PropTypes.string.isRequired
 }
 
-export default withRouter(LessonWizard);
+export default withRouter(TaskWizard);

@@ -49,7 +49,7 @@ class Login extends React.Component {
               parseJsonPayload.bind(this)(res, action.type, json => {
                 localStorage.setItem("teamAppEmail", json.account.email)
                 if (!getLocalProgress()) {
-                  setLocalProgress({ level:1, task:0, step:0 })
+                  setLocalProgress({ level:1, tasknum:0, step:0 })
                 }
                 dispatch(accountLoginSuccess(json.account))
                 this.props.history.push('/Tasks')

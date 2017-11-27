@@ -3,23 +3,23 @@ import React from 'react';
 import { withRouter } from 'react-router-dom'
 import PropTypes from 'prop-types'
 import DOMPurify from 'dompurify'
-import LessonScreenBaseClass from './LessonScreenBaseClass'
-import './LessonProse.css'
+import TaskScreenBaseClass from './TaskScreenBaseClass'
+import './TaskProse.css'
 
-class LessonProse extends LessonScreenBaseClass {
+class TaskProse extends TaskScreenBaseClass {
 
   render() {
     let { content } = this.props
     setTimeout(() =>{
-      this.props.onScreenComplete() // Tell LessonWizard ok to activate Next button
+      this.props.onScreenComplete() // Tell TaskWizard ok to activate Next button
     }, 0)
     return (
-      <div className="LessonProse" dangerouslySetInnerHTML={{__html: DOMPurify.sanitize(content)}} />
+      <div className="TaskProse" dangerouslySetInnerHTML={{__html: DOMPurify.sanitize(content)}} />
     );
   }
 }
 
-LessonProse.propTypes = {
+TaskProse.propTypes = {
   store: PropTypes.object.isRequired,
   content: PropTypes.string.isRequired,
   onScreenComplete: PropTypes.func.isRequired,
@@ -27,4 +27,4 @@ LessonProse.propTypes = {
   onRevertProgress: PropTypes.func.isRequired
 }
 
-export default withRouter(LessonProse);
+export default withRouter(TaskProse);

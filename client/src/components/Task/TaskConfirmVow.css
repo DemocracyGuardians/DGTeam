@@ -1,9 +1,9 @@
 
-.LessonConfirmVow {
+.TaskConfirmVow {
   padding-bottom: 3em;
 }
 
-.LessonConfirmVowText {
+.TaskConfirmVowText {
   margin: 1.25em 2em 2em;
   font-size: 120%;
   font-weight: bold;
@@ -13,26 +13,26 @@
   box-shadow: 1px 2px 1px #979;
 }
 
-.LessonConfirmVowButtonRow {
+.TaskConfirmVowButtonRow {
   display: flex;
 }
 
-.LessonConfirmVowButtonYes.ui.button, .LessonConfirmVowButtonNo.ui.button {
+.TaskConfirmVowButtonYes.ui.button, .TaskConfirmVowButtonNo.ui.button {
   flex-grow: 0;
   font-size: 110%;
   font-weight: bold;
 }
 
-.LessonConfirmVowButtonYes.ui.button {
+.TaskConfirmVowButtonYes.ui.button {
   background: #e0c1e2 none; /* #e0e1e2 none;*/
   border: 1px solid darkviolet;
 }
 
-.LessonConfirmVowButtonNo.ui.button {
+.TaskConfirmVowButtonNo.ui.button {
   background: #d0d1d2 none;
   border: 1px solid black;
 }
 
-.LessonConfirmVowButtonRow .spacer {
+.TaskConfirmVowButtonRow .spacer {
   flex-grow: 1;
 }
