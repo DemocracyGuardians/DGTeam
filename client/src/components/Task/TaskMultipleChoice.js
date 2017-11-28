@@ -3,10 +3,10 @@ import React from 'react';
 import { withRouter } from 'react-router-dom'
 import PropTypes from 'prop-types'
 import { Button, Checkbox, Icon, Message } from 'semantic-ui-react'
-import TaskScreenBaseClass from './TaskScreenBaseClass'
+import TaskStepBaseClass from './TaskStepBaseClass'
 import './TaskMultipleChoice.css'
 
-class TaskMultipleChoice extends TaskScreenBaseClass {
+class TaskMultipleChoice extends TaskStepBaseClass {
   constructor(props) {
     super(props)
     this.state = {
@@ -27,7 +27,7 @@ class TaskMultipleChoice extends TaskScreenBaseClass {
     let { questions } = this.state
     let anyWrong = questions.some(question => question.value !== question.a)
     if (!anyWrong) {
-      this.props.onScreenComplete() // Tell TaskWizard ok to activate Next button
+      this.props.onStepComplete() // Tell TaskWizard ok to activate Next button
     }
     this.setState({ score: anyWrong ? 'fail' : 'pass' })
   }
@@ -107,8 +107,8 @@ class TaskMultipleChoice extends TaskScreenBaseClass {
 TaskMultipleChoice.propTypes = {
   store: PropTypes.object.isRequired,
   content: PropTypes.object.isRequired,
-  onScreenComplete: PropTypes.func.isRequired,
-  onScreenAdvance: PropTypes.func.isRequired,
+  onStepComplete: PropTypes.func.isRequired,
+  onStepAdvance: PropTypes.func.isRequired,
   onRevertProgress: PropTypes.func.isRequired
 }
 

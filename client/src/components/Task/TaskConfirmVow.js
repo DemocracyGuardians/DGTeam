@@ -4,14 +4,14 @@ import { withRouter } from 'react-router-dom'
 import PropTypes from 'prop-types'
 import { Button, Message } from 'semantic-ui-react'
 import { RSAA } from 'redux-api-middleware';
-import TaskScreenBaseClass from './TaskScreenBaseClass'
+import TaskStepBaseClass from './TaskStepBaseClass'
 import { accountLogoutSuccess } from '../../actions/accountActions'
 import { TEAM_BASE_URL, TEAM_API_RELATIVE_PATH } from '../../envvars'
 import './TaskConfirmVow.css'
 
 const logoutApiUrl = TEAM_BASE_URL + TEAM_API_RELATIVE_PATH + '/logout'
 
-class TaskConfirmVow extends TaskScreenBaseClass {
+class TaskConfirmVow extends TaskStepBaseClass {
   constructor(props) {
     super(props)
     this.state = {
@@ -21,7 +21,7 @@ class TaskConfirmVow extends TaskScreenBaseClass {
   }
 
   yes = (e) => {
-    this.props.onScreenAdvance() // Tell TaskWizard to advance to next screen
+    this.props.onStepAdvance() // Tell TaskWizard to advance to next screen
   }
 
   no = (e) => {
@@ -102,8 +102,8 @@ class TaskConfirmVow extends TaskScreenBaseClass {
 TaskConfirmVow.propTypes = {
   store: PropTypes.object.isRequired,
   content: PropTypes.string.isRequired,
-  onScreenComplete: PropTypes.func.isRequired,
-  onScreenAdvance: PropTypes.func.isRequired,
+  onStepComplete: PropTypes.func.isRequired,
+  onStepAdvance: PropTypes.func.isRequired,
   onRevertProgress: PropTypes.func.isRequired
 }
 

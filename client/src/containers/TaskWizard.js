@@ -20,13 +20,12 @@ class TaskWizard extends React.Component {
     this.state = {
       level: parseInt(this.props.level, 10),
       name: this.props.name,
-      taskName: null,
-      forceRerender: 0
+      taskName: null
     }
     this.gettask = this.gettask.bind(this);
     this.updateprogress = this.updateprogress.bind(this);
-    this.onScreenComplete = this.onScreenComplete.bind(this);
-    this.onScreenAdvance = this.onScreenAdvance.bind(this);
+    this.onStepComplete = this.onStepComplete.bind(this);
+    this.onStepAdvance = this.onStepAdvance.bind(this);
     this.onRevertProgress = this.onRevertProgress.bind(this);
     this.getLocalProgressWrapper = this.getLocalProgressWrapper.bind(this);
     this.gettask()
@@ -156,7 +155,7 @@ class TaskWizard extends React.Component {
     dispatch(apiAction)
   }
 
-  onScreenComplete = () => {
+  onStepComplete = () => {
     let { progressIndex } = this.state
     let localProgress = this.getLocalProgressWrapper()
     let screenIndex = localProgress.step
@@ -167,8 +166,8 @@ class TaskWizard extends React.Component {
     this.updateprogress(progressIndex) // Note that screen updates while server gets its update
   }
 
-  onScreenAdvance = () => {
-    let { forceRerender, progressIndex, nSteps } = this.state
+  onStepAdvance = () => {
+    let { progressIndex, nSteps } = this.state
     let localProgress = this.getLocalProgressWrapper()
     let screenIndex = localProgress.step
     if (progressIndex < screenIndex+1) {
@@ -179,8 +178,7 @@ class TaskWizard extends React.Component {
     }
     localProgress.step = screenIndex
     setLocalProgress(localProgress)
-    forceRerender++
-    this.setState({ progressIndex, forceRerender })
+    this.setState({ progressIndex })
     this.updateprogress(progressIndex) // Note that screen updates while server gets its update
   }
 
@@ -248,10 +246,10 @@ class TaskWizard extends React.Component {
     setLocalProgress(localProgress)
     this.setState({ progressIndex })
     setTimeout(() => {
-      let TaskScreenContent = document.querySelector('.TaskScreenContent')
-      if (TaskScreenContent) {
-        TaskScreenContent.scrollTop = 0
-        TaskScreenContent.scrollLeft = 0
+      let TaskStepContent = document.querySelector('.TaskStepContent')
+      if (TaskStepContent) {
+        TaskStepContent.scrollTop = 0
+        TaskStepContent.scrollLeft = 0
       }
     }, 50)
   }
@@ -286,7 +284,7 @@ class TaskWizard extends React.Component {
         <h1>Task {level}.{tasknum+1}: {task.title}</h1>
       )
       screenTitle = (
-        <h2><div className="ScreenTitlePage">({screenIndex+1} of {nSteps})</div>{task.steps[screenIndex].title}</h2>
+        <h2><div className="StepTitlePage">({screenIndex+1} of {nSteps})</div>{task.steps[screenIndex].title}</h2>
       )
       let firstStyle = { visibility: screenIndex > 0 ? 'visible' : 'hidden'}
       let prevStyle = { visibility: screenIndex > 0 ? 'visible' : 'hidden'}
@@ -315,7 +313,7 @@ class TaskWizard extends React.Component {
         screenContent = (
           <div>
             <TaskProse content={task.steps[screenIndex].content} store={store}
-              onScreenComplete={this.onScreenComplete} onScreenAdvance={this.onScreenAdvance} onRevertProgress={this.onRevertProgress} />
+              onStepComplete={this.onStepComplete} onStepAdvance={this.onStepAdvance} onRevertProgress={this.onRevertProgress} />
             <div className="TaskNavigation">{navigation}</div>
           </div>
         )
@@ -323,7 +321,7 @@ class TaskWizard extends React.Component {
         screenContent = (
           <div>
             <TaskTrueFalse content={task.steps[screenIndex].content} store={store}
-              onScreenComplete={this.onScreenComplete} onScreenAdvance={this.onScreenAdvance} onRevertProgress={this.onRevertProgress} />
+              onStepComplete={this.onStepComplete} onStepAdvance={this.onStepAdvance} onRevertProgress={this.onRevertProgress} />
             <div className="TaskNavigation">{navigation}</div>
           </div>
         )
@@ -331,7 +329,7 @@ class TaskWizard extends React.Component {
         screenContent = (
           <div>
             <TaskMultipleChoice content={task.steps[screenIndex].content} store={store}
-              onScreenComplete={this.onScreenComplete} onScreenAdvance={this.onScreenAdvance} onRevertProgress={this.onRevertProgress} />
+              onStepComplete={this.onStepComplete} onStepAdvance={this.onStepAdvance} onRevertProgress={this.onRevertProgress} />
             <div className="TaskNavigation">{navigation}</div>
           </div>
         )
@@ -339,7 +337,7 @@ class TaskWizard extends React.Component {
         screenContent = (
           <div>
             <TaskConfirmVow content={task.steps[screenIndex].content} store={store}
-              onScreenComplete={this.onScreenComplete} onScreenAdvance={this.onScreenAdvance} onRevertProgress={this.onRevertProgress} />
+              onStepComplete={this.onStepComplete} onStepAdvance={this.onStepAdvance} onRevertProgress={this.onRevertProgress} />
             <div className="TaskNavigation">{navigation}</div>
           </div>
         )
@@ -348,8 +346,8 @@ class TaskWizard extends React.Component {
     return (
       <div className="TaskWizard">
         <div className="TaskTitle">{taskTitle}</div>
-        <div className="TaskScreenTitle">{screenTitle}</div>
-        <div className="TaskScreenContent">{screenContent}</div>
+        <div className="TaskStepTitle">{screenTitle}</div>
+        <div className="TaskStepContent">{screenContent}</div>
       </div>
     );
   }

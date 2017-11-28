@@ -2,18 +2,18 @@
 import React from 'react';
 import PropTypes from 'prop-types'
 
-class TaskScreenBaseClass extends React.Component {
+class TaskStepBaseClass extends React.Component {
   render() {
     return (<span></span>)
   }
 }
 
-TaskScreenBaseClass.propTypes = {
+TaskStepBaseClass.propTypes = {
   store: PropTypes.object.isRequired,
   content: PropTypes.string.isRequired,
-  onScreenComplete: PropTypes.func.isRequired,
+  onStepComplete: PropTypes.func.isRequired,
   onRevertProgress: PropTypes.func.isRequired
 }
 
 
-export default TaskScreenBaseClass;
+export default TaskStepBaseClass;
