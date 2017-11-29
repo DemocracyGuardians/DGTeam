@@ -78,3 +78,21 @@
   font-size: 1.1em;
   margin-top: .25em;
 }
+
+.TaskWizardCompletion .TaskNavigationButton.last .ui.button {
+  color: #606;
+  background: #f0e1f2 none;
+  font-weight: bold;
+  border: 1px solid #606;
+}
+
+.TaskWizard .TaskWizardCongratulations {
+  color: #060;
+  text-align: center;
+  margin-top: 0.75em;
+}
+
+.TaskWizardComplete {
+  margin-bottom: 3em;
+  text-align: center;
+}

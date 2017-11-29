@@ -107,79 +107,88 @@ class TaskWizard extends React.Component {
     dispatch(apiAction)
   }
 
-  updateprogress(progressIndex) {
-    let componentThis = this
-    let { level, tasknum } = this.state
-    let { dispatch, getState } = this.props.store
-    let storeState = getState()
-    let values = JSON.parse(JSON.stringify(storeState.progress))
-    values.level = level
-    values.tasknum = tasknum
-    values.step = progressIndex
-    let updateprogressApiUrl = TEAM_BASE_URL + TEAM_API_RELATIVE_PATH + '/updateprogress'
-    const apiAction = {
-      [RSAA]: {
-        endpoint: updateprogressApiUrl,
-        method: 'POST',
-        credentials: 'include',
-        types: [
-          'updateprogress_request', // ignored
-          {
-            type: 'updateprogress_success',
-            payload: (action, state, res) => {
-              parseJsonPayload(res, action.type, function(json) {
-                dispatch(taskUpdateProgressSuccess(json.account, json.progress, json.tasks))
-                let progress = json.progress
-                let { level, tasknum, nSteps } = this.state
-                // In case another browser session advanced in the background
-                if (progress.level > level || (progress.level === level && progress.tasknum > tasknum)) {
-                  this.setState({ progressIndex: nSteps })
-                } else if (progress.level === level && progress.tasknum === tasknum && progress.step > progressIndex) {
-                  this.setState({ progressIndex: progress.step })
-                }
-              }.bind(componentThis))
+  updateprogress(level, tasknum, progressIndex) {
+    return new Promise((resolve, reject) => {
+      let componentThis = this
+      let { dispatch, getState } = this.props.store
+      let storeState = getState()
+      let values = JSON.parse(JSON.stringify(storeState.progress))
+      values.level = level
+      values.tasknum = tasknum
+      values.step = progressIndex
+      let updateprogressApiUrl = TEAM_BASE_URL + TEAM_API_RELATIVE_PATH + '/updateprogress'
+      const apiAction = {
+        [RSAA]: {
+          endpoint: updateprogressApiUrl,
+          method: 'POST',
+          credentials: 'include',
+          types: [
+            'updateprogress_request', // ignored
+            {
+              type: 'updateprogress_success',
+              payload: (action, state, res) => {
+                parseJsonPayload(res, action.type, function(json) {
+                  dispatch(taskUpdateProgressSuccess(json.account, json.progress, json.tasks))
+                  let progress = json.progress
+                  let { level, tasknum, nSteps } = this.state
+                  // In case another browser session advanced in the background
+                  if (progress.level > level || (progress.level === level && progress.tasknum > tasknum)) {
+                    this.setState({ progressIndex: nSteps })
+                  } else if (progress.level === level && progress.tasknum === tasknum && progress.step > progressIndex) {
+                    this.setState({ progressIndex: progress.step })
+                  }
+                }.bind(componentThis))
+                resolve()
+              }
+            },
+            {
+              type: 'updateprogress_failure',
+              payload: (action, state, res) => {
+                reject('updateprogress_failure')
+              }
             }
-          },
-          {
-            type: 'updateprogress_failure',
-            payload: (action, state, res) => {
-              console.error('TaskWizard updateprogress_failure')
-              this.props.history.push('/systemerror')
-            }
-          }
-        ],
-        body: JSON.stringify(values),
-        headers: { 'Content-Type': 'application/json' }
+          ],
+          body: JSON.stringify(values),
+          headers: { 'Content-Type': 'application/json' }
+        }
       }
-    }
-    dispatch(apiAction)
+      dispatch(apiAction)
+    })
   }
 
   onStepComplete = () => {
-    let { progressIndex } = this.state
+    let { progressIndex, level, tasknum } = this.state
     let localProgress = this.getLocalProgressWrapper()
     let screenIndex = localProgress.step
     if (progressIndex < screenIndex+1) {
       progressIndex = screenIndex+1
       this.setState({ progressIndex })
     }
-    this.updateprogress(progressIndex) // Note that screen updates while server gets its update
+    // Note that screen updates before server gets its update (for responsiveness)
+    this.updateprogress(level, tasknum, progressIndex).then(() => {}).catch(e => {
+      console.error('TaskWizard onStepComplete updateprogress_failure')
+      this.props.history.push('/systemerror')
+    })
   }
 
   onStepAdvance = () => {
-    let { progressIndex, nSteps } = this.state
+    let { nSteps, progressIndex, level, tasknum } = this.state
     let localProgress = this.getLocalProgressWrapper()
     let screenIndex = localProgress.step
     if (progressIndex < screenIndex+1) {
       progressIndex = screenIndex+1
     }
-    if (screenIndex < nSteps-1) {
+    if (screenIndex < nSteps) {
       screenIndex++
     }
     localProgress.step = screenIndex
     setLocalProgress(localProgress)
     this.setState({ progressIndex })
-    this.updateprogress(progressIndex) // Note that screen updates while server gets its update
+    // Note that screen updates before server gets its update (for responsiveness)
+    this.updateprogress(level, tasknum, progressIndex).then(() => {}).catch(e => {
+      console.error('TaskWizard onStepAdvance updateprogress_failure')
+      this.props.history.push('/systemerror')
+    })
   }
 
   onRevertProgress() {
@@ -223,21 +232,37 @@ class TaskWizard extends React.Component {
     dispatch(apiAction)
   }
 
-
   handleNavigationClick = (name, e) => {
-    let { taskName, progressIndex, nSteps} = this.state
+    let { level, tasknum, taskName, progressIndex, nSteps} = this.state
     let localProgress = this.getLocalProgressWrapper()
     let screenIndex = localProgress.step
-    let readyToFinish = progressIndex >= nSteps && screenIndex >= nSteps-1
     if (name === 'first' && screenIndex > 0) {
       screenIndex = 0
     } else if (name === 'prev' && screenIndex > 0) {
       screenIndex--
-    } else if (name === 'next' && screenIndex < nSteps-1 && progressIndex >= screenIndex-1) {
+    } else if (name === 'next' && screenIndex < nSteps) {
       screenIndex++
-    } else if (name === 'last' && screenIndex < nSteps-1 && progressIndex >= nSteps-1) {
-      //FIXME readyToFinish logic
-      screenIndex = nSteps - 1
+    } else if (name === 'last' && screenIndex < nSteps && progressIndex >= nSteps) {
+      screenIndex = nSteps
+    } else if (name === 'last' && screenIndex >= nSteps && progressIndex >= nSteps) {
+      // User clicked on "Finish" button, so advance to the next task
+      let { getState } = this.props.store
+      let storeState = getState()
+      let tasks = storeState.tasks
+      let nLevels = tasks.levels.length
+      let nTasks = tasks.levels[level].tasks.length
+      tasknum++
+      progressIndex = 0
+      if (tasknum >= nTasks) {
+        level++
+        tasknum = 0
+      }
+      this.updateprogress(level, tasknum, progressIndex).then(() => {
+        this.props.history.push('/Tasks')
+      }).catch(e => {
+        console.error('TaskWizard handleNavigationClick updateprogress_failure')
+        this.props.history.push('/systemerror')
+      })
     } else {
       console.error('TaskWizard handleNavigationClick unexpected case. taskName:'+taskName+', progressIndex='+progressIndex+', screenIndex:'+screenIndex);
       return // should not get here ever
@@ -272,9 +297,8 @@ class TaskWizard extends React.Component {
     if (!task) {
       return (<div></div>)
     }
-    let type = task.steps[screenIndex].type
+    let type = screenIndex < nSteps ? task.steps[screenIndex].type : 'congrats'
     let taskTitle, screenTitle, screenContent, navigation
-    let readyToFinish = progressIndex >= nSteps && screenIndex >= nSteps-1
     if (!taskName) {
       taskTitle = 'loading ... '
     } else if (!task || !task.success) {
@@ -283,16 +307,16 @@ class TaskWizard extends React.Component {
       taskTitle = (
         <h1>Task {level}.{tasknum+1}: {task.title}</h1>
       )
-      screenTitle = (
-        <h2><div className="StepTitlePage">({screenIndex+1} of {nSteps})</div>{task.steps[screenIndex].title}</h2>
-      )
+      if (screenIndex < nSteps ) {
+        screenTitle = (
+          <h2><div className="StepTitlePage">({screenIndex+1} of {nSteps})</div>{task.steps[screenIndex].title}</h2>
+        )
+      }
       let firstStyle = { visibility: screenIndex > 0 ? 'visible' : 'hidden'}
       let prevStyle = { visibility: screenIndex > 0 ? 'visible' : 'hidden'}
-      let nextStyle = { visibility: screenIndex < (nSteps-1) ? 'visible' : 'hidden'}
-      let lastStyle = { visibility: screenIndex < (nSteps-1) || readyToFinish ? 'visible' : 'hidden'}
-      let nextDisabled = (progressIndex <= screenIndex)
-      let lastDisabled = (progressIndex < nSteps) && !readyToFinish
-      let lastText = readyToFinish ? 'Finish' : 'End'
+      let nextStyle = { visibility: screenIndex < progressIndex ? 'visible' : 'hidden'}
+      let lastStyle = { visibility: progressIndex >= nSteps ? 'visible' : 'hidden'}
+      let lastText = screenIndex >= nSteps ? 'Finish' : 'End'
       navigation = (
         <div className="TaskNavigationButtons">
           <span className="TaskNavigationButton first" style={firstStyle} >
@@ -302,10 +326,10 @@ class TaskWizard extends React.Component {
             <Button onClick={this.handleNavigationClick.bind(this, 'prev')} >Prev</Button>
           </span>
           <span className="TaskNavigationButton next" style={nextStyle} >
-            <Button onClick={this.handleNavigationClick.bind(this, 'next')} disabled={nextDisabled} >Next</Button>
+            <Button onClick={this.handleNavigationClick.bind(this, 'next')} >Next</Button>
           </span>
           <span className="TaskNavigationButton last" style={lastStyle} >
-            <Button onClick={this.handleNavigationClick.bind(this, 'last')} disabled={lastDisabled} >{lastText}</Button>
+            <Button onClick={this.handleNavigationClick.bind(this, 'last')} >{lastText}</Button>
           </span>
         </div>
       )
@@ -343,13 +367,24 @@ class TaskWizard extends React.Component {
         )
       }
     }
-    return (
-      <div className="TaskWizard">
+    let result
+    if (screenIndex < nSteps) {
+      result = ( <div className="TaskWizardStep">
         <div className="TaskTitle">{taskTitle}</div>
         <div className="TaskStepTitle">{screenTitle}</div>
         <div className="TaskStepContent">{screenContent}</div>
-      </div>
-    );
+      </div> )
+    } else {
+      result = ( <div className="TaskWizardCompletion">
+        <div className="TaskTitle">{taskTitle}</div>
+        <h2 className="TaskWizardCongratulations">Congratulations!</h2>
+        <div className="TaskWizardComplete">You have completed this task. Press "Finish" to proceed.</div>
+        <div className="TaskNavigation">{navigation}</div>
+      </div> )
+    }
+    return ( <div className="TaskWizard">
+      {result}
+    </div> );
   }
 }
 

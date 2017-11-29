@@ -11,7 +11,7 @@ var connection = mysql.createConnection({
   user: TEAM_DB_USER,
   password: TEAM_DB_PASSWORD,
   database: TEAM_DB_DATABASE,
-  debug: true
+  debug: false
 });
 
 connection.connect(function(error){

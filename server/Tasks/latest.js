@@ -22,6 +22,11 @@ module.exports = {
         { type: 'Task', name: 'Vows' },
         { type: 'Task', name: 'Profile' }
       ]
+    },
+    {
+      tasks: [
+        { type: 'Task', name: 'Placeholder' }
+      ]
     }
   ]
 }
