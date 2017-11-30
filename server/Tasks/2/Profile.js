@@ -4,7 +4,7 @@ module.exports = {
   steps: [
     {
       type: 'TaskProse',
-      title: 'Profiles are the foundation of Democracy Guardians\'s trustworthiness judgments',
+      title: 'About profiles',
       content: `
         <p>Every member of the Democracy Guardians team must have a complete and up to date profile that contains all relevant information for others to judge your personal trustworthiness. This task will step you through the process of creating an initial profile.</p>
 

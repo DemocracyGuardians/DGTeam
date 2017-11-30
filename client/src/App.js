@@ -12,6 +12,7 @@ import ForgotPassword from './containers/ForgotPassword'
 import ResetPasswordSent from './components/Session/ResetPasswordSent'
 import ResetPassword from './containers/ResetPassword'
 import ResetPasswordSuccess from './components/Session/ResetPasswordSuccess'
+import ResetProgress from './containers/ResetProgress'
 import SystemError from './components/Misc/SystemError'
 
 // Needed for onTouchTap
@@ -28,6 +29,7 @@ class App extends Component {
     const ResetPasswordSentComp = (() => (<ResetPasswordSent store={this.props.store} />))
     const ResetPasswordComp = (() => (<ResetPassword store={this.props.store} />))
     const ResetPasswordSuccessComp = (() => (<ResetPasswordSuccess store={this.props.store} />))
+    const ResetProgressComp = (() => (<ResetProgress store={this.props.store} />))
     const WorkbenchComp = (() => (<Workbench store={this.props.store} />))
     let defaultRoute = localStorage.getItem("teamAppEmail") ? '/login' : '/signup'
     return (
@@ -42,6 +44,7 @@ class App extends Component {
             <Route path='/resetpasswordsent' component={ResetPasswordSentComp} />
             <Route path='/resetpassword' component={ResetPasswordComp} />
             <Route path='/resetpasswordsuccess' component={ResetPasswordSuccessComp} />
+            <Route path='/resetprogress' component={ResetProgressComp} />
             <Route exact path='/(Tasks|Messages|Search|Me)' component={WorkbenchComp} />
             <Route exact path='/Inbox/:id' component={WorkbenchComp} />
             <Route exact path='/Task/:level/:name' component={WorkbenchComp} />

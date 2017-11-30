@@ -18,13 +18,14 @@ module.exports = {
     },
     {
       tasks: [
+        { type: 'Task', name: 'Welcome' },
         { type: 'Task', name: 'Trustworthiness' },
-        { type: 'Task', name: 'Vows' },
-        { type: 'Task', name: 'Profile' }
+        { type: 'Task', name: 'Vows' }
       ]
     },
     {
       tasks: [
+        { type: 'Task', name: 'Profile' },
         { type: 'Task', name: 'Placeholder' }
       ]
     }

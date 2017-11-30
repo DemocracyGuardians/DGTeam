@@ -200,16 +200,16 @@ class TaskWizard extends React.Component {
     values.level = localProgress.level
     values.tasknum = localProgress.tasknum
     values.step = localProgress.step
-    let revertprogressApiUrl = TEAM_BASE_URL + TEAM_API_RELATIVE_PATH + '/revertprogress'
+    let resetprogressApiUrl = TEAM_BASE_URL + TEAM_API_RELATIVE_PATH + '/resetprogress'
     const apiAction = {
       [RSAA]: {
-        endpoint: revertprogressApiUrl,
+        endpoint: resetprogressApiUrl,
         method: 'POST',
         credentials: 'include',
         types: [
-          'revertprogress_request', // ignored
+          'resetprogress_request', // ignored
           {
-            type: 'revertprogress_success',
+            type: 'resetprogress_success',
             payload: (action, state, res) => {
               parseJsonPayload(res, action.type, function(json) {
                 dispatch(taskRevertProgressSuccess(json.account, json.progress, json.tasks))
@@ -218,9 +218,9 @@ class TaskWizard extends React.Component {
             }
           },
           {
-            type: 'revertprogress_failure',
+            type: 'resetprogress_failure',
             payload: (action, state, res) => {
-              console.error('TaskWizard revertprogress_failure')
+              console.error('TaskWizard resetprogress_failure')
               this.props.history.push('/systemerror')
             }
           }

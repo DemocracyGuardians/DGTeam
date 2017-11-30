@@ -7,3 +7,14 @@ export function progressIncrementSuccess(progress) {
     progress
   }
 }
+
+export const RESET_PROGRESS_SUCCESS = 'RESET_PROGRESS_SUCCESS'
+
+export function resetProgressSuccess(account, progress, tasks) {
+  return {
+    type: RESET_PROGRESS_SUCCESS,
+    account,
+    progress,
+    tasks
+  }
+}

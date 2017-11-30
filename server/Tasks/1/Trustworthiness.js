@@ -87,32 +87,9 @@ module.exports = {
               'They recognize their own limitations and avoid offering judgments on things on which they have limited understanding.'
             ],
             a: 'c'
-          },
-          {
-            q: 'Which of the following are not necessarily true about trustworthy people?',
-            choices: [
-              'They are honest.',
-              'They are dependable.',
-              'They have similar political beliefs as me.',
-              'They search for all possible solutions and evaluate them objectively before making a decision or formulating an opinion.',
-              'They recognize their own limitations and avoid offering judgments on things on which they have limited understanding.'
-            ],
-            a: 'c'
           }
         ]
       }
-    },
-    {
-      type: 'TaskConfirmVow',
-      title: 'Vow',
-      content: 'I vow to be honest and trustworthy in all my activities with this organization.'
-    },
-    {
-      type: 'TaskProse',
-      title: 'We also put a degree of trust in crowd-sourced social media',
-      content: `
-        <p>In the age of the Internet and social media, we trust people we don’t know all of the time. When we are deciding on which restaurant to go for dinner, we often rely on restaurant reviews written by unknown people. When we bid on something at an auction site, we look at seller ratings from people we don’t know to decide whether the promise of a bargain is worth the chance the seller is dishonest. When we need to learn about an unfamiliar topic, we usually feel we can trust the information we find in the crowd-sourced online encyclopedia Wikipedia, particularly for topics without ideological controversy.</p>
-`
     }
   ]
 }

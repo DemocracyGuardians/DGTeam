@@ -47,7 +47,7 @@ apiRouter.post('/getinbox', authMiddleware, inboxRoutes.getinbox)
 apiRouter.post('/gettask/:level/:name', authMiddleware, taskRoutes.gettask)
 apiRouter.post('/gettasks', authMiddleware, taskRoutes.gettasks)
 apiRouter.post('/updateprogress', authMiddleware, taskRoutes.updateprogress)
-apiRouter.post('/revertprogress', authMiddleware, taskRoutes.revertprogress)
+apiRouter.post('/resetprogress', authMiddleware, taskRoutes.resetprogress)
 app.use(TEAM_API_RELATIVE_PATH, apiRouter);
 
 app.listen(TEAM_API_PORT);

@@ -29,6 +29,8 @@ class MoreMenu extends React.Component {
     this.setState({ isOpen: false })
     if (name === 'logout') {
       this.logout()
+    } else if (name === 'resetprogress') {
+      this.props.history.push('/resetprogress')
     }
   }
 
@@ -70,6 +72,9 @@ class MoreMenu extends React.Component {
       <Menu icon='labeled' vertical>
         <Menu.Item name='logout' onClick={this.handleItemClick} >
           Logout
+        </Menu.Item>
+        <Menu.Item name='resetprogress' onClick={this.handleItemClick} >
+          Reset Progress
         </Menu.Item>
       </Menu>
     )
