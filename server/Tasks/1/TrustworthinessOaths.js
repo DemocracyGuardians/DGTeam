@@ -16,12 +16,12 @@ module.exports = {
     {
       type: 'TaskConfirmOath',
       title: 'Oath',
-      content: 'I swear to be honest and trustworthy in all my activities with this organization.'
+      content: 'I promise to be honest and trustworthy in all my activities with this organization.'
     },
     {
       type: 'TaskConfirmOath',
       title: 'Oath',
-      content: 'I swear to be be thoughtful and open-minded in all my activities with this organization where I recognize that different people have different points of view and that another person\'s opinions are just as valid as mine.'
+      content: 'I promise to be be thoughtful and open-minded in all my activities with this organization where I recognize that different people have different points of view and that another person\'s opinions are just as valid as mine.'
     }
   ]
 }
