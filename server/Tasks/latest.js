@@ -18,15 +18,15 @@ module.exports = {
     },
     {
       tasks: [
-        { type: 'Task', name: 'Welcome' },
-        { type: 'Task', name: 'Trustworthiness' },
-        { type: 'Task', name: 'Vows' }
+        { name: 'Welcome', title: 'Welcome to the Team' },
+        { name: 'Trustworthiness', title: 'Introducing Trustworthiness ' },
+        { name: 'Pledges', title: 'Your Pledges' }
       ]
     },
     {
       tasks: [
-        { type: 'Task', name: 'Profile' },
-        { type: 'Task', name: 'Placeholder' }
+        { name: 'YourProfile', title: 'Your Profile' },
+        { name: 'OtherProfile', title: 'Creating or Editing a Different Profile' }
       ]
     }
   ]

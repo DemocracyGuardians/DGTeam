@@ -19,7 +19,7 @@ let notifications = [
 <p>To complete Level 1 and advance to level 2, you must complete the following three training modules:</p>
 <ul class="AppTaskList">
   <li><a href="/Task/1/Trustworthiness" class="AppTaskPressmeHighlight">Introducing Trustworthiness - Press here to start</a></li>
-  <li>Confirming Your Vows</li>
+  <li>Confirming Your Pledges</li>
   <li>Filling Out Your Profile</li>
 </ul>
     `

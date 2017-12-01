@@ -1,6 +1,6 @@
 
+//   title: 'Your Profile'
 module.exports = {
-  title: 'Your Profile',
   steps: [
     {
       type: 'TaskProse',

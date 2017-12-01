@@ -66,17 +66,20 @@ class Tasks extends React.Component {
     if (level < nLevels)  {
       let levelTasks = tasks.levels[level].tasks
       levelTasks.map((item, index) => {
-        let type = <span className="TaskItemType">{item.type}</span>
         let num = <span className="TaskItemNum">{level}.{index+1}</span>
-        let name = <span className="TaskItemName">{item.name}</span>
-        let href = "/" + item.type + "/" + level + "/" + item.name
-        if (tasknum === index) {
-          let thisIs = <span className="TasksThisIsCurrent">Your current task</span>
+        let title = <span className="TaskItemTitle">{item.title}</span>
+        let href = "/Task/" + level + "/" + item.name
+        if (index === tasknum) {
+          let thisIs = <span className="TasksThisIsCurrent">Current task</span>
           r.push( <li key={(count++).toString()} className="TasksItemCurrent">
-            <a href={href}>{type} {num}: {name} {thisIs}</a>
+            <a href={href}>{thisIs} Task {num}: {title}</a>
+          </li> )
+        } else if (index < tasknum) {
+          r.push( <li key={(count++).toString()} className="TasksItemCompleted">
+            <a href={href}>Task {num}: {title}</a>
           </li> )
         } else {
-          r.push( <li key={(count++).toString()} className="TasksItemNonCurrent">{type} {num}: {name}</li> )
+          r.push( <li key={(count++).toString()} className="TasksItemFuture">Task {num}: {title}</li> )
         }
         return null
       })

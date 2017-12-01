@@ -1,6 +1,6 @@
 
+//   title: 'Introducing Trustworthiness'
 module.exports = {
-  title: 'Introducing Trustworthiness',
   steps: [
     {
       type: 'TaskProse',
@@ -35,7 +35,7 @@ module.exports = {
         police)</li>
         <li>We
         trust religious leaders to honor their faith and religious
-        vows</li>
+        pledges</li>
         <li>Generals trust that their soldiers will follow
         all orders to the best of their abilities</li>
         <li>In

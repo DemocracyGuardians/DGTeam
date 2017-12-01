@@ -7,11 +7,11 @@ import { RSAA } from 'redux-api-middleware';
 import TaskStepBaseClass from './TaskStepBaseClass'
 import { accountLogoutSuccess } from '../../actions/accountActions'
 import { TEAM_BASE_URL, TEAM_API_RELATIVE_PATH } from '../../envvars'
-import './TaskConfirmVow.css'
+import './TaskConfirmPledge.css'
 
 const logoutApiUrl = TEAM_BASE_URL + TEAM_API_RELATIVE_PATH + '/logout'
 
-class TaskConfirmVow extends TaskStepBaseClass {
+class TaskConfirmPledge extends TaskStepBaseClass {
   constructor(props) {
     super(props)
     this.state = {
@@ -66,11 +66,11 @@ class TaskConfirmVow extends TaskStepBaseClass {
     let { confirmed } = this.state
     let msg, noButtonText, noButtonFunc, yesButtonText
     if (confirmed === 'no') {
-      msg = ( <Message className="TaskConfirmVowAreYouSure">
+      msg = ( <Message className="TaskConfirmPledgeAreYouSure">
           <Message.Header>Another chance to agree</Message.Header>
-          <p>Every team member must agree with all of the vows.
-            If you cannot agree with this vow, you cannot advance further with organizational activities.</p>
-          <p>Please press "I Agree" if you do indeed agree with this vow or press "Logout" to exit.</p>
+          <p>Every team member must agree with all of the pledges.
+            If you cannot agree with this pledge, you cannot advance further with organizational activities.</p>
+          <p>Please press "I Agree" if you do indeed agree with this pledge or press "Logout" to exit.</p>
         </Message> )
       yesButtonText = "I Agree"
       noButtonText = "Logout"
@@ -82,16 +82,16 @@ class TaskConfirmVow extends TaskStepBaseClass {
       noButtonFunc = this.no
     }
     return (
-      <div className="TaskConfirmVow" >
-        <div className="TaskConfirmVowText" >
+      <div className="TaskConfirmPledge" >
+        <div className="TaskConfirmPledgeText" >
           {this.props.content}
         </div>
         {msg}
-        <div className="TaskConfirmVowButtonRow">
+        <div className="TaskConfirmPledgeButtonRow">
           <span className="spacer"></span>
-          <Button className="TaskConfirmVowButtonYes" onClick={this.yes} >{yesButtonText}</Button>
+          <Button className="TaskConfirmPledgeButtonYes" onClick={this.yes} >{yesButtonText}</Button>
           <span className="spacer"></span>
-          <Button className="TaskConfirmVowButtonNo" onClick={noButtonFunc} >{noButtonText}</Button>
+          <Button className="TaskConfirmPledgeButtonNo" onClick={noButtonFunc} >{noButtonText}</Button>
           <span className="spacer"></span>
         </div>
       </div>
@@ -99,7 +99,7 @@ class TaskConfirmVow extends TaskStepBaseClass {
   }
 }
 
-TaskConfirmVow.propTypes = {
+TaskConfirmPledge.propTypes = {
   store: PropTypes.object.isRequired,
   content: PropTypes.string.isRequired,
   onStepComplete: PropTypes.func.isRequired,
@@ -107,4 +107,4 @@ TaskConfirmVow.propTypes = {
   onRevertProgress: PropTypes.func.isRequired
 }
 
-export default withRouter(TaskConfirmVow);
+export default withRouter(TaskConfirmPledge);

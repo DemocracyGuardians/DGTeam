@@ -1,6 +1,6 @@
 
+// title: 'Welcome to the Team'
 module.exports = {
-  title: 'Welcome To The Team',
   steps: [
     {
       type: 'TaskProse',
