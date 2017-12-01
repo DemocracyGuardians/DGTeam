@@ -7,11 +7,11 @@ import { RSAA } from 'redux-api-middleware';
 import TaskStepBaseClass from './TaskStepBaseClass'
 import { accountLogoutSuccess } from '../../actions/accountActions'
 import { TEAM_BASE_URL, TEAM_API_RELATIVE_PATH } from '../../envvars'
-import './TaskConfirmPledge.css'
+import './TaskConfirmOath.css'
 
 const logoutApiUrl = TEAM_BASE_URL + TEAM_API_RELATIVE_PATH + '/logout'
 
-class TaskConfirmPledge extends TaskStepBaseClass {
+class TaskConfirmOath extends TaskStepBaseClass {
   constructor(props) {
     super(props)
     this.state = {
@@ -66,11 +66,11 @@ class TaskConfirmPledge extends TaskStepBaseClass {
     let { confirmed } = this.state
     let msg, noButtonText, noButtonFunc, yesButtonText
     if (confirmed === 'no') {
-      msg = ( <Message className="TaskConfirmPledgeAreYouSure">
+      msg = ( <Message className="TaskConfirmOathAreYouSure">
           <Message.Header>Another chance to agree</Message.Header>
-          <p>Every team member must agree with all of the pledges.
-            If you cannot agree with this pledge, you cannot advance further with organizational activities.</p>
-          <p>Please press "I Agree" if you do indeed agree with this pledge or press "Logout" to exit.</p>
+          <p>Every team member must agree with all of the oaths.
+            If you cannot agree with this oath, you cannot advance further with organizational activities.</p>
+          <p>Please press "I Agree" if you do indeed agree with this oath or press "Logout" to exit.</p>
         </Message> )
       yesButtonText = "I Agree"
       noButtonText = "Logout"
@@ -82,16 +82,16 @@ class TaskConfirmPledge extends TaskStepBaseClass {
       noButtonFunc = this.no
     }
     return (
-      <div className="TaskConfirmPledge" >
-        <div className="TaskConfirmPledgeText" >
+      <div className="TaskConfirmOath" >
+        <div className="TaskConfirmOathText" >
           {this.props.content}
         </div>
         {msg}
-        <div className="TaskConfirmPledgeButtonRow">
+        <div className="TaskConfirmOathButtonRow">
           <span className="spacer"></span>
-          <Button className="TaskConfirmPledgeButtonYes" onClick={this.yes} >{yesButtonText}</Button>
+          <Button className="TaskConfirmOathButtonYes" onClick={this.yes} >{yesButtonText}</Button>
           <span className="spacer"></span>
-          <Button className="TaskConfirmPledgeButtonNo" onClick={noButtonFunc} >{noButtonText}</Button>
+          <Button className="TaskConfirmOathButtonNo" onClick={noButtonFunc} >{noButtonText}</Button>
           <span className="spacer"></span>
         </div>
       </div>
@@ -99,7 +99,7 @@ class TaskConfirmPledge extends TaskStepBaseClass {
   }
 }
 
-TaskConfirmPledge.propTypes = {
+TaskConfirmOath.propTypes = {
   store: PropTypes.object.isRequired,
   content: PropTypes.string.isRequired,
   onStepComplete: PropTypes.func.isRequired,
@@ -107,4 +107,4 @@ TaskConfirmPledge.propTypes = {
   onRevertProgress: PropTypes.func.isRequired
 }
 
-export default withRouter(TaskConfirmPledge);
+export default withRouter(TaskConfirmOath);

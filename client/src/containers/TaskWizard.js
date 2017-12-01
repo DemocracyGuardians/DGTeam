@@ -11,7 +11,7 @@ import { getLocalProgress, setLocalProgress } from '../util/localProgress'
 import TaskProse from '../components/Task/TaskProse'
 import TaskTrueFalse from '../components/Task/TaskTrueFalse'
 import TaskMultipleChoice from '../components/Task/TaskMultipleChoice'
-import TaskConfirmPledge from '../components/Task/TaskConfirmPledge'
+import TaskConfirmOath from '../components/Task/TaskConfirmOath'
 import './TaskWizard.css'
 
 class TaskWizard extends React.Component {
@@ -357,10 +357,10 @@ class TaskWizard extends React.Component {
             <div className="TaskNavigation">{navigation}</div>
           </div>
         )
-      } else if (type === 'TaskConfirmPledge') {
+      } else if (type === 'TaskConfirmOath') {
         screenContent = (
           <div>
-            <TaskConfirmPledge content={task.steps[screenIndex].content} store={store}
+            <TaskConfirmOath content={task.steps[screenIndex].content} store={store}
               onStepComplete={this.onStepComplete} onStepAdvance={this.onStepAdvance} onRevertProgress={this.onRevertProgress} />
             <div className="TaskNavigation">{navigation}</div>
           </div>

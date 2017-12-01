@@ -20,7 +20,7 @@ module.exports = {
       tasks: [
         { name: 'Welcome', title: 'Welcome to the Team' },
         { name: 'Trustworthiness', title: 'Introducing Trustworthiness ' },
-        { name: 'Pledges', title: 'Your Pledges' }
+        { name: 'TrustworthinessOaths', title: 'Trustworthiness Oaths' }
       ]
     },
     {
