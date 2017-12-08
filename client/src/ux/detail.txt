@@ -118,13 +118,16 @@ Book title candidates:
   Earning Trust **
 
 Site name candidates:
-  Being Good Is Cool **** (domain acquired: org and com)
+  Trust Builders (org is 1588)
+  Trust Focus (org acquired)
+  Trust Crowd (.Org acquired)
+  Being Good Is Cool  (domain acquired: org and com)
   Trust Rewards **** (.Org acquired, .Com is an empty website)
-  Cool To Be Good *** (.Org acquired, .Com owned by squatter)
-  Good is Cool **** (.Org acquired, .Com owned by squatter)
+  Cool To Be Good (.Org acquired, .Com owned by squatter)
+  Good is Cool  (.Org acquired, .Com owned by squatter)
   Trust Judgments *** (domain acquired: org and com)
   Rewarding Trust *** (domain acquired: org and com)
-  Trust Network
+  Trust Network (.Org available, min offer 250)
   Trust Judges
   Trust Winners * (domain acquired: org and com)
   Winning Trust ** (.Org acquired, .Com owned by squatter)
