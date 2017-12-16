@@ -12,7 +12,16 @@ import TaskProse from '../components/Task/TaskProse'
 import TaskTrueFalse from '../components/Task/TaskTrueFalse'
 import TaskMultipleChoice from '../components/Task/TaskMultipleChoice'
 import TaskConfirmOath from '../components/Task/TaskConfirmOath'
+import TaskProfile from '../components/Task/TaskProfile'
 import './TaskWizard.css'
+
+let componentXref = {
+  TaskProse: TaskProse,
+  TaskTrueFalse: TaskTrueFalse,
+  TaskMultipleChoice: TaskMultipleChoice,
+  TaskConfirmOath: TaskConfirmOath,
+  TaskProfile: TaskProfile
+}
 
 class TaskWizard extends React.Component {
   constructor(props){
@@ -20,12 +29,14 @@ class TaskWizard extends React.Component {
     this.state = {
       level: parseInt(this.props.level, 10),
       name: this.props.name,
-      taskName: null
+      taskName: null,
+      showWizardNavigation: true
     }
     this.gettask = this.gettask.bind(this);
     this.updateprogress = this.updateprogress.bind(this);
     this.onStepComplete = this.onStepComplete.bind(this);
     this.onStepAdvance = this.onStepAdvance.bind(this);
+    this.hideShowWizardNavigation = this.hideShowWizardNavigation.bind(this);
     this.onRevertProgress = this.onRevertProgress.bind(this);
     this.getLocalProgressWrapper = this.getLocalProgressWrapper.bind(this);
     this.gettask()
@@ -191,6 +202,10 @@ class TaskWizard extends React.Component {
     })
   }
 
+  hideShowWizardNavigation(showWizardNavigation) {
+    this.setState({ showWizardNavigation })
+  }
+
   onRevertProgress() {
     let componentThis = this
     let { dispatch, getState } = this.props.store
@@ -249,7 +264,6 @@ class TaskWizard extends React.Component {
       let { getState } = this.props.store
       let storeState = getState()
       let tasks = storeState.tasks
-      let nLevels = tasks.levels.length
       let nTasks = tasks.levels[level].tasks.length
       tasknum++
       progressIndex = 0
@@ -291,7 +305,7 @@ class TaskWizard extends React.Component {
 
   render() {
     let { store } = this.props
-    let { taskName, task, level, progressIndex, nSteps, tasknum } = this.state
+    let { taskName, task, level, progressIndex, nSteps, tasknum, showWizardNavigation } = this.state
     let localProgress = this.getLocalProgressWrapper()
     let screenIndex = localProgress.step
     if (!task) {
@@ -308,36 +322,43 @@ class TaskWizard extends React.Component {
         <h1>Task {level}.{tasknum+1}: {task.title}</h1>
       )
       if (screenIndex < nSteps ) {
+        let stepTitle = (componentXref[type] && componentXref[type].getTitle) ?
+            componentXref[type].getTitle(store, task.steps[screenIndex].content) : task.steps[screenIndex].title
         screenTitle = (
-          <h2><div className="StepTitlePage">({screenIndex+1} of {nSteps})</div>{task.steps[screenIndex].title}</h2>
+          <h2><div className="StepTitlePage">({screenIndex+1} of {nSteps})</div>{stepTitle}</h2>
         )
       }
-      let firstStyle = { visibility: screenIndex > 0 ? 'visible' : 'hidden'}
-      let prevStyle = { visibility: screenIndex > 0 ? 'visible' : 'hidden'}
-      let nextStyle = { visibility: screenIndex < progressIndex ? 'visible' : 'hidden'}
-      let lastStyle = { visibility: progressIndex >= nSteps ? 'visible' : 'hidden'}
-      let lastText = screenIndex >= nSteps ? 'Finish' : 'End'
-      navigation = (
-        <div className="TaskNavigationButtons">
-          <span className="TaskNavigationButton first" style={firstStyle} >
-            <Button onClick={this.handleNavigationClick.bind(this, 'first')} >Start</Button>
-          </span>
-          <span className="TaskNavigationButton prev" style={prevStyle} >
-            <Button onClick={this.handleNavigationClick.bind(this, 'prev')} >Prev</Button>
-          </span>
-          <span className="TaskNavigationButton next" style={nextStyle} >
-            <Button onClick={this.handleNavigationClick.bind(this, 'next')} >Next</Button>
-          </span>
-          <span className="TaskNavigationButton last" style={lastStyle} >
-            <Button onClick={this.handleNavigationClick.bind(this, 'last')} >{lastText}</Button>
-          </span>
-        </div>
-      )
+      if (showWizardNavigation) {
+        let firstStyle = { visibility: screenIndex > 0 ? 'visible' : 'hidden'}
+        let prevStyle = { visibility: screenIndex > 0 ? 'visible' : 'hidden'}
+        let nextStyle = { visibility: screenIndex < progressIndex ? 'visible' : 'hidden'}
+        let lastStyle = { visibility: progressIndex >= nSteps ? 'visible' : 'hidden'}
+        let lastText = screenIndex >= nSteps ? 'Finish' : 'End'
+        navigation = (
+          <div className="TaskNavigationButtons">
+            <span className="TaskNavigationButton first" style={firstStyle} >
+              <Button onClick={this.handleNavigationClick.bind(this, 'first')} >Start</Button>
+            </span>
+            <span className="TaskNavigationButton prev" style={prevStyle} >
+              <Button onClick={this.handleNavigationClick.bind(this, 'prev')} >Prev</Button>
+            </span>
+            <span className="TaskNavigationButton next" style={nextStyle} >
+              <Button onClick={this.handleNavigationClick.bind(this, 'next')} >Next</Button>
+            </span>
+            <span className="TaskNavigationButton last" style={lastStyle} >
+              <Button onClick={this.handleNavigationClick.bind(this, 'last')} >{lastText}</Button>
+            </span>
+          </div>
+        )
+      } else {
+        navigation = ''
+      }
       if (type === 'TaskProse') {
         screenContent = (
           <div>
             <TaskProse content={task.steps[screenIndex].content} store={store}
-              onStepComplete={this.onStepComplete} onStepAdvance={this.onStepAdvance} onRevertProgress={this.onRevertProgress} />
+              onStepComplete={this.onStepComplete} onStepAdvance={this.onStepAdvance}
+              onRevertProgress={this.onRevertProgress} hideShowWizardNavigation={this.hideShowWizardNavigation} />
             <div className="TaskNavigation">{navigation}</div>
           </div>
         )
@@ -345,7 +366,8 @@ class TaskWizard extends React.Component {
         screenContent = (
           <div>
             <TaskTrueFalse content={task.steps[screenIndex].content} store={store}
-              onStepComplete={this.onStepComplete} onStepAdvance={this.onStepAdvance} onRevertProgress={this.onRevertProgress} />
+              onStepComplete={this.onStepComplete} onStepAdvance={this.onStepAdvance}
+              onRevertProgress={this.onRevertProgress} hideShowWizardNavigation={this.hideShowWizardNavigation} />
             <div className="TaskNavigation">{navigation}</div>
           </div>
         )
@@ -353,7 +375,8 @@ class TaskWizard extends React.Component {
         screenContent = (
           <div>
             <TaskMultipleChoice content={task.steps[screenIndex].content} store={store}
-              onStepComplete={this.onStepComplete} onStepAdvance={this.onStepAdvance} onRevertProgress={this.onRevertProgress} />
+              onStepComplete={this.onStepComplete} onStepAdvance={this.onStepAdvance}
+              onRevertProgress={this.onRevertProgress} hideShowWizardNavigation={this.hideShowWizardNavigation} />
             <div className="TaskNavigation">{navigation}</div>
           </div>
         )
@@ -361,10 +384,21 @@ class TaskWizard extends React.Component {
         screenContent = (
           <div>
             <TaskConfirmOath content={task.steps[screenIndex].content} store={store}
-              onStepComplete={this.onStepComplete} onStepAdvance={this.onStepAdvance} onRevertProgress={this.onRevertProgress} />
+              onStepComplete={this.onStepComplete} onStepAdvance={this.onStepAdvance}
+              onRevertProgress={this.onRevertProgress} hideShowWizardNavigation={this.hideShowWizardNavigation} />
             <div className="TaskNavigation">{navigation}</div>
           </div>
         )
+      } else if (type === 'TaskProfile') {
+        screenContent = (
+          <div>
+            <TaskProfile content={task.steps[screenIndex].content} store={store}
+              onStepComplete={this.onStepComplete} onStepAdvance={this.onStepAdvance}
+              onRevertProgress={this.onRevertProgress} hideShowWizardNavigation={this.hideShowWizardNavigation} />
+            <div className="TaskNavigation">{navigation}</div>
+          </div>
+        )
+
       }
     }
     let result

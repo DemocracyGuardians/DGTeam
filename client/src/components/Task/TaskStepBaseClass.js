@@ -10,10 +10,10 @@ class TaskStepBaseClass extends React.Component {
 
 TaskStepBaseClass.propTypes = {
   store: PropTypes.object.isRequired,
-  content: PropTypes.string.isRequired,
+  content: PropTypes.oneOfType([PropTypes.string, PropTypes.object]).isRequired,
   onStepComplete: PropTypes.func.isRequired,
-  onRevertProgress: PropTypes.func.isRequired
+  onRevertProgress: PropTypes.func.isRequired,
+  hideShowWizardNavigation: PropTypes.func.isRequired
 }
-
 
 export default TaskStepBaseClass;

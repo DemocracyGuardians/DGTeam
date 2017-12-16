@@ -1,7 +1,7 @@
 
 const dbconnection = require('../util/dbconnection')
 const latest = require('../Tasks/latest')
-const readtask = require('../util/readtask');
+const gettask = require('../util/gettask');
 const getUserObject = require('../util/getUserObject')
 const getBaseName = require('../util/getBaseName')
 const logSend = require('../util/logSend')
@@ -26,7 +26,7 @@ exports.gettask = function(req, res, next) {
   let account = JSON.parse(JSON.stringify(req.session.user));
   let taskPath = req.path.substr('/gettask/'.length);
   let tokens = taskPath.split('/');
-  readtask(tokens[0], tokens[1]).then(task => {
+  gettask(tokens[0], tokens[1]).then(task => {
     getUserObject(account.email, { account }).then(userObject => {
       userObject.task = task;
       logSendOK(res, userObject, "gettask success.");
@@ -60,21 +60,21 @@ exports.updateprogress = function(req, res, next) {
       logSendCE(res, 400, UNSPECIFIED_SYSTEM_ERROR, 'invalid tasknum:'+updatedProgress.tasknum, {});
     } else {
       console.log('updateprogress values ok');
-      let readtaskPromise = new Promise((readtaskResolve, readtaskReject) => {
+      let gettaskPromise = new Promise((gettaskResolve, gettaskReject) => {
         if (updatedProgress.level === nLevels) {
           // Special case: user has completed all tasks that have been defined so far
-          readtaskResolve(null);
+          gettaskResolve(null);
         } else {
           let taskItem = latest.levels[updatedProgress.level].tasks[updatedProgress.tasknum];
-          readtask(updatedProgress.level, taskItem.name).then(task => {
-            console.log('updateprogress readtask ok');
-            readtaskResolve(task);
+          gettask(updatedProgress.level, taskItem.name).then(task => {
+            console.log('updateprogress gettask ok');
+            gettaskResolve(task);
           }).catch(error => {
-            readtaskReject(error);
+            gettaskReject(error);
           });
         }
       });
-      readtaskPromise.then(task => {
+      gettaskPromise.then(task => {
         if (task && updatedProgress.step > task.steps.length) {
           logSendCE(res, 400, UNSPECIFIED_SYSTEM_ERROR, 'invalid step:'+updatedProgress.step, {});
           return;
@@ -153,21 +153,21 @@ exports.resetprogress = function(req, res, next) {
     } else if (updatedProgress.level === nLevels && (updatedProgress.tasknum !== 0 || updatedProgress.step !== 0)) {
       logSendCE(res, 400, UNSPECIFIED_SYSTEM_ERROR, 'invalid tasknum:'+updatedProgress.tasknum, {});
     } else {
-      let readtaskPromise = new Promise((readtaskResolve, readtaskReject) => {
+      let gettaskPromise = new Promise((gettaskResolve, gettaskReject) => {
         if (updatedProgress.level === nLevels) {
           // Special case: user has completed all tasks that have been defined so far
-          readtaskResolve(null);
+          gettaskResolve(null);
         } else {
           let taskItem = latest.levels[updatedProgress.level].tasks[updatedProgress.tasknum];
-          readtask(updatedProgress.level, taskItem.name).then(task => {
-            console.log('resetprogress readtask ok');
-            readtaskResolve(task);
+          gettask(updatedProgress.level, taskItem.name).then(task => {
+            console.log('resetprogress gettask ok');
+            gettaskResolve(task);
           }).catch(error => {
-            readtaskReject(error);
+            gettaskReject(error);
           });
         }
       });
-      readtaskPromise.then(task => {
+      gettaskPromise.then(task => {
         if (task && updatedProgress.step > task.steps.length) {
           logSendCE(res, 400, UNSPECIFIED_SYSTEM_ERROR, 'invalid step:'+updatedProgress.step, {});
           return;

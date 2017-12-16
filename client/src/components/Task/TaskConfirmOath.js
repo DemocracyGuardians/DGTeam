@@ -104,7 +104,8 @@ TaskConfirmOath.propTypes = {
   content: PropTypes.string.isRequired,
   onStepComplete: PropTypes.func.isRequired,
   onStepAdvance: PropTypes.func.isRequired,
-  onRevertProgress: PropTypes.func.isRequired
+  onRevertProgress: PropTypes.func.isRequired,
+  hideShowWizardNavigation: PropTypes.func.isRequired
 }
 
 export default withRouter(TaskConfirmOath);

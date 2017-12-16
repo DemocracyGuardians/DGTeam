@@ -14,6 +14,10 @@ module.exports = {
 
         <p>Press "Next" to begin filling out your profile.</p>
 `
-    }
+},
+{
+  type: 'TaskYourProfileWizard'
+}
+
   ]
 }

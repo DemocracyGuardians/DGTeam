@@ -2,7 +2,8 @@
 const dbconnection = require('./dbconnection')
 const getBaseName = require('./getBaseName')
 const latest = require('../Tasks/latest')
-const readtask = require('./readtask');
+const gettask = require('./gettask');
+const profileCategories = require('./profileCategories');
 
 var connection = dbconnection.getConnection();
 
@@ -97,6 +98,7 @@ module.exports = function(email, alreadyHave) {
             console.log('progressPromise.then progress='+JSON.stringify(progress));
             userObject.progress = progress;
             userObject.tasks = latest;
+            userObject.tasks.profileCategories = profileCategories;
             console.log('userObject='+JSON.stringify(userObject));
             masterResolve(userObject);
           }).catch(error => {
