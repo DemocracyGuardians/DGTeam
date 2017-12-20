@@ -10,25 +10,31 @@
   padding: 0.5em 0;
 }
 
-.TaskProfileEntry textarea {
-  width: 100%;
+.TaskProfile textarea, .TaskProfile input {
+  width: 98%;
   resize: none;
   height: auto;
 }
 
-.TaskProfileEntry textarea.NowEditing {
+.TaskProfile .NowEditing {
   border: 2px solid blue;
 }
 
-.TaskProfileEntry textarea:disabled {
+.TaskProfile textarea:disabled, .TaskProfile input:disabled {
   opacity: 0.8;
   color: black;
   background-color: white;
-  /* height: auto;
-  max-height: 7em;*/
 }
 
-.TaskProfileEntry .TaskProfileEditDiv {
+.TaskProfile input {
+  margin-bottom: 0.5em;
+}
+
+.TaskProfile input:disabled {
+  border: 1px solid darkgray;
+}
+
+.TaskProfile .TaskProfileEditDiv {
   text-align: right;
   padding: 0.1em 0.5em 0;
 }

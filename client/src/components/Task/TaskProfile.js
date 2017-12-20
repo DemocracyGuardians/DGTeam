@@ -13,6 +13,8 @@ import { Button } from 'semantic-ui-react'
 import parseJsonPayload from '../../util/parseJsonPayload'
 import { TEAM_BASE_URL, TEAM_API_RELATIVE_PATH } from '../../envvars'
 import TaskStepBaseClass from './TaskStepBaseClass'
+import TaskProfileBasic from './TaskProfileBasic'
+import TaskProfileNames from './TaskProfileNames'
 import TaskProfileList from './TaskProfileList'
 import './TaskProfile.css'
 
@@ -207,7 +209,9 @@ class TaskProfile extends TaskStepBaseClass {
     }
     let childComponent = ''
     if (category === 'basic') {
-
+      childComponent = <TaskProfileBasic store={store} updateEditingStatus={this.updateEditingStatus} categoryData={categoryData} />
+    } else if (category === 'names') {
+      childComponent = <TaskProfileNames store={store} updateEditingStatus={this.updateEditingStatus} categoryData={categoryData} />
     } else if (category === 'internetId') {
 
     } else {

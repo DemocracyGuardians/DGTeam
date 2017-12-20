@@ -10,7 +10,8 @@ module.exports = {
   // Optional properties are:
   //   qualifier:internetPlatform if this category requires an extra qualifier value
   person: [
-    { name:'basic', title:'((This person\'s)) names', long:`((name))`},
+    { name:'basic', title:'((This person\'s)) basic identity information', long:`((basic))`},
+    { name:'names', title:'((This person\'s)) names', long:`((names))`},
     { name:'internetId', title:'((This person\'s)) Internet and social media IDs', qualifier:'internetPlatform', long:`
       List all of the relevant Internet websites, social media accounts or other Web/Internet addresses or identities
       that ((this person)) ((has)).`},
@@ -58,15 +59,23 @@ module.exports = {
     '((has))':  { you:'have'},
     '((A person\'s))':  { you:'Your', org:'An organization\'s'},
     '((person))': { org:'organization' },
+    '((people))': { org:'organizations' },
     '((this person))': { you:'you', org:'this organization' },
     '((this person\'s))': { you:'your', org:'this organization\'s' },
     '((This person\'s))': { you:'Your', org:'This organization\'s' },
     '((the person\'s))': { you:'your', org:'the organization\'s' },
+    '((If possible, include))': { you:'Include'},
     '((official_examples))': { you:'a passport, driver\'s license or tax return', person:'a passport, driver\'s license or tax return', org:'contracts or government forms' },
-    '((name))': { all: `
-      List all of the names by which ((this person)) ((is)) commonly known with the general public.
-      If possible, include ((the person\'s)) official/legal name, such as would appear on
-      ((official_examples)).`},
+    '((basic))': { all: `
+      Provide basic identity information that will help to uniquely distinguish ((this person)) versus other ((people))
+      with the same or similar names.
+      ((If possible, include)) ((the person\'s)) legal name, such as would appear on
+      ((official_examples)).
+      `},
+    '((names))': { all: `
+      List all names by which ((this person)) ((is)) commonly known
+      to the general public. Include nicknames if used in public situations.
+      `},
     '((OkPreferNot))': { you:`<p>If you have been untrustworthy in the past and now you have improved your behavior,
       feel free to confess and explain how you have redeemed yourself.
       If you acted in a way that could be construed as untrustworthy but

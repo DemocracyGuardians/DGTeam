@@ -3,10 +3,9 @@ import React from 'react';
 import { withRouter } from 'react-router-dom'
 import PropTypes from 'prop-types'
 import TaskProfileEntries from './TaskProfileEntries'
-import resizeTextarea from '../../util/resizeTextarea'
-import './TaskProfileList.css'
+import './TaskProfileNames.css'
 
-class TextareaEntry extends React.Component {
+class TaskProfileNameTextEntry extends React.Component {
   constructor(props) {
     super(props)
     let { row, rowData } = this.props
@@ -32,12 +31,6 @@ class TextareaEntry extends React.Component {
     if (row !== prevState.row || thisJson !== prevJson) {
       entryDataChanged(rowData, row, 0)
     }
-    //FIXME relies on knowing about class NowEditing
-    let element = this.refs.TextareaEntry
-    let clz = element.className
-    let nowEditing = clz.indexOf('NowEditing') >= 0
-    let maxHeight = Math.max(Math.ceil(window.innerHeight*(nowEditing ? 0.5 : 0.1)),70)+'px'
-    resizeTextarea(element, maxHeight)
   }
   handleInput(event) {
     let { value } = event.target
@@ -46,12 +39,12 @@ class TextareaEntry extends React.Component {
   render() {
     let { addlClasses, disabled } = this.props
     let { rowData } = this.state
-    let clz = 'TaskProfileTextarea ' + addlClasses
-    return <textarea className={clz} rows="2" value={rowData[0]} disabled={disabled} onInput={this.handleInput} ref='TextareaEntry' />
+    let clz = 'TaskProfileSimpleTextEntry ' + addlClasses
+    return <input className={clz} value={rowData[0]} disabled={disabled} onInput={this.handleInput} ref='TaskProfileNameTextEntry' />
   }
 }
 
-class TaskProfileList extends React.Component {
+class TaskProfileNames extends React.Component {
   constructor(props) {
     super(props)
     this.updateEditingStatus = this.updateEditingStatus.bind(this)
@@ -64,19 +57,31 @@ class TaskProfileList extends React.Component {
 
   render() {
     let { categoryData, store } = this.props
+    //FIXME generalize the other names label
     return (
-      <div className="TaskProfileList" >
-        <TaskProfileEntries store={store} updateEditingStatus={this.updateEditingStatus}
-          entryComponent={TextareaEntry} entryData={categoryData} />
+      <div className="TaskProfileNames">
+        <div className="TaskProfileNamesLegalName">
+          <label>
+            <div className="TaskProfileNamesLabel">Legal name</div>
+            <input/>
+          </label>
+        </div>
+        <div className="TaskProfileNamesOtherNames">
+          <div className="TaskProfileNamesOtherNamesLabel">
+            Provide all other names by which you are known to the general public.
+          </div>
+          <TaskProfileEntries store={store} updateEditingStatus={this.updateEditingStatus}
+            entryComponent={TaskProfileNameTextEntry} entryData={categoryData} />
+        </div>
       </div>
     );
   }
 }
 
-TaskProfileList.propTypes = {
+TaskProfileNames.propTypes = {
   store: PropTypes.object.isRequired,
   categoryData: PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.string)).isRequired,
   updateEditingStatus: PropTypes.func.isRequired
 }
 
-export default withRouter(TaskProfileList);
+export default withRouter(TaskProfileNames);
