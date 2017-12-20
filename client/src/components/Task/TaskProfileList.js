@@ -2,23 +2,9 @@
 import React from 'react';
 import { withRouter } from 'react-router-dom'
 import PropTypes from 'prop-types'
-import DOMPurify from 'dompurify'
 import TaskProfileEntries from './TaskProfileEntries'
 import resizeTextarea from '../../util/resizeTextarea'
 import './TaskProfileList.css'
-
-/*
-const Label = props => <span>{props.children}</span>
-const Button = props => {
-    const Inner = props.inner;
-    return <button><Inner>Foo</Inner></button>
-}
-const Page = () => <Button inner={Label}/>
-
-const Label = props => <span>{props.content}</span>
-const Tab = props => <div>{props.content}</div>
-const Page = () => <Tab content={<Label content='Foo' />} />
-*/
 
 class TextareaEntry extends React.Component {
   constructor(props) {
@@ -77,12 +63,9 @@ class TaskProfileList extends React.Component {
   }
 
   render() {
-    let { categoryData, store, updateEditingStatus } = this.props
-    let content = 'TaskProfileList'
-
+    let { categoryData, store } = this.props
     return (
       <div>
-        <div className="TaskProfileList" dangerouslySetInnerHTML={{__html: DOMPurify.sanitize(content)}} />
         <TaskProfileEntries store={store} updateEditingStatus={this.updateEditingStatus}
           entryComponent={TextareaEntry} entryData={categoryData} />
       </div>
@@ -92,12 +75,7 @@ class TaskProfileList extends React.Component {
 
 TaskProfileList.propTypes = {
   store: PropTypes.object.isRequired,
-  categoryData: PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.string)).isRequired,/*,
-  content: PropTypes.string.isRequired,
-  onStepComplete: PropTypes.func.isRequired,
-  onStepAdvance: PropTypes.func.isRequired,
-  onRevertProgress: PropTypes.func.isRequired,
-  hideShowWizardNavigation: PropTypes.func.isRequired*/
+  categoryData: PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.string)).isRequired,
   updateEditingStatus: PropTypes.func.isRequired
 }
 

@@ -1,3 +1,9 @@
 
-.TaskProfileMultiple {
+.TaskProfileEntries {
+  padding: 1em 0;
+}
+
+.TaskProfileNoEntries {
+  font-style: italic;
+  padding-bottom: 1em;
 }
