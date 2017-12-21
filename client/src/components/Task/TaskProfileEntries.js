@@ -2,15 +2,8 @@
 import React from 'react';
 import { withRouter } from 'react-router-dom'
 import PropTypes from 'prop-types'
+import TaskProfileEditableEntry from './TaskProfileEditableEntry'
 import './TaskProfileEntries.css'
-
-class Entry extends React.Component {
-  render() {
-    const EntryComponent = this.props.entryComponent
-    let { addlClasses, rowData, row, disabled, entryDataChanged } = this.props
-    return <EntryComponent rowData={rowData} row={row} disabled={disabled} addlClasses={addlClasses} entryDataChanged={entryDataChanged} />
-  }
-}
 
 class TaskProfileEntries extends React.Component {
   constructor(props) {
@@ -154,35 +147,28 @@ class TaskProfileEntries extends React.Component {
           let upStyle = { visibility: nowEditing > 0 ? 'visible' : 'hidden' }
           let downStyle = { visibility: nowEditing < entryData.length-1 ? 'visible' : 'hidden' }
           entriesArr.push(<div key={(count++).toString()} className="TaskProfileEntry">
-            <div className="TaskProfileTextareaRow">
-              <Entry entryComponent={entryComponent} rowData={entryData[i]} row={i} disabled={false} entryDataChanged={this.entryDataChanged} addlClasses='NowEditing' />
-            </div>
-            <div className="TaskProfileEditControls">
-              <a href="" onClick={this.onClickSaveEntry} data-entry-index={i} >OK</a>
-              <span className="TaskProfileSmallSpace"></span>
-              <a href="" onClick={this.onClickRevertEntry} data-entry-index={i} >Cancel</a>
-              <span className="TaskProfileLargeSpace"></span>
-              <a href="" onClick={this.onClickMoveUp} data-entry-index={i} style={upStyle} >Move&#8593;</a>
-              <span className="TaskProfileSmallSpace"></span>
-              <a href="" onClick={this.onClickMoveDown} data-entry-index={i} style={downStyle} >Move&#8595;</a>
-              <span className="TaskProfileLargeSpace"></span>
-              <a href="" onClick={this.onClickDeleteEntry} data-entry-index={i} >Remove</a>
-            </div>
+            <TaskProfileEditableEntry dataIndex={i} disabled={false} labelText=''
+              entryClasses='NowEditing' entryComponent={entryComponent} entryData={entryData[i]} entryDataChanged={this.entryDataChanged}
+              labelStyle={{}} editStyle={{display:'none'}} upStyle={upStyle} downStyle={downStyle} removeStyle={{}}
+              editFunc={this.onClickEditEntry} okFunc={this.onClickSaveEntry} cancelFunc={this.onClickRevertEntry}
+              upFunc={this.onClickMoveUp} downFunc={this.onClickMoveDown} removeFunc={this.onClickDeleteEntry} />
           </div>)
+
         } else if (typeof nowEditing === 'number'){
           entriesArr.push(<div key={(count++).toString()} className="TaskProfileEntry">
-            <div className="TaskProfileTextareaRow">
-              <Entry entryComponent={entryComponent} rowData={entryData[i]} row={i} disabled={true} entryDataChanged={this.entryDataChanged} addlClasses='' />
-            </div>
+            <TaskProfileEditableEntry dataIndex={i} disabled={true} labelText=''
+              entryClasses='' entryComponent={entryComponent} entryData={entryData[i]} entryDataChanged={this.entryDataChanged}
+              labelStyle={{}} editStyle={{display:'none'}} upStyle={{visibility:'hidden'}} downStyle={{visibility:'hidden'}} removeStyle={{visibility:'hidden'}}
+              editFunc={this.onClickEditEntry} okFunc={this.onClickSaveEntry} cancelFunc={this.onClickRevertEntry}
+              upFunc={this.onClickMoveUp} downFunc={this.onClickMoveDown} removeFunc={this.onClickDeleteEntry} />
           </div>)
         } else {
           entriesArr.push(<div key={(count++).toString()} className="TaskProfileEntry">
-            <div className="TaskProfileTextareaRow">
-              <div className="TaskProfileEditDiv" onClick={this.onClickEditEntry} data-entry-index={i} >
-                <a href="" onClick={this.onClickEditEntry} data-entry-index={i} >Edit</a>
-              </div>
-              <Entry entryComponent={entryComponent} rowData={entryData[i]} row={i} disabled={true} entryDataChanged={this.entryDataChanged} addlClasses='' />
-            </div>
+            <TaskProfileEditableEntry dataIndex={i} disabled={true} labelText=''
+              entryClasses='' entryComponent={entryComponent} entryData={entryData[i]} entryDataChanged={this.entryDataChanged}
+              labelStyle={{}} editStyle={{}} upStyle={{visibility:'hidden'}} downStyle={{visibility:'hidden'}} removeStyle={{visibility:'hidden'}}
+              editFunc={this.onClickEditEntry} okFunc={this.onClickSaveEntry} cancelFunc={this.onClickRevertEntry}
+              upFunc={this.onClickMoveUp} downFunc={this.onClickMoveDown} removeFunc={this.onClickDeleteEntry} />
           </div>)
         }
       }
