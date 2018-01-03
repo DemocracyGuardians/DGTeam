@@ -10,7 +10,7 @@ module.exports = {
   // Optional properties are:
   //   qualifier:internetPlatform if this category requires an extra qualifier value
   person: [
-    { name:'basic', title:'((This person\'s)) basic identity information', long:`((basic))`},
+    { name:'basic', title:'((This person\'s)) basic vital identity information', long:`((basic))`},
     { name:'names', title:'((This person\'s)) names', long:`((names))`},
     { name:'internetId', title:'((This person\'s)) Internet and social media IDs', qualifier:'internetPlatform', long:`
       List all of the relevant Internet websites, social media accounts or other Web/Internet addresses or identities

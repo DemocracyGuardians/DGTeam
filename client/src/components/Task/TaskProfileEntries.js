@@ -135,6 +135,7 @@ class TaskProfileEntries extends React.Component {
     }
 
     // Build the list of entries
+    let hidden = {visibility:'hidden'}
     let entriesArr = []
     let addNew = ''
     let count = 0
@@ -149,7 +150,7 @@ class TaskProfileEntries extends React.Component {
           entriesArr.push(<div key={(count++).toString()} className="TaskProfileEntry">
             <TaskProfileEditableEntry dataIndex={i} disabled={false} labelText=''
               entryClasses='NowEditing' entryComponent={entryComponent} entryData={entryData[i]} entryDataChanged={this.entryDataChanged}
-              labelStyle={{}} editStyle={{display:'none'}} upStyle={upStyle} downStyle={downStyle} removeStyle={{}}
+              labelStyle={{}} editStyle={{display:'none'}} okCancelStyle={{}} upStyle={upStyle} downStyle={downStyle} removeStyle={{}}
               editFunc={this.onClickEditEntry} okFunc={this.onClickSaveEntry} cancelFunc={this.onClickRevertEntry}
               upFunc={this.onClickMoveUp} downFunc={this.onClickMoveDown} removeFunc={this.onClickDeleteEntry} />
           </div>)
@@ -158,7 +159,7 @@ class TaskProfileEntries extends React.Component {
           entriesArr.push(<div key={(count++).toString()} className="TaskProfileEntry">
             <TaskProfileEditableEntry dataIndex={i} disabled={true} labelText=''
               entryClasses='' entryComponent={entryComponent} entryData={entryData[i]} entryDataChanged={this.entryDataChanged}
-              labelStyle={{}} editStyle={{display:'none'}} upStyle={{visibility:'hidden'}} downStyle={{visibility:'hidden'}} removeStyle={{visibility:'hidden'}}
+              labelStyle={{}} editStyle={{display:'none'}} okCancelStyle={hidden} upStyle={hidden} downStyle={hidden} removeStyle={hidden}
               editFunc={this.onClickEditEntry} okFunc={this.onClickSaveEntry} cancelFunc={this.onClickRevertEntry}
               upFunc={this.onClickMoveUp} downFunc={this.onClickMoveDown} removeFunc={this.onClickDeleteEntry} />
           </div>)
@@ -166,7 +167,7 @@ class TaskProfileEntries extends React.Component {
           entriesArr.push(<div key={(count++).toString()} className="TaskProfileEntry">
             <TaskProfileEditableEntry dataIndex={i} disabled={true} labelText=''
               entryClasses='' entryComponent={entryComponent} entryData={entryData[i]} entryDataChanged={this.entryDataChanged}
-              labelStyle={{}} editStyle={{}} upStyle={{visibility:'hidden'}} downStyle={{visibility:'hidden'}} removeStyle={{visibility:'hidden'}}
+              labelStyle={{}} editStyle={{}}  okCancelStyle={hidden} upStyle={hidden} downStyle={hidden} removeStyle={hidden}
               editFunc={this.onClickEditEntry} okFunc={this.onClickSaveEntry} cancelFunc={this.onClickRevertEntry}
               upFunc={this.onClickMoveUp} downFunc={this.onClickMoveDown} removeFunc={this.onClickDeleteEntry} />
           </div>)

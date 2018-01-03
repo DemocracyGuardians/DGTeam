@@ -59,7 +59,7 @@ class TaskProfileList extends React.Component {
 
   updateEditingStatus(params) {
     let { editingInProcess, newEntryData } = params
-    this.props.updateEditingStatus({ editingInProcess, newCategoryData: newEntryData})
+    this.props.updateEditingStatus({ editingInProcess, newCategoryData: { entries: newEntryData } })
   }
 
   render() {
@@ -67,7 +67,7 @@ class TaskProfileList extends React.Component {
     return (
       <div className="TaskProfileList" >
         <TaskProfileEntries store={store} updateEditingStatus={this.updateEditingStatus}
-          entryComponent={TextareaEntry} entryData={categoryData} />
+          entryComponent={TextareaEntry} entryData={categoryData.entries} />
       </div>
     );
   }
@@ -75,7 +75,7 @@ class TaskProfileList extends React.Component {
 
 TaskProfileList.propTypes = {
   store: PropTypes.object.isRequired,
-  categoryData: PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.string)).isRequired,
+  categoryData: PropTypes.object.isRequired,
   updateEditingStatus: PropTypes.func.isRequired
 }
 

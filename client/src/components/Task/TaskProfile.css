@@ -34,17 +34,6 @@
   border: 1px solid darkgray;
 }
 
-.TaskProfile .TaskProfileEditDiv {
-  text-align: right;
-  padding: 0.1em 0.5em 0;
-}
-
-.TaskProfileEditControls {
-  display:flex;
-  padding: 0 0.2em;
-  margin-top: -0.2em;
-}
-
 .TaskProfilePendingChangesDiv {
   padding: 1em 0 0;
   display: flex;

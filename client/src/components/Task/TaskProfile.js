@@ -41,24 +41,33 @@ class TaskProfile extends TaskStepBaseClass {
   constructor(props) {
     super(props)
     this.state = {
-      //nowEditing: null
       editingInProcess: false,
       categoryData: null,
       lastSavedData: null
     }
+    this.getCategoryName = this.getCategoryName.bind(this)
     this.updateEditingStatus = this.updateEditingStatus.bind(this)
     this.getCategoryData = this.getCategoryData.bind(this)
     this.onClickShowChanges = this.onClickShowChanges.bind(this)
     this.onClickSaveChanges = this.onClickSaveChanges.bind(this)
     this.onClickDiscardChanges = this.onClickDiscardChanges.bind(this)
-    this.getCategoryData()
+    this.getCategoryData(this.getCategoryName())
+  }
+
+  getCategoryName() {
+    let { content, store } = this.props
+    let storeState = store.getState()
+    let { profileCategories } = storeState.tasks
+    let { index } = content
+    let { name } = profileCategories.person[index]
+    return name
   }
 
   componentWillReceiveProps(nextProps) {
     let thisJson = JSON.stringify(this.props.content)
     let nextJson = JSON.stringify(nextProps.content)
     if (nextJson !== thisJson) {
-      this.getCategoryData()
+      this.getCategoryData(this.getCategoryName())
     }
   }
 
@@ -91,9 +100,9 @@ class TaskProfile extends TaskStepBaseClass {
     }
   }
 
-  getCategoryData() {
+  getCategoryData(category) {
     setTimeout(()  => {
-      let categoryData = []
+      let categoryData = { entries:[] }
       let lastSavedData = categoryData
       this.setState({ categoryData, lastSavedData })
     }, 100)
@@ -107,8 +116,9 @@ class TaskProfile extends TaskStepBaseClass {
   onClickSaveChanges(e) {
     e.preventDefault()
     let { categoryData } = this.state
-    let newCategoryData = []
-    categoryData.forEach(entry => {
+    let { entries } = categoryData
+    let newEntries = []
+    entries.forEach(entry => {
       let allEmpty = true
       entry.forEach((cell, index) => {
         entry[index] = cell = cell.trim()
@@ -117,9 +127,11 @@ class TaskProfile extends TaskStepBaseClass {
         }
       })
       if (!allEmpty) {
-        newCategoryData.push(entry)
+        newEntries.push(entry)
       }
     })
+    let newCategoryData = JSON.parse(JSON.stringify(categoryData))
+    newCategoryData.entries = newEntries
     this.setState({ lastSavedData: newCategoryData, categoryData: newCategoryData, pendingChanges: false })
   }
 
@@ -173,7 +185,10 @@ class TaskProfile extends TaskStepBaseClass {
     setTimeout(() => {
       this.props.onStepComplete() // Tell TaskWizard ok to activate Next button
     }, 0)
-    let { categoryData, /*nowEditing,*/ editingInProcess, pendingChanges } = this.state
+    let { categoryData, editingInProcess, pendingChanges } = this.state
+    if (categoryData === null) {
+      return <div></div>
+    }
     let { content, store } = this.props
     let storeState = store.getState()
     let { profileCategories } = storeState.tasks
@@ -199,14 +214,11 @@ class TaskProfile extends TaskStepBaseClass {
     if (pendingChanges && !editingInProcess) {
       saveDiscardChangesBottom = saveDiscardChanges
       //FIXME need a better conditional, perhaps using height of boxes
-      if (categoryData.length > 4) {
+      if (categoryData.entries.length > 4) {
         saveDiscardChangesTop = saveDiscardChanges
       }
     }
     let category = name
-    if (categoryData === null) {
-      return <div></div>
-    }
     let childComponent = ''
     if (category === 'basic') {
       childComponent = <TaskProfileBasic store={store} updateEditingStatus={this.updateEditingStatus} categoryData={categoryData} />
@@ -218,7 +230,7 @@ class TaskProfile extends TaskStepBaseClass {
       childComponent = <TaskProfileList store={store} updateEditingStatus={this.updateEditingStatus} categoryData={categoryData} />
     }
     let anyEmpty = false
-    categoryData.forEach(entry => {
+    categoryData.entries.forEach(entry => {
       let allEmpty = true
       entry.forEach((cell, index) => {
         entry[index] = cell = cell.trim()

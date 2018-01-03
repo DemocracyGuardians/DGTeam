@@ -52,7 +52,7 @@ class TaskProfileNames extends React.Component {
 
   updateEditingStatus(params) {
     let { editingInProcess, newEntryData } = params
-    this.props.updateEditingStatus({ editingInProcess, newCategoryData: newEntryData})
+    this.props.updateEditingStatus({ editingInProcess, newCategoryData: { entries: newEntryData } })
   }
 
   render() {
@@ -71,7 +71,7 @@ class TaskProfileNames extends React.Component {
             Provide all other names by which you are known to the general public.
           </div>
           <TaskProfileEntries store={store} updateEditingStatus={this.updateEditingStatus}
-            entryComponent={TaskProfileNameTextEntry} entryData={categoryData} />
+            entryComponent={TaskProfileNameTextEntry} entryData={categoryData.entries} />
         </div>
       </div>
     );
@@ -80,7 +80,7 @@ class TaskProfileNames extends React.Component {
 
 TaskProfileNames.propTypes = {
   store: PropTypes.object.isRequired,
-  categoryData: PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.string)).isRequired,
+  categoryData: PropTypes.object.isRequired,
   updateEditingStatus: PropTypes.func.isRequired
 }
 
