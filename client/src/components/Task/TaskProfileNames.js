@@ -18,24 +18,20 @@ class TaskProfileNameTextEntry extends React.Component {
   }
   componentWillReceiveProps(nextProps) {
     let { row, rowData } = nextProps
-    let thisJson = JSON.stringify(this.state.rowData)
-    let nextJson = JSON.stringify(rowData)
-    if (row !== this.props.row || nextJson !== thisJson) {
+    if (row !== this.state.row || rowData !== this.state.rowData) {
       this.setState({ row, rowData })
     }
   }
   componentDidUpdate(prevProps, prevState) {
     let { entryDataChanged } = this.props
     let { row, rowData } = this.state
-    let prevJson = JSON.stringify(prevState.rowData)
-    let thisJson = JSON.stringify(rowData)
-    if (row !== prevState.row || thisJson !== prevJson) {
+    if (row !== prevState.row || rowData !== prevState.rowData) {
       entryDataChanged(rowData, row, 0)
     }
   }
   handleInput(event) {
     let { value } = event.target
-    this.setState({ rowData: [value] })
+    this.setState({ rowData: value })
   }
   render() {
     let { addlClasses, disabled } = this.props
@@ -58,7 +54,7 @@ class TaskProfileNames extends React.Component {
   }
 
   getNewEmptyRowData() {
-    return ['']
+    return ''
   }
 
   render() {

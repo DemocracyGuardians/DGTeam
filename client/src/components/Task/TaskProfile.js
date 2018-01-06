@@ -105,14 +105,8 @@ class TaskProfile extends TaskStepBaseClass {
     let { entries } = categoryData
     let newEntries = []
     entries.forEach(entry => {
-      let allEmpty = true
-      entry.forEach((cell, index) => {
-        entry[index] = cell = cell.trim()
-        if (cell.length > 0) {
-          allEmpty = false
-        }
-      })
-      if (!allEmpty) {
+      let trimmed = entry.trim()
+      if (trimmed.length > 0) {
         newEntries.push(entry)
       }
     })
@@ -218,14 +212,8 @@ class TaskProfile extends TaskStepBaseClass {
     if (!editingInProcess) {
       let anyEmpty = false
       categoryData.entries.forEach(entry => {
-        let allEmpty = true
-        entry.forEach((cell, index) => {
-          entry[index] = cell = cell.trim()
-          if (cell.length > 0) {
-            allEmpty = false
-          }
-        })
-        if (allEmpty) {
+        let trimmed = entry.trim()
+        if (trimmed.length === 0) {
           anyEmpty = true
         }
       })

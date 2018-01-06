@@ -195,7 +195,7 @@ TaskProfileEntries.propTypes = {
   store: PropTypes.object.isRequired,
   multiline: PropTypes.bool,
   entryComponent: PropTypes.func.isRequired,
-  entryData: PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.string)).isRequired,
+  entryData: PropTypes.arrayOf(PropTypes.string).isRequired,
   updateEditingStatus: PropTypes.func.isRequired,
   getNewEmptyRowData: PropTypes.func.isRequired
 }
