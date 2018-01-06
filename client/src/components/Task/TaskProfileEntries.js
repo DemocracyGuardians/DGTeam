@@ -13,7 +13,6 @@ class TaskProfileEntries extends React.Component {
       entryComponent: this.props.entryComponent,
       entryData: this.props.entryData
     }
-    this.setFocusNowEditing = this.setFocusNowEditing.bind(this)
     this.onClickAddEntry = this.onClickAddEntry.bind(this)
     this.onClickEditEntry = this.onClickEditEntry.bind(this)
     this.onClickSaveEntry = this.onClickSaveEntry.bind(this)
@@ -25,19 +24,23 @@ class TaskProfileEntries extends React.Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    // FIXME make sure props are different?
     let { entryComponent, entryData } = nextProps
-    this.setState({ entryComponent, entryData })
+    let thisValue = this.props.entryData
+    let nextValue = entryData
+    if (typeof thisValue === 'object' || Array.isArray(thisValue)) {
+      thisValue = JSON.stringify(thisValue)
+      nextValue = JSON.stringify(nextValue)
+    }
+    if (entryComponent !== this.props.entryComponent || nextValue !== thisValue) {
+      this.setState({ entryComponent, entryData })
+    }
   }
 
-  setFocusNowEditing() {
-    //FIXME componentDidUpdate?
-    setTimeout(() => {
-      let control = document.querySelector('.TaskProfile .NowEditing')
-      if (control) {
-        control.focus()
-      }
-    }, 0)
+  componentDidUpdate() {
+    let control = document.querySelector('.TaskProfile .NowEditing')
+    if (control) {
+      control.focus()
+    }
   }
 
   onClickAddEntry(e) {
@@ -45,11 +48,9 @@ class TaskProfileEntries extends React.Component {
     e.stopPropagation()
     let { entryData } = this.state
     let newEntryData = JSON.parse(JSON.stringify(entryData))
-    //FIXME needs to come from parent
-    let blankRow = ['']
+    let blankRow = this.props.getNewEmptyRowData()
     newEntryData.push(blankRow)
     this.setState({ nowEditing: newEntryData.length-1, savedNowEditing:[''], entryData: newEntryData })
-    this.setFocusNowEditing()
   }
 
   onClickEditEntry(e) {
@@ -62,7 +63,6 @@ class TaskProfileEntries extends React.Component {
     let index = parseInt(indexString, 10)
     this.setState({ nowEditing: index, savedNowEditing: entryData[index] })
     updateEditingStatus({ editingInProcess: true, newEntryData: entryData })
-    this.setFocusNowEditing()
   }
 
   onClickSaveEntry(e)  {
@@ -130,6 +130,7 @@ class TaskProfileEntries extends React.Component {
 
   render() {
     let { entryComponent, entryData, nowEditing } = this.state
+    let { multiline} = this.props
     if (!entryData) {
       return (<div></div>)
     }
@@ -149,7 +150,7 @@ class TaskProfileEntries extends React.Component {
           let downStyle = { visibility: nowEditing < entryData.length-1 ? 'visible' : 'hidden' }
           entriesArr.push(<div key={(count++).toString()} className="TaskProfileEntry">
             <TaskProfileEditableEntry dataIndex={i} disabled={false} labelText=''
-              entryClasses='NowEditing' entryComponent={entryComponent} entryData={entryData[i]} entryDataChanged={this.entryDataChanged}
+              entryClasses='NowEditing' entryComponent={entryComponent} multiline={multiline} entryData={entryData[i]} entryDataChanged={this.entryDataChanged}
               labelStyle={{}} editStyle={{display:'none'}} okCancelStyle={{}} upStyle={upStyle} downStyle={downStyle} removeStyle={{}}
               editFunc={this.onClickEditEntry} okFunc={this.onClickSaveEntry} cancelFunc={this.onClickRevertEntry}
               upFunc={this.onClickMoveUp} downFunc={this.onClickMoveDown} removeFunc={this.onClickDeleteEntry} />
@@ -157,7 +158,7 @@ class TaskProfileEntries extends React.Component {
 
         } else if (typeof nowEditing === 'number'){
           entriesArr.push(<div key={(count++).toString()} className="TaskProfileEntry">
-            <TaskProfileEditableEntry dataIndex={i} disabled={true} labelText=''
+            <TaskProfileEditableEntry dataIndex={i} disabled={true} multiline={multiline} labelText=''
               entryClasses='' entryComponent={entryComponent} entryData={entryData[i]} entryDataChanged={this.entryDataChanged}
               labelStyle={{}} editStyle={{display:'none'}} okCancelStyle={hidden} upStyle={hidden} downStyle={hidden} removeStyle={hidden}
               editFunc={this.onClickEditEntry} okFunc={this.onClickSaveEntry} cancelFunc={this.onClickRevertEntry}
@@ -165,7 +166,7 @@ class TaskProfileEntries extends React.Component {
           </div>)
         } else {
           entriesArr.push(<div key={(count++).toString()} className="TaskProfileEntry">
-            <TaskProfileEditableEntry dataIndex={i} disabled={true} labelText=''
+            <TaskProfileEditableEntry dataIndex={i} disabled={true} multiline={multiline} labelText=''
               entryClasses='' entryComponent={entryComponent} entryData={entryData[i]} entryDataChanged={this.entryDataChanged}
               labelStyle={{}} editStyle={{}}  okCancelStyle={hidden} upStyle={hidden} downStyle={hidden} removeStyle={hidden}
               editFunc={this.onClickEditEntry} okFunc={this.onClickSaveEntry} cancelFunc={this.onClickRevertEntry}
@@ -190,13 +191,11 @@ class TaskProfileEntries extends React.Component {
 
 TaskProfileEntries.propTypes = {
   store: PropTypes.object.isRequired,
+  multiline: PropTypes.bool,
   entryComponent: PropTypes.func.isRequired,
-  entryData: PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.string)).isRequired,/*
-  content: PropTypes.string.isRequired,
-  onStepComplete: PropTypes.func.isRequired,
-  onStepAdvance: PropTypes.func.isRequired,
-  onRevertProgress: PropTypes.func.isRequired,*/
-  updateEditingStatus: PropTypes.func.isRequired
+  entryData: PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.string)).isRequired,
+  updateEditingStatus: PropTypes.func.isRequired,
+  getNewEmptyRowData: PropTypes.func.isRequired
 }
 
 export default withRouter(TaskProfileEntries);

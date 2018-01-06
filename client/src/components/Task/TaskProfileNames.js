@@ -3,6 +3,7 @@ import React from 'react';
 import { withRouter } from 'react-router-dom'
 import PropTypes from 'prop-types'
 import TaskProfileEntries from './TaskProfileEntries'
+import substituteVariables from '../../util/substituteVariables'
 import './TaskProfileNames.css'
 
 class TaskProfileNameTextEntry extends React.Component {
@@ -48,6 +49,7 @@ class TaskProfileNames extends React.Component {
   constructor(props) {
     super(props)
     this.updateEditingStatus = this.updateEditingStatus.bind(this)
+    this.getNewEmptyRowData = this.getNewEmptyRowData.bind(this)
   }
 
   updateEditingStatus(params) {
@@ -55,9 +57,16 @@ class TaskProfileNames extends React.Component {
     this.props.updateEditingStatus({ editingInProcess, newCategoryData: { entries: newEntryData } })
   }
 
+  getNewEmptyRowData() {
+    return ['']
+  }
+
   render() {
-    let { categoryData, store } = this.props
-    //FIXME generalize the other names label
+    let { categoryData, store, qualifier } = this.props
+    let storeState = store.getState()
+    let { profileCategories } = storeState.tasks
+    let { variables } = profileCategories
+    let otherNamesLabel = substituteVariables('Provide all other names by which ((this person)) ((is)) known to the general public.', variables, qualifier)
     return (
       <div className="TaskProfileNames">
         <div className="TaskProfileNamesLegalName">
@@ -68,9 +77,9 @@ class TaskProfileNames extends React.Component {
         </div>
         <div className="TaskProfileNamesOtherNames">
           <div className="TaskProfileNamesOtherNamesLabel">
-            Provide all other names by which you are known to the general public.
+            {otherNamesLabel}
           </div>
-          <TaskProfileEntries store={store} updateEditingStatus={this.updateEditingStatus}
+          <TaskProfileEntries store={store} updateEditingStatus={this.updateEditingStatus} getNewEmptyRowData={this.getNewEmptyRowData}
             entryComponent={TaskProfileNameTextEntry} entryData={categoryData.entries} />
         </div>
       </div>
@@ -81,7 +90,8 @@ class TaskProfileNames extends React.Component {
 TaskProfileNames.propTypes = {
   store: PropTypes.object.isRequired,
   categoryData: PropTypes.object.isRequired,
-  updateEditingStatus: PropTypes.func.isRequired
+  updateEditingStatus: PropTypes.func.isRequired,
+  qualifier: PropTypes.string.isRequired
 }
 
 export default withRouter(TaskProfileNames);

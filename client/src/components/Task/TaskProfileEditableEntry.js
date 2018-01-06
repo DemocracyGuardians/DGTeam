@@ -57,7 +57,7 @@ TaskProfileEditableEntry.propTypes = {
   entryClasses: PropTypes.string.isRequired,
   entryData: PropTypes.oneOfType([
     PropTypes.string,
-    PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.string))
+    PropTypes.arrayOf(PropTypes.string)
   ]),
   entryDataChanged: PropTypes.func.isRequired,
   labelStyle: PropTypes.object.isRequired,

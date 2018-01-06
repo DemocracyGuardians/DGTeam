@@ -11,31 +11,15 @@ import DOMPurify from 'dompurify'
 import { RSAA } from 'redux-api-middleware'
 import { Button } from 'semantic-ui-react'
 import parseJsonPayload from '../../util/parseJsonPayload'
+import substituteVariables from '../../util/substituteVariables'
 import { TEAM_BASE_URL, TEAM_API_RELATIVE_PATH } from '../../envvars'
 import TaskStepBaseClass from './TaskStepBaseClass'
-import TaskProfileBasic from './TaskProfileBasic'
+import TaskProfileVital from './TaskProfileVital'
 import TaskProfileNames from './TaskProfileNames'
 import TaskProfileList from './TaskProfileList'
 import './TaskProfile.css'
 
 const profileitemApiUrl = TEAM_BASE_URL + TEAM_API_RELATIVE_PATH + '/profileitem'
-
-// Do variable substitutions on a string
-// Replacement strings can be recursively replaced, so /g isn't sufficient
-let substituteVariables = function(str, variables, qualifier) {
-  for (let i=0; i<1000; i++) {
-    let done = true
-    str = str.replace(/\(\(([^)]+)\)\)/, function(match, p1, offset, wholeString) {
-      done = false
-      let substitute = (variables[match] && (variables[match][qualifier] || variables[match]['all'])) || p1
-      return substitute
-    })
-    if (done) {
-      break
-    }
-  }
-  return str
-}
 
 class TaskProfile extends TaskStepBaseClass {
   constructor(props) {
@@ -59,8 +43,8 @@ class TaskProfile extends TaskStepBaseClass {
     let storeState = store.getState()
     let { profileCategories } = storeState.tasks
     let { index } = content
-    let { name } = profileCategories.person[index]
-    return name
+    let { category } = profileCategories.person[index]
+    return category
   }
 
   componentWillReceiveProps(nextProps) {
@@ -194,7 +178,7 @@ class TaskProfile extends TaskStepBaseClass {
     let { profileCategories } = storeState.tasks
     let { index, qualifier } = content
     let { variables } = profileCategories
-    let { name } = profileCategories.person[index]
+    let { category } = profileCategories.person[index]
     // Do variable substitutions on the long description string
     // Replacement strings can be recursively replaced, so /g isn't sufficient
     let long = substituteVariables(profileCategories.person[index].long, variables, qualifier)
@@ -218,16 +202,16 @@ class TaskProfile extends TaskStepBaseClass {
         saveDiscardChangesTop = saveDiscardChanges
       }
     }
-    let category = name
     let childComponent = ''
-    if (category === 'basic') {
-      childComponent = <TaskProfileBasic store={store} updateEditingStatus={this.updateEditingStatus} categoryData={categoryData} />
+    if (category === 'vital') {
+      childComponent = <TaskProfileVital store={store} updateEditingStatus={this.updateEditingStatus} categoryData={categoryData} />
     } else if (category === 'names') {
-      childComponent = <TaskProfileNames store={store} updateEditingStatus={this.updateEditingStatus} categoryData={categoryData} />
-    } else if (category === 'internetId') {
-
+      childComponent = <TaskProfileNames store={store} updateEditingStatus={this.updateEditingStatus}
+        categoryData={categoryData} qualifier={qualifier} />
     } else {
-      childComponent = <TaskProfileList store={store} updateEditingStatus={this.updateEditingStatus} categoryData={categoryData} />
+      let multiline = category === 'internetId' ? false : true
+      childComponent = <TaskProfileList store={store} updateEditingStatus={this.updateEditingStatus}
+        categoryData={categoryData} multiline={multiline} />
     }
     let anyEmpty = false
     categoryData.entries.forEach(entry => {

@@ -4,11 +4,11 @@ import { withRouter } from 'react-router-dom'
 import PropTypes from 'prop-types'
 import resizeTextarea from '../../util/resizeTextarea'
 import TaskProfileEditableEntry from './TaskProfileEditableEntry'
-import './TaskProfileBasic.css'
+import './TaskProfileVital.css'
 
 let rownumToField = ['legalName', 'dob', 'otherVital' ]
 
-class TaskProfileBasicTextEntry extends React.Component {
+class TaskProfileVitalTextEntry extends React.Component {
   constructor(props) {
     super(props)
     let { row, rowData } = this.props
@@ -53,12 +53,12 @@ class TaskProfileBasicTextEntry extends React.Component {
         pattern={pattern} onInput={this.handleInput} ref='TaskProfileBasicTextareaEntry' />
     } else {
       return <input className={clz} value={rowData} disabled={disabled} placeholder={placeholder}
-        pattern={pattern} onInput={this.handleInput} ref='TaskProfileBasicTextEntry' />
+        pattern={pattern} onInput={this.handleInput} ref='TaskProfileVitalTextEntry' />
     }
   }
 }
 
-class TaskProfileBasic extends React.Component {
+class TaskProfileVital extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
@@ -66,7 +66,6 @@ class TaskProfileBasic extends React.Component {
       categoryData: this.props.categoryData
     }
     this.updateEditingStatus = this.updateEditingStatus.bind(this)
-    this.setFocusNowEditing = this.setFocusNowEditing.bind(this)
     this.onClickEditEntry = this.onClickEditEntry.bind(this)
     this.onClickSaveEntry = this.onClickSaveEntry.bind(this)
     this.onClickRevertEntry = this.onClickRevertEntry.bind(this)
@@ -79,14 +78,11 @@ class TaskProfileBasic extends React.Component {
     this.props.updateEditingStatus({ editingInProcess, newCategoryData })
   }
 
-  setFocusNowEditing() {
-    //FIXME componentDidUpdate?
-    setTimeout(() => {
-      let control = document.querySelector('.TaskProfile .NowEditing')
-      if (control) {
-        control.focus()
-      }
-    }, 0)
+  componentDidUpdate() {
+    let control = document.querySelector('.TaskProfile .NowEditing')
+    if (control) {
+      control.focus()
+    }
   }
 
   onClickEditEntry(e) {
@@ -97,7 +93,6 @@ class TaskProfileBasic extends React.Component {
     let indexString = current.getAttribute('data-entry-index')
     this.setState({ nowEditing: indexString, savedNowEditing: categoryData[indexString] })
     this.updateEditingStatus({ editingInProcess: true, newCategoryData: categoryData })
-    this.setFocusNowEditing()
   }
 
   onClickSaveEntry(e)  {
@@ -149,13 +144,13 @@ class TaskProfileBasic extends React.Component {
     let otherVitalOkCancelStyle = nowEditing === 'otherVital'  ? {} : hidden
     let placeholder = nowEditing === null ? '(press "Edit" to enter a value)' : ''
     return (
-      <div className="TaskProfileBasic">
+      <div className="TaskProfileVital">
         <div className="TaskProfileBasicLegalName">
           <label>
             <div className="TaskProfileEntry">
               <TaskProfileEditableEntry dataIndex='legalName' disabled={legalDisabled}
                 labelText='Legal name' placeholder={placeholder}
-                entryClasses={legalEntryClasses} entryComponent={TaskProfileBasicTextEntry} entryData={categoryData.legalName} entryDataChanged={this.entryDataChanged}
+                entryClasses={legalEntryClasses} entryComponent={TaskProfileVitalTextEntry} entryData={categoryData.legalName} entryDataChanged={this.entryDataChanged}
                 labelStyle={{}} editStyle={legalEditStyle} okCancelStyle={legalOkCancelStyle} upStyle={hidden} downStyle={hidden} removeStyle={hidden}
                 editFunc={this.onClickEditEntry} okFunc={this.onClickSaveEntry} cancelFunc={this.onClickRevertEntry}
                 upFunc={this.nullFunc} downFunc={this.nullFunc} removeFunc={this.nullFunc} />
@@ -167,7 +162,7 @@ class TaskProfileBasic extends React.Component {
             <div className="TaskProfileEntry">
               <TaskProfileEditableEntry dataIndex='dob' disabled={dobDisabled}
                 labelText='Birth date (yyyy-mm-dd)' pattern='^(\d{4})\D?(0[1-9]|1[0-2])\D?([12]\d|0[1-9]|3[01])$' placeholder={placeholder}
-                entryClasses={dobEntryClasses} entryComponent={TaskProfileBasicTextEntry} entryData={categoryData.dob} entryDataChanged={this.entryDataChanged}
+                entryClasses={dobEntryClasses} entryComponent={TaskProfileVitalTextEntry} entryData={categoryData.dob} entryDataChanged={this.entryDataChanged}
                 labelStyle={{}} editStyle={dobEditStyle} okCancelStyle={dobOkCancelStyle} upStyle={hidden} downStyle={hidden} removeStyle={hidden}
                 editFunc={this.onClickEditEntry} okFunc={this.onClickSaveEntry} cancelFunc={this.onClickRevertEntry}
                 upFunc={this.nullFunc} downFunc={this.nullFunc} removeFunc={this.nullFunc} />
@@ -178,7 +173,7 @@ class TaskProfileBasic extends React.Component {
           <label>
             <TaskProfileEditableEntry dataIndex='otherVital' disabled={otherVitalDisabled} multiline={true}
               labelText='Other vital information, such as place of birth or date of death' placeholder={placeholder}
-              entryClasses={otherVitalEntryClasses} entryComponent={TaskProfileBasicTextEntry} entryData={categoryData.otherVital} entryDataChanged={this.entryDataChanged}
+              entryClasses={otherVitalEntryClasses} entryComponent={TaskProfileVitalTextEntry} entryData={categoryData.otherVital} entryDataChanged={this.entryDataChanged}
               labelStyle={{}} editStyle={otherVitalEditStyle} okCancelStyle={otherVitalOkCancelStyle} upStyle={hidden} downStyle={hidden} removeStyle={hidden}
               editFunc={this.onClickEditEntry} okFunc={this.onClickSaveEntry} cancelFunc={this.onClickRevertEntry}
               upFunc={this.nullFunc} downFunc={this.nullFunc} removeFunc={this.nullFunc} />
@@ -189,10 +184,10 @@ class TaskProfileBasic extends React.Component {
   }
 }
 
-TaskProfileBasic.propTypes = {
+TaskProfileVital.propTypes = {
   store: PropTypes.object.isRequired,
   categoryData: PropTypes.object.isRequired,
   updateEditingStatus: PropTypes.func.isRequired
 }
 
-export default withRouter(TaskProfileBasic);
+export default withRouter(TaskProfileVital);
