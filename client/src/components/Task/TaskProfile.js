@@ -82,6 +82,8 @@ class TaskProfile extends TaskStepBaseClass {
       thisJson !== newJson) {
       this.setState({ editingInProcess, pendingChanges, categoryData: newCategoryData })
     }
+    let { hideShowWizardNavigation } = this.props
+    hideShowWizardNavigation(!(editingInProcess || pendingChanges))
   }
 
   getCategoryData(category) {
@@ -213,21 +215,23 @@ class TaskProfile extends TaskStepBaseClass {
       childComponent = <TaskProfileList store={store} updateEditingStatus={this.updateEditingStatus}
         categoryData={categoryData} multiline={multiline} />
     }
-    let anyEmpty = false
-    categoryData.entries.forEach(entry => {
-      let allEmpty = true
-      entry.forEach((cell, index) => {
-        entry[index] = cell = cell.trim()
-        if (cell.length > 0) {
-          allEmpty = false
+    if (!editingInProcess) {
+      let anyEmpty = false
+      categoryData.entries.forEach(entry => {
+        let allEmpty = true
+        entry.forEach((cell, index) => {
+          entry[index] = cell = cell.trim()
+          if (cell.length > 0) {
+            allEmpty = false
+          }
+        })
+        if (allEmpty) {
+          anyEmpty = true
         }
       })
-      if (allEmpty) {
-        anyEmpty = true
+      if (anyEmpty) {
+        emptyEntries = (<div className="TaskProfileEmptyEntries">Empty entries will be removed with the next Save Changes.</div>)
       }
-    })
-    if (anyEmpty) {
-      emptyEntries = (<div className="TaskProfileEmptyEntries">Empty entries will be removed with the next Save Changes.</div>)
     }
 
     return (

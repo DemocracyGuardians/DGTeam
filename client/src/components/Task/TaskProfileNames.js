@@ -71,8 +71,7 @@ class TaskProfileNames extends React.Component {
       <div className="TaskProfileNames">
         <div className="TaskProfileNamesLegalName">
           <label>
-            <div className="TaskProfileNamesLabel">Legal name</div>
-            <input/>
+            <div className="TaskProfileNamesLabel">Legal name: (not yet provided)</div>
           </label>
         </div>
         <div className="TaskProfileNamesOtherNames">

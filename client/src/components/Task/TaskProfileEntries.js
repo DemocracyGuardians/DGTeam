@@ -47,10 +47,12 @@ class TaskProfileEntries extends React.Component {
     e.preventDefault()
     e.stopPropagation()
     let { entryData } = this.state
+    let { updateEditingStatus } = this.props
     let newEntryData = JSON.parse(JSON.stringify(entryData))
     let blankRow = this.props.getNewEmptyRowData()
     newEntryData.push(blankRow)
     this.setState({ nowEditing: newEntryData.length-1, savedNowEditing:[''], entryData: newEntryData })
+    updateEditingStatus({ editingInProcess: true, newEntryData: newEntryData })
   }
 
   onClickEditEntry(e) {
