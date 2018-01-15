@@ -76,15 +76,16 @@ Submissions from low-ranking members require evaluation
 
 
 api
-  POST/PUT/GET/DELETE profile[/profileId[/category]]
-  Initial creation is just "POST profile", returns profileId
-  [userId,] if present on creation, must match session user and there cannot already be a profileId in user table
-  [{
-    [category ENUM] required if category not in url
-    entryIndex int (for ordering the entries)
-    [qualifier ENUM] for internetId
-    entry:[] varchar
-  }]
+  g(s)etprofiledata
+  {
+    subjectId
+    categories: [{
+      category ENUM
+      categoryData {
+        possible category-specific name-value pairs
+        entries[]
+      }
+    }]
 
 db tables
 
@@ -102,7 +103,7 @@ ue_ztm_org
 ue_ztm_profile_items
   id (for each separate value -  may never be used)
   profileId
-  authorId
+  userId
   category (abbreviation) ENUM
     name (special=legal)
     permission  (orgs only, for acting on behalf, values=userId,edit|admin,)
@@ -186,3 +187,4 @@ user / entity { // stored in entity tables?
   training
   political profile?
 }
+https://acorn.tv/docmartin/series8

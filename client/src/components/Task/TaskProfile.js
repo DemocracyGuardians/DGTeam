@@ -19,8 +19,6 @@ import TaskProfileNames from './TaskProfileNames'
 import TaskProfileList from './TaskProfileList'
 import './TaskProfile.css'
 
-const profileitemApiUrl = TEAM_BASE_URL + TEAM_API_RELATIVE_PATH + '/profileitem'
-
 class TaskProfile extends TaskStepBaseClass {
   constructor(props) {
     super(props)
@@ -35,11 +33,11 @@ class TaskProfile extends TaskStepBaseClass {
     this.onClickShowChanges = this.onClickShowChanges.bind(this)
     this.onClickSaveChanges = this.onClickSaveChanges.bind(this)
     this.onClickDiscardChanges = this.onClickDiscardChanges.bind(this)
-    this.getCategoryData(this.getCategoryName())
+    this.getCategoryData(this.getCategoryName(this.props))
   }
 
-  getCategoryName() {
-    let { content, store } = this.props
+  getCategoryName(props) {
+    let { content, store } = props
     let storeState = store.getState()
     let { profileCategories } = storeState.tasks
     let { index } = content
@@ -51,7 +49,7 @@ class TaskProfile extends TaskStepBaseClass {
     let thisJson = JSON.stringify(this.props.content)
     let nextJson = JSON.stringify(nextProps.content)
     if (nextJson !== thisJson) {
-      this.getCategoryData(this.getCategoryName())
+      this.getCategoryData(this.getCategoryName(nextProps))
     }
   }
 
@@ -87,11 +85,51 @@ class TaskProfile extends TaskStepBaseClass {
   }
 
   getCategoryData(category) {
-    setTimeout(()  => {
-      let categoryData = { entries:[] }
-      let lastSavedData = categoryData
-      this.setState({ categoryData, lastSavedData })
-    }, 100)
+    let componentThis = this
+    let { store } = this.props
+    let { dispatch } = store
+    let storeState = store.getState()
+    let { id } = storeState.account
+    let values = { subjectId: id, category }
+    let getCategoryDataApiUrl = TEAM_BASE_URL + TEAM_API_RELATIVE_PATH + '/getprofilecategorydata'
+    const apiAction = {
+      [RSAA]: {
+        endpoint: getCategoryDataApiUrl,
+        method: 'POST',
+        credentials: 'include',
+        types: [
+          'getcategorydata_request', // ignored
+          {
+            type: 'getcategorydata_success',
+            payload: (action, state, res) => {
+              parseJsonPayload(res, action.type, function(json) {
+                let categoryData = {
+                  legalName: json.categoryData.legalName,
+                  dob: json.categoryData.dob,
+                  otherVital: json.categoryData.otherVital,
+                  entries: json.categoryData.values
+                }
+                if (!Array.isArray(categoryData.entries)) {
+                  categoryData.entries = []
+                }
+                let lastSavedData = categoryData
+                this.setState({ categoryData, lastSavedData })
+              }.bind(componentThis))
+            }
+          },
+          {
+            type: 'getcategorydata_failure',
+            payload: (action, state, res) => {
+              console.error('TaskWizard getcategorydata_failure')
+              this.props.history.push('/systemerror')
+            }
+          }
+        ],
+        body: JSON.stringify(values),
+        headers: { 'Content-Type': 'application/json' }
+      }
+    }
+    dispatch(apiAction)
   }
 
   onClickShowChanges(e) {
@@ -113,24 +151,24 @@ class TaskProfile extends TaskStepBaseClass {
     let newCategoryData = JSON.parse(JSON.stringify(categoryData))
     newCategoryData.entries = newEntries
     this.setState({ lastSavedData: newCategoryData, categoryData: newCategoryData, pendingChanges: false })
-  }
-
-  onClickDiscardChanges(e) {
-    e.preventDefault()
-    let { lastSavedData } = this.state
-    this.setState({ categoryData: lastSavedData, pendingChanges: false })
-  }
-
-  handleSubmit(values) {
-    let localProgress = values
     let componentThis = this
-    let { dispatch, getState } = this.props.store
-    let storeState = getState()
-    let storeStateProgress = JSON.parse(JSON.stringify(storeState.progress))
-    values = Object.assign({}, storeStateProgress, localProgress)
+    let { content, store } = this.props
+    let { dispatch } = store
+    let storeState = store.getState()
+    let category = this.getCategoryName(this.props)
+    let { id } = storeState.account
+    let payload = { subjectId: id, category }
+    if (category === 'vital') {
+      payload.legalName = categoryData.legalName
+      payload.dob = categoryData.dob
+      payload.otherVital = categoryData.otherVital
+    } else {
+      payload.values = newEntries
+    }
+    let setCategoryDataApiUrl = TEAM_BASE_URL + TEAM_API_RELATIVE_PATH + '/setprofilecategorydata'
     const apiAction = {
       [RSAA]: {
-        endpoint: profileitemApiUrl,
+        endpoint: setCategoryDataApiUrl,
         method: 'POST',
         credentials: 'include',
         types: [
@@ -139,9 +177,7 @@ class TaskProfile extends TaskStepBaseClass {
             type: 'profileitem_success',
             payload: (action, state, res) => {
               parseJsonPayload(res, action.type, function(json) {
-                /*dispatch(resetProgressSuccess(json.account, json.progress, json.tasks))
-                setLocalProgress(localProgress)
-                this.props.history.push('/Tasks')*/
+                // silent success
               }.bind(componentThis))
             }
           },
@@ -153,11 +189,17 @@ class TaskProfile extends TaskStepBaseClass {
             }
           }
         ],
-        body: JSON.stringify(values),
+        body: JSON.stringify(payload),
         headers: { 'Content-Type': 'application/json' }
       }
     }
     dispatch(apiAction)
+  }
+
+  onClickDiscardChanges(e) {
+    e.preventDefault()
+    let { lastSavedData } = this.state
+    this.setState({ categoryData: lastSavedData, pendingChanges: false })
   }
 
   render() {
@@ -201,7 +243,7 @@ class TaskProfile extends TaskStepBaseClass {
     let childComponent = ''
     if (category === 'vital') {
       childComponent = <TaskProfileVital store={store} updateEditingStatus={this.updateEditingStatus} categoryData={categoryData} />
-    } else if (category === 'names') {
+    } else if (category === 'name') {
       childComponent = <TaskProfileNames store={store} updateEditingStatus={this.updateEditingStatus}
         categoryData={categoryData} qualifier={qualifier} />
     } else {

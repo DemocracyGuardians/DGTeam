@@ -37,7 +37,7 @@ class TaskProfileNameTextEntry extends React.Component {
     let { addlClasses, disabled } = this.props
     let { rowData } = this.state
     let clz = 'TaskProfileSimpleTextEntry ' + addlClasses
-    return <input className={clz} value={rowData[0]} disabled={disabled} onInput={this.handleInput} ref='TaskProfileNameTextEntry' />
+    return <input className={clz} value={rowData} disabled={disabled} onInput={this.handleInput} ref='TaskProfileNameTextEntry' />
   }
 }
 
@@ -46,6 +46,15 @@ class TaskProfileNames extends React.Component {
     super(props)
     this.updateEditingStatus = this.updateEditingStatus.bind(this)
     this.getNewEmptyRowData = this.getNewEmptyRowData.bind(this)
+  }
+
+  componentWillReceiveProps(nextProps) {
+    let { categoryData } = nextProps
+    let thisJson = JSON.stringify(this.props.categoryData)
+    let nextJson = JSON.stringify(categoryData)
+    if (thisJson !== nextJson) {
+      this.setState({ categoryData })
+    }
   }
 
   updateEditingStatus(params) {
@@ -62,12 +71,13 @@ class TaskProfileNames extends React.Component {
     let storeState = store.getState()
     let { profileCategories } = storeState.tasks
     let { variables } = profileCategories
+    let legalName = categoryData.legalName || '<em>(not yet provided)</em>'
     let otherNamesLabel = substituteVariables('Provide all other names by which ((this person)) ((is)) known to the general public.', variables, qualifier)
     return (
       <div className="TaskProfileNames">
         <div className="TaskProfileNamesLegalName">
           <label>
-            <div className="TaskProfileNamesLabel">Legal name: (not yet provided)</div>
+            <div className="TaskProfileNamesLabel">Legal name: {legalName}</div>
           </label>
         </div>
         <div className="TaskProfileNamesOtherNames">

@@ -58,6 +58,15 @@ class TaskProfileList extends React.Component {
     this.getNewEmptyRowData = this.getNewEmptyRowData.bind(this)
   }
 
+  componentWillReceiveProps(nextProps) {
+    let { categoryData } = nextProps
+    let thisJson = JSON.stringify(this.props.categoryData)
+    let nextJson = JSON.stringify(categoryData)
+    if (thisJson !== nextJson) {
+      this.setState({ categoryData })
+    }
+  }
+
   updateEditingStatus(params) {
     let { editingInProcess, newEntryData } = params
     this.props.updateEditingStatus({ editingInProcess, newCategoryData: { entries: newEntryData } })

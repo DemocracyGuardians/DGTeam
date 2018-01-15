@@ -51,7 +51,7 @@ class TaskProfileEntries extends React.Component {
     let newEntryData = JSON.parse(JSON.stringify(entryData))
     let blankRow = this.props.getNewEmptyRowData()
     newEntryData.push(blankRow)
-    this.setState({ nowEditing: newEntryData.length-1, savedNowEditing:[''], entryData: newEntryData })
+    this.setState({ nowEditing: newEntryData.length-1, savedNowEditing:'', entryData: newEntryData })
     updateEditingStatus({ editingInProcess: true, newEntryData: newEntryData })
   }
 
@@ -77,7 +77,12 @@ class TaskProfileEntries extends React.Component {
     e.preventDefault()
     let { nowEditing, savedNowEditing, entryData } = this.state
     let newEntryData = JSON.parse(JSON.stringify(entryData))
-    newEntryData[nowEditing] = savedNowEditing
+    let trimmed = savedNowEditing.trim()
+    if (trimmed.length === 0) {
+      newEntryData.splice(nowEditing, 1)
+    } else {
+      newEntryData[nowEditing] = savedNowEditing
+    }
     this.setState({ nowEditing: null, savedNowEditing: null, entryData: newEntryData })
     this.props.updateEditingStatus({ editingInProcess: false, newEntryData })
   }

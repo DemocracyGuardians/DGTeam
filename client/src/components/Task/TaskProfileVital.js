@@ -6,8 +6,6 @@ import resizeTextarea from '../../util/resizeTextarea'
 import TaskProfileEditableEntry from './TaskProfileEditableEntry'
 import './TaskProfileVital.css'
 
-let rownumToField = ['legalName', 'dob', 'otherVital' ]
-
 class TaskProfileVitalTextEntry extends React.Component {
   constructor(props) {
     super(props)
@@ -82,6 +80,15 @@ class TaskProfileVital extends React.Component {
     let control = document.querySelector('.TaskProfile .NowEditing')
     if (control) {
       control.focus()
+    }
+  }
+
+  componentWillReceiveProps(nextProps) {
+    let { categoryData } = nextProps
+    let thisJson = JSON.stringify(this.props.categoryData)
+    let nextJson = JSON.stringify(categoryData)
+    if (thisJson !== nextJson) {
+      this.setState({ categoryData })
     }
   }
 

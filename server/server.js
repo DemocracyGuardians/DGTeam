@@ -9,6 +9,7 @@ var sessionMgmt = require('./util/sessionMgmt');
 var sessionRoutes = require('./routes/sessionRoutes');
 var inboxRoutes = require('./routes/inboxRoutes');
 var taskRoutes = require('./routes/taskRoutes');
+var profileRoutes = require('./routes/profileRoutes');
 
 var TEAM_API_RELATIVE_PATH = process.env.TEAM_API_RELATIVE_PATH;
 var TEAM_API_PORT = process.env.TEAM_API_PORT;
@@ -48,6 +49,8 @@ apiRouter.post('/gettask/:level/:name', authMiddleware, taskRoutes.gettask)
 apiRouter.post('/gettasks', authMiddleware, taskRoutes.gettasks)
 apiRouter.post('/updateprogress', authMiddleware, taskRoutes.updateprogress)
 apiRouter.post('/resetprogress', authMiddleware, taskRoutes.resetprogress)
+apiRouter.post('/getprofilecategorydata', authMiddleware, profileRoutes.getprofilecategorydata)
+apiRouter.post('/setprofilecategorydata', authMiddleware, profileRoutes.setprofilecategorydata)
 app.use(TEAM_API_RELATIVE_PATH, apiRouter);
 
 app.listen(TEAM_API_PORT);

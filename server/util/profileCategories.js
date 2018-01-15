@@ -11,7 +11,7 @@ module.exports = {
   //   qualifier:internetPlatform if this category requires an extra qualifier value
   person: [
     { category:'vital', title:'((This person\'s)) basic vital identity information', long:`((vital))`},
-    { category:'names', title:'((This person\'s)) names', long:`((names))`},
+    { category:'name', title:'((This person\'s)) names', long:`((names))`},
     { category:'internetId', title:'((This person\'s)) Internet sites and social media accounts', qualifier:'internetPlatform', long:`
       Provide the URL/hyperlink for each relevant websites, social media account, blog or other Web/Internet addresses or identities
       that ((this person)) ((has)). For social media, provide the the URL for ((this person\'s)) base/home page
@@ -20,29 +20,29 @@ module.exports = {
       Provide any pertinent information about ((this person\'s)) education.`},
     { category:'employment', title:'((This person\'s)) employment history', long:`
       Provide any pertinent information about ((this person\'s)) employment history.`},
-    { category:'activity', title:'((This person\'s)) activities and associations', long:`
-      Provide any other pertinent information about ((this person\'s)) activities and associations.`},
+    { category:'activity', title:'((This person\'s)) activities, associations and affiliations', long:`
+      Provide any other pertinent information about ((this person\'s)) activities, associations and affiliations.`},
     { category:'authority', title:'Domains of public activity and authoritative comment', long:`
       List the areas in which ((this person)) ((makes)) public authoritative comments that influence others.
       For example, a lawyer might blog on legal matters and a medical doctor might have a TV program on health issues.
       Some people comment authoritatively about politics on social media and influence the opinions of loyal followers,
       in some cases without a relevant degree or experience.`},
-    { category:'financial', title:'((This person\'s)) financial trustworthiness', long:`
-      <p>Provide any other pertinent information about ((this person\'s)) trustworthiness in financial relationships.</p>
-      <p>Example trustworthy behavior: always honor financial obligations.</p>
-      <p>Example untrustworthy behavior: stealing, cheating and reneging on financial obligations.</p>
-      ((OkPreferNot))`},
     { category:'legal', title:'((This person\'s)) legal and criminal trustworthiness', long:`
       <p>Provide any other pertinent information about ((this person\'s)) trustworthiness with regard to legal and criminal behavior.</p>
       <p>Example trustworthy behavior: never in legal or criminal trouble.</p>
       <p>Example untrustworthy behavior: convictions or court judgments against.</p>
       ((OkPreferNot))`},
-    { category:'relationships', title:'((This person\'s)) relationship trustworthiness', long:`
+    { category:'financial', title:'((This person\'s)) financial trustworthiness', long:`
+      <p>Provide any other pertinent information about ((this person\'s)) trustworthiness in financial relationships.</p>
+      <p>Example trustworthy behavior: always honor financial obligations.</p>
+      <p>Example untrustworthy behavior: stealing, cheating and reneging on financial obligations.</p>
+      ((OkPreferNot))`},
+    { category:'relationship', title:'((This person\'s)) relationship trustworthiness', long:`
       <p>Provide any other pertinent information about ((this person\'s)) trustworthiness in personal relationships.</p>
       <p>Example trustworthy behavior: honesty and honoring marriage vows.</p>
       <p>Example untrustworthy behavior: murder, sexual assault/harassment, lying, cheating and abuse.</p>
       ((OkPreferNot))`},
-    { category:'statements', title:'Public statements that reflect on ((this person\'s)) trustworthiness', long:`
+    { category:'statement', title:'Public statements that reflect on ((this person\'s)) trustworthiness', long:`
       List public statements that ((this person)) ((has)) made that reflect on ((this person\'s)) trustworthiness.
       Common sources of such statements are blogs, social media accounts, news articles, books, podcasts and videos.
       Always provide a URL/hyperlink so that the source material is available for everyone to review.`},
